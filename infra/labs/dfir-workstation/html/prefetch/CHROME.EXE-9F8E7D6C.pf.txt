@@ -1,0 +1,5 @@
+Prefetch export (text form for analysis)
+Executable: CHROME.EXE
+Run count: 231
+Last run: 2026-07-28T21:40:00Z
+Path: C:\Program Files\Google\Chrome\Application\chrome.exe

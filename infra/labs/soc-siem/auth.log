@@ -1,0 +1,19 @@
+2026-07-28T08:12:03Z AUTH_SUCCESS user=jdupont src=10.10.0.55 service=vpn
+2026-07-28T08:14:47Z AUTH_SUCCESS user=mleroy src=10.10.0.61 service=vpn
+2026-07-28T09:02:11Z AUTH_FAILED user=admin src=198.51.100.23 service=ssh reason=bad_password
+2026-07-28T09:45:32Z AUTH_SUCCESS user=svc-backup src=10.10.0.10 service=cron
+2026-07-28T10:03:56Z AUTH_FAILED user=root src=203.0.113.140 service=ssh reason=bad_password
+2026-07-28T10:04:02Z AUTH_FAILED user=root src=203.0.113.140 service=ssh reason=bad_password
+2026-07-28T11:20:15Z AUTH_SUCCESS user=jdupont src=10.10.0.55 service=vpn
+2026-07-28T13:41:09Z AUTH_FAILED user=guest src=192.0.2.88 service=ftp reason=account_disabled
+2026-07-28T14:55:23Z AUTH_SUCCESS user=mleroy src=10.10.0.61 service=vpn
+2026-07-28T22:14:01Z AUTH_FAILED user=admin src=203.0.113.77 service=ssh reason=bad_password
+2026-07-28T22:14:04Z AUTH_FAILED user=admin src=203.0.113.77 service=ssh reason=bad_password
+2026-07-28T22:14:07Z AUTH_FAILED user=admin src=203.0.113.77 service=ssh reason=bad_password
+2026-07-28T22:14:11Z AUTH_FAILED user=admin src=203.0.113.77 service=ssh reason=bad_password
+2026-07-28T22:14:14Z AUTH_FAILED user=admin src=203.0.113.77 service=ssh reason=bad_password
+2026-07-28T22:14:19Z AUTH_SUCCESS user=admin src=203.0.113.77 service=ssh session=FLAG{ip_malveillante_identifiee}
+2026-07-28T23:02:44Z AUTH_SUCCESS user=jdupont src=10.10.0.55 service=vpn
+2026-07-29T00:11:52Z AUTH_SUCCESS user=svc-backup src=10.10.0.10 service=cron
+2026-07-29T06:30:07Z AUTH_FAILED user=test src=192.0.2.201 service=ssh reason=unknown_user
+2026-07-29T07:18:44Z AUTH_SUCCESS user=mleroy src=10.10.0.61 service=vpn

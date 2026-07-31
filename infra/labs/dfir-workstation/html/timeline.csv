@@ -1,0 +1,11 @@
+timestamp,macb,path,description
+2026-07-28T21:38:02Z,.A..,C:\Users\victime\AppData\Local\Microsoft\Outlook\outlook.pst,Email received with attachment "Facture_2026_URGENT.exe"
+2026-07-28T21:40:55Z,M.C.,C:\Users\victime\Downloads\Facture_2026_URGENT.exe,Attachment saved to disk from email client
+2026-07-28T21:42:11Z,.A..,C:\Users\victime\Downloads\Facture_2026_URGENT.exe,Executable launched by user (see prefetch/FACTURE_2026~1.EXE-7C91F3A2.pf.txt)
+2026-07-28T21:42:14Z,MACB,C:\Windows\System32\Tasks\WindowsUpdateCheck,Scheduled task created for persistence
+2026-07-28T21:43:02Z,.A..,C:\Users\victime\Documents\clients_2026.xlsx,Sensitive spreadsheet accessed
+2026-07-28T22:16:47Z,.A..,C:\Users\victime\Documents\clients_2026.xlsx,File read again immediately before outbound network transfer (correlate with proxy logs)
+2026-07-28T22:16:50Z,MACB,C:\Windows\System32\winevt\Logs\Security.evtx,Event log cleared shortly after transfer — anti-forensic attempt
+
+Chronologie complète confirmée : phishing -> exécution -> persistance -> exfiltration -> nettoyage des logs.
+FLAG{chronologie_reconstruite}

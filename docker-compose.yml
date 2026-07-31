@@ -1,0 +1,154 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      # The host's docker.sock is bind-mounted below at the standard Linux path — this container
+      # runs Linux regardless of the host OS, so the app's Windows-named-pipe auto-detection
+      # doesn't apply here and must be pinned explicitly.
+      - DOCKER_SOCKET=/var/run/docker.sock
+    env_file: .env.local
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_started
+      ollama:
+        condition: service_started
+      whisper:
+        condition: service_started
+      piper:
+        condition: service_started
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: nyx
+      POSTGRES_USER: nyx
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-nyx_dev_secret}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nyx -d nyx"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+      - ./infra/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  minio:
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-nyx}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-nyx_minio_secret}
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    restart: unless-stopped
+
+  minio-init:
+    image: minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 nyx nyx_minio_secret;
+      mc mb --ignore-existing local/nyx-courses;
+      mc mb --ignore-existing local/nyx-labs;
+      mc mb --ignore-existing local/nyx-uploads;
+      mc anonymous set download local/nyx-courses;
+      exit 0;
+      "
+
+  # Ask Nyx — assistant IA 100% local (LLM + reconnaissance et synthèse vocales)
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    healthcheck:
+      test: ["CMD-SHELL", "ollama list || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+    restart: unless-stopped
+
+  # Télécharge le modèle par défaut une fois au premier démarrage, puis se termine (comme minio-init)
+  ollama-init:
+    image: ollama/ollama:latest
+    depends_on:
+      ollama:
+        condition: service_healthy
+    environment:
+      OLLAMA_HOST: "http://ollama:11434"
+    entrypoint: >
+      /bin/sh -c "
+      ollama pull ${OLLAMA_MODEL:-llama3.2:3b};
+      exit 0;
+      "
+
+  whisper:
+    image: onerahmet/openai-whisper-asr-webservice:latest
+    ports:
+      - "9002:9000"
+    environment:
+      # "tiny" plutôt que "base" : moins de RAM résidente une fois le service démarré,
+      # important sur une machine à 8 Go de RAM totale où Whisper tourne aux côtés d'Ollama.
+      ASR_MODEL: tiny
+      ASR_ENGINE: faster_whisper
+    volumes:
+      - whisper_data:/root/.cache
+    restart: unless-stopped
+
+  piper:
+    build:
+      context: ./infra/piper
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8000"
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:
+  ollama_data:
+  whisper_data:

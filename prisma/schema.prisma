@@ -1,0 +1,265 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Course {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  title       String
+  description String
+  category    String
+  icon        String
+  color       String
+  order       Int
+  credits     Int       @default(0)
+  coverImage  String?
+  dependsOn   Json      @default("[]")
+  chapters    Chapter[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([category])
+  @@index([order])
+}
+
+model Chapter {
+  id             String      @id @default(cuid())
+  courseId       String
+  course         Course      @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  number         Int
+  title          String
+  status         String      @default("not_started")
+  completedAt    DateTime?
+  notes          String?
+  lastReviewedAt DateTime?
+  tp             TP?
+  quizzes        Quiz[]
+  flashcards     Flashcard[]
+  comments       Comment[]
+  resources      Resource[]
+  updatedAt      DateTime    @updatedAt
+
+  @@unique([courseId, number])
+  @@index([courseId])
+  @@index([status])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  chapterId String
+  chapter   Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  author    String   @default("Aure")
+  content   String
+  createdAt DateTime @default(now())
+
+  @@index([chapterId])
+  @@index([createdAt])
+}
+
+model Resource {
+  id        String   @id @default(cuid())
+  chapterId String
+  chapter   Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  title     String
+  url       String
+  type      String   @default("link")
+  note      String?
+  isCurated Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([chapterId])
+}
+
+model Quiz {
+  id        String        @id @default(cuid())
+  chapterId String        @unique
+  chapter   Chapter       @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  title     String
+  questions Json
+  attempts  QuizAttempt[]
+  createdAt DateTime      @default(now())
+}
+
+model QuizAttempt {
+  id        String   @id @default(cuid())
+  quizId    String
+  quiz      Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  score     Int
+  total     Int
+  answers   Json
+  duration  Int?
+  createdAt DateTime @default(now())
+
+  @@index([quizId])
+  @@index([createdAt])
+}
+
+model TP {
+  id          String    @id @default(cuid())
+  chapterId   String    @unique
+  chapter     Chapter   @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  title       String
+  environment String
+  objectives  Json
+  steps       Json
+  notes       String?
+  completedAt DateTime?
+  updatedAt   DateTime  @updatedAt
+}
+
+model CheatEntry {
+  id          String   @id @default(cuid())
+  category    String
+  subcategory String?
+  title       String
+  command     String
+  description String
+  example     String?
+  tags        Json
+  isFavorite  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@index([category])
+  @@index([title, command, description])
+}
+
+model Flashcard {
+  id          String   @id @default(cuid())
+  deck        String
+  chapterId   String?
+  chapter     Chapter? @relation(fields: [chapterId], references: [id], onDelete: SetNull)
+  front       String
+  back        String
+  interval    Int      @default(1)
+  easeFactor  Float    @default(2.5)
+  nextReview  DateTime @default(now())
+  reviewCount Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  @@index([deck])
+  @@index([deck, nextReview])
+  @@index([nextReview])
+}
+
+model Certification {
+  id            String    @id @default(cuid())
+  slug          String    @unique
+  name          String
+  provider      String
+  status        String    @default("not_started")
+  targetDate    DateTime?
+  completedDate DateTime?
+  notes         String?
+  linkedCourses Json
+  priority      Int       @default(0)
+
+  @@index([priority])
+  @@index([status])
+}
+
+model Project {
+  id            String    @id @default(cuid())
+  title         String
+  description   String
+  type          String    @default("proposed")
+  category      String
+  status        String    @default("idea")
+  linkedCourses Json
+  steps         Json      @default("[]")
+  notes         String?
+  resourceUrl   String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  completedAt   DateTime?
+
+  @@index([type])
+  @@index([status])
+  @@index([category])
+}
+
+model Lab {
+  id            String       @id @default(cuid())
+  slug          String       @unique
+  title         String
+  category      String
+  difficulty    String
+  estimatedTime Int
+  totalPoints   Int
+  description   String
+  mdPath        String
+  targets       Json
+  kaliImage     String       @default("nyx/kali-tools")
+  prerequisites Json
+  published     Boolean      @default(false)
+  sessions      LabSession[]
+  flags         LabFlag[]
+  createdAt     DateTime     @default(now())
+
+  @@index([category])
+  @@index([difficulty])
+  @@index([published])
+}
+
+model LabFlag {
+  id       String        @id @default(cuid())
+  labId    String
+  lab      Lab           @relation(fields: [labId], references: [id], onDelete: Cascade)
+  flagId   String
+  hint     String
+  value    String
+  points   Int
+  captures FlagCapture[]
+
+  @@index([labId])
+}
+
+model LabSession {
+  id          String        @id @default(cuid())
+  labId       String
+  lab         Lab           @relation(fields: [labId], references: [id])
+  kaliId      String
+  networkId   String
+  status      String        @default("active")
+  score       Int           @default(0)
+  bonusPoints Int           @default(0)
+  startedAt   DateTime      @default(now())
+  completedAt DateTime?
+  captures    FlagCapture[]
+
+  @@index([status])
+  @@index([startedAt])
+}
+
+model FlagCapture {
+  id         String     @id @default(cuid())
+  flagId     String
+  flag       LabFlag    @relation(fields: [flagId], references: [id])
+  sessionId  String
+  session    LabSession @relation(fields: [sessionId], references: [id])
+  capturedAt DateTime   @default(now())
+
+  @@unique([flagId, sessionId])
+  @@index([sessionId])
+}
+
+model CommandLogEntry {
+  id         String   @id @default(cuid())
+  sessionId  String
+  command    String
+  executedAt DateTime @default(now())
+
+  @@index([sessionId])
+  @@index([executedAt])
+}

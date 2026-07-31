@@ -1,0 +1,10 @@
+2026-07-28T08:13:02Z src=10.10.0.55 dest=intranet.corp.lab method=GET bytes_sent=1204
+2026-07-28T08:15:10Z src=10.10.0.61 dest=mail.corp.lab method=GET bytes_sent=884
+2026-07-28T09:46:01Z src=10.10.0.10 dest=updates.corp.lab method=GET bytes_sent=52210
+2026-07-28T11:21:03Z src=10.10.0.55 dest=intranet.corp.lab method=POST bytes_sent=430
+2026-07-28T14:56:02Z src=10.10.0.61 dest=mail.corp.lab method=GET bytes_sent=910
+2026-07-28T22:15:02Z src=203.0.113.77 dest=intranet.corp.lab method=GET bytes_sent=2044
+2026-07-28T22:16:47Z src=203.0.113.77 dest=exfil.badhost.example method=POST bytes_sent=48213811 note=FLAG{incident_confirme}
+2026-07-28T23:03:10Z src=10.10.0.55 dest=intranet.corp.lab method=GET bytes_sent=1180
+2026-07-29T00:12:20Z src=10.10.0.10 dest=updates.corp.lab method=GET bytes_sent=48310
+2026-07-29T07:19:02Z src=10.10.0.61 dest=mail.corp.lab method=GET bytes_sent=902

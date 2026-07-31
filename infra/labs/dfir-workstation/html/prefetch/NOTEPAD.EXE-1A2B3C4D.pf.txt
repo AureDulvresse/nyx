@@ -1,0 +1,5 @@
+Prefetch export (text form for analysis)
+Executable: NOTEPAD.EXE
+Run count: 14
+Last run: 2026-07-27T09:12:00Z
+Path: C:\Windows\System32\notepad.exe

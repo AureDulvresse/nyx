@@ -1,0 +1,6 @@
+Note interne (brouillon non destiné à publication) — rappel sécurité mots de passe :
+
+"Marc, on t'a déjà dit de ne pas utiliser le nom de ton chien + ton année de naissance comme
+mot de passe (ex: Rex1988) sur les comptes professionnels. Change ça cette semaine."
+
+FLAG{profil_numerique_reconstitue}

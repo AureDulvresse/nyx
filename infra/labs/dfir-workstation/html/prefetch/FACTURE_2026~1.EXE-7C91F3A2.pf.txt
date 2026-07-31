@@ -1,0 +1,10 @@
+Prefetch export (text form for analysis)
+Executable: FACTURE_2026_URGENT.EXE
+Run count: 1
+Last run: 2026-07-28T21:42:11Z
+Path: C:\Users\victime\Downloads\Facture_2026_URGENT.exe
+Loaded modules: kernel32.dll, ws2_32.dll, wininet.dll
+Analyst note: single execution, immediately after an email attachment download (see timeline.csv) —
+this is the vecteur d'entrée.
+
+FLAG{vecteur_entree_identifie}
