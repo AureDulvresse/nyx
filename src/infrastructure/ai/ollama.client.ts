@@ -3,5 +3,5 @@ export function getOllamaUrl(): string {
 }
 
 export function getOllamaModel(): string {
-  return process.env.OLLAMA_MODEL ?? 'llama3.2:3b'
+  return process.env.OLLAMA_MODEL ?? 'llama3.2:1b'
 }

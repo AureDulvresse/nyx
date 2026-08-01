@@ -5,7 +5,11 @@
 export function stripMarkdownForSpeech(markdown: string): string {
   return markdown
     .replace(/```[\s\S]*?```/g, '')
-    .replace(/<[A-Z]\w*[\s\S]*?\/>/g, '')
+    // [^<]* (not [\s\S]*?) matters: a lazy any-char match here would happily cross right over a
+    // non-self-closing tag (TipCallout, CehCallout...) that has no "/>" of its own, and keep
+    // searching until it hit some LATER unrelated self-closing tag's "/>" — silently deleting
+    // every heading and callout in between as if it were one giant self-closing component.
+    .replace(/<[A-Z]\w*[^<]*\/>/g, '')
     .replace(/<([A-Z]\w*)[^>]*>([\s\S]*?)<\/\1>/g, '$2')
     .replace(/!\[.*?\]\(.*?\)/g, '')
     .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')

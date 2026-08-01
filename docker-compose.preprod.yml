@@ -1,0 +1,54 @@
+# Pile pré-prod : l'app buildée en production (pas de bind-mount du code source, pas de hot
+# reload) derrière nginx, en local sur http://localhost:8080. Réutilise les services déjà lancés
+# par `docker-compose.yml` (postgres, redis, minio, ollama, whisper, piper) via leur réseau —
+# démarre-les d'abord avec `docker-compose up -d postgres redis minio ollama whisper piper`.
+#
+# Lancement :
+#   docker-compose -f docker-compose.preprod.yml up -d --build
+# Puis ouvrir http://localhost:8080
+#
+# Les URLs ci-dessous utilisent les noms de service Docker (postgres, redis, minio, ollama...),
+# pas "localhost" comme dans .env.local — depuis l'intérieur du conteneur app, "localhost" se
+# désignerait lui-même, pas les autres conteneurs.
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: .env.local
+    environment:
+      - NODE_ENV=production
+      - DOCKER_SOCKET=/var/run/docker.sock
+      - DATABASE_URL=postgresql://nyx:${POSTGRES_PASSWORD:-nyx_dev_secret}@postgres:5432/nyx?schema=public
+      - DIRECT_URL=postgresql://nyx:${POSTGRES_PASSWORD:-nyx_dev_secret}@postgres:5432/nyx?schema=public
+      - REDIS_URL=redis://redis:6379
+      - MINIO_ENDPOINT=http://minio:9000
+      # Volontairement "localhost" (et non "minio") : c'est le NAVIGATEUR qui charge ces URLs
+      # directement, pas le conteneur app — le port 9000 est publié sur l'hôte par docker-compose.yml.
+      - MINIO_PUBLIC_URL=http://localhost:9000
+      - OLLAMA_URL=http://ollama:11434
+      - WHISPER_URL=http://whisper:9000
+      - PIPER_URL=http://piper:8000
+      - NEXTAUTH_URL=http://localhost:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - nyx_default
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:1.27-alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./infra/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - app
+    networks:
+      - nyx_default
+    restart: unless-stopped
+
+networks:
+  nyx_default:
+    external: true

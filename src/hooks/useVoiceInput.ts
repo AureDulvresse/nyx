@@ -23,8 +23,16 @@ export function useVoiceInput() {
       recorder.start()
       mediaRecorderRef.current = recorder
       setIsRecording(true)
-    } catch {
-      setError("Impossible d'accéder au micro — vérifie les permissions du navigateur.")
+    } catch (e) {
+      if (e instanceof DOMException && (e.name === 'NotAllowedError' || e.name === 'SecurityError')) {
+        setError(
+          "Micro refusé — clique sur l'icône 🔒/ⓘ à gauche de l'URL, autorise le micro pour ce site, puis réessaie."
+        )
+      } else if (e instanceof DOMException && e.name === 'NotFoundError') {
+        setError('Aucun micro détecté sur cet appareil.')
+      } else {
+        setError("Impossible d'accéder au micro — vérifie les permissions du navigateur.")
+      }
     }
   }, [])
 

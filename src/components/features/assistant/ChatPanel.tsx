@@ -1,19 +1,31 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { SentIcon, Mic01Icon, MicOff01Icon, VolumeHighIcon, VolumeOffIcon, Loading03Icon } from 'hugeicons-react'
+import {
+  SentIcon,
+  Mic01Icon,
+  MicOff01Icon,
+  VolumeHighIcon,
+  VolumeOffIcon,
+  PlayCircleIcon,
+  Loading03Icon,
+} from 'hugeicons-react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { useAskNyx } from '@/hooks/useAskNyx'
 import { useVoiceInput } from '@/hooks/useVoiceInput'
 import { useTextToSpeech } from '@/hooks/useTextToSpeech'
 import { cn } from '@/lib/utils/cn'
+import { ConfirmActivationModal } from './ConfirmActivationModal'
+
+type PendingConfirm = { kind: 'mic' } | { kind: 'speak'; content: string }
 
 export function ChatPanel() {
   const { messages, isPending, error, sendMessage, context } = useAskNyx()
   const { isRecording, isTranscribing, error: voiceError, startRecording, stopRecording } = useVoiceInput()
-  const { isSpeaking, speak, stop: stopSpeaking } = useTextToSpeech()
+  const { isSpeaking, needsManualPlay, speak, stop: stopSpeaking, retryPlay } = useTextToSpeech()
   const [input, setInput] = useState('')
+  const [pendingConfirm, setPendingConfirm] = useState<PendingConfirm | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -32,8 +44,28 @@ export function ChatPanel() {
       const text = await stopRecording()
       if (text) setInput((prev) => (prev ? `${prev} ${text}` : text))
     } else {
-      await startRecording()
+      setPendingConfirm({ kind: 'mic' })
     }
+  }
+
+  const handleSpeakClick = (content: string) => {
+    if (needsManualPlay) {
+      retryPlay()
+    } else if (isSpeaking) {
+      stopSpeaking()
+    } else {
+      setPendingConfirm({ kind: 'speak', content })
+    }
+  }
+
+  const confirmActivation = async () => {
+    if (!pendingConfirm) return
+    if (pendingConfirm.kind === 'mic') {
+      await startRecording()
+    } else {
+      await speak(pendingConfirm.content)
+    }
+    setPendingConfirm(null)
   }
 
   return (
@@ -61,11 +93,18 @@ export function ChatPanel() {
               {m.content}
               {m.role === 'assistant' && (
                 <button
-                  onClick={() => (isSpeaking ? stopSpeaking() : speak(m.content))}
+                  onClick={() => handleSpeakClick(m.content)}
                   className="ml-2 inline-flex align-middle text-text-secondary hover:text-purple"
-                  aria-label="Écouter la réponse"
+                  aria-label={needsManualPlay ? 'Lancer la lecture' : 'Écouter la réponse'}
+                  title={needsManualPlay ? 'Lecture bloquée par le navigateur — clique pour lancer' : undefined}
                 >
-                  {isSpeaking ? <VolumeOffIcon size={14} /> : <VolumeHighIcon size={14} />}
+                  {needsManualPlay ? (
+                    <PlayCircleIcon size={14} className="text-purple" />
+                  ) : isSpeaking ? (
+                    <VolumeOffIcon size={14} />
+                  ) : (
+                    <VolumeHighIcon size={14} />
+                  )}
                 </button>
               )}
             </div>
@@ -116,6 +155,23 @@ export function ChatPanel() {
           </Button>
         </div>
       </div>
+
+      {pendingConfirm?.kind === 'mic' && (
+        <ConfirmActivationModal
+          title="Activer le micro ?"
+          description="Ask Nyx va utiliser ton micro pour transcrire ta question en local (via Whisper) — rien n'est envoyé en dehors de ta machine."
+          onConfirm={confirmActivation}
+          onCancel={() => setPendingConfirm(null)}
+        />
+      )}
+      {pendingConfirm?.kind === 'speak' && (
+        <ConfirmActivationModal
+          title="Activer la lecture audio ?"
+          description="Ask Nyx va lire cette réponse à voix haute via la synthèse vocale locale (Piper)."
+          onConfirm={confirmActivation}
+          onCancel={() => setPendingConfirm(null)}
+        />
+      )}
     </div>
   )
 }

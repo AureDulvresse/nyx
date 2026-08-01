@@ -121,8 +121,7 @@ services:
       OLLAMA_HOST: "http://ollama:11434"
     entrypoint: >
       /bin/sh -c "
-      ollama pull ${OLLAMA_MODEL:-llama3.2:3b};
-      exit 0;
+      ollama pull ${OLLAMA_MODEL:-llama3.2:1b}
       "
 
   whisper:
