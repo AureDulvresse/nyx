@@ -121,7 +121,9 @@ services:
       OLLAMA_HOST: "http://ollama:11434"
     entrypoint: >
       /bin/sh -c "
-      ollama pull ${OLLAMA_MODEL:-llama3.2:1b}
+      ollama pull ${OLLAMA_MODEL:-llama3.2:1b} &&
+      echo 'Préchargement du modèle en mémoire (peut prendre plusieurs minutes sur disque lent)...' &&
+      ollama run ${OLLAMA_MODEL:-llama3.2:1b} 'Bonjour' --keepalive 30m
       "
 
   whisper:

@@ -6,6 +6,7 @@ export interface ICacheService {
   del(key: string): Promise<void>
   exists(key: string): Promise<boolean>
   incr(key: string): Promise<number>
+  decr(key: string): Promise<number>
   expire(key: string, ttlSeconds: number): Promise<void>
 }
 
@@ -41,6 +42,15 @@ export class RedisCacheService implements ICacheService {
 
   async incr(key: string): Promise<number> {
     return this.redis.incr(key)
+  }
+
+  async decr(key: string): Promise<number> {
+    const value = await this.redis.decr(key)
+    if (value < 0) {
+      await this.redis.set(key, '0')
+      return 0
+    }
+    return value
   }
 
   async expire(key: string, ttlSeconds: number): Promise<void> {

@@ -13,6 +13,10 @@ export class PrismaCourseRepository implements ICourseRepository {
     return courses as unknown as Course[]
   }
 
+  async findById(id: string): Promise<Course | null> {
+    return prisma.course.findUnique({ where: { id } }) as unknown as Promise<Course | null>
+  }
+
   async findBySlug(slug: string): Promise<Course | null> {
     const cached = await cacheService.get<Course>(CACHE_KEYS.course(slug))
     if (cached) return cached
@@ -85,11 +89,19 @@ export class PrismaChapterRepository implements IChapterRepository {
     const cached = await cacheService.get<CourseProgress>(CACHE_KEYS.courseProgress(courseId))
     if (cached) return cached
 
-    const [course, total, completed] = await Promise.all([
+    const [course, total, completed, exam] = await Promise.all([
       prisma.course.findUniqueOrThrow({ where: { id: courseId } }),
       prisma.chapter.count({ where: { courseId } }),
       prisma.chapter.count({ where: { courseId, status: 'completed' } }),
+      prisma.courseExam.findUnique({
+        where: { courseId },
+        include: { attempts: { where: { passed: true }, take: 1 } },
+      }),
     ])
+
+    const percentage = total > 0 ? Math.round((completed / total) * 100) : 0
+    const hasExam = exam !== null
+    const examPassed = hasExam && exam!.attempts.length > 0
 
     const result: CourseProgress = {
       courseId,
@@ -98,7 +110,10 @@ export class PrismaChapterRepository implements IChapterRepository {
       color: course.color,
       total,
       completed,
-      percentage: total > 0 ? Math.round((completed / total) * 100) : 0,
+      percentage,
+      hasExam,
+      examPassed,
+      courseCompleted: percentage === 100 && (!hasExam || examPassed),
     }
     await cacheService.set(CACHE_KEYS.courseProgress(courseId), result, CACHE_TTL.progress)
     return result

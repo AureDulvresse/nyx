@@ -49,6 +49,9 @@ export function LabMissionPage({
   const Icon = category.icon
   const pastSessions = sessions.filter((s) => s.status !== 'active')
   const excerpt = content ? stripMarkdownForSpeech(content.source).slice(0, 3000) : lab.description
+  // Never pass hint/value to the client here — those stay locked behind unlockHint() until paid
+  // for, and shipping them in this server-rendered prop would defeat that entirely.
+  const publicFlags = (lab.flags ?? []).map((f) => ({ id: f.id, flagId: f.flagId, points: f.points }))
 
   return (
     <div className="space-y-8">
@@ -98,7 +101,9 @@ export function LabMissionPage({
 
       <NetworkMap targets={lab.targets} />
 
-      <LabMission lab={lab} />
+      {/* flags stripped here on purpose — LabMission takes the sanitized `flags` prop instead, so
+          the real hint/value pairs never reach the client bundle for a locked hint. */}
+      <LabMission lab={{ ...lab, flags: undefined }} flags={publicFlags} />
 
       {pastSessions.length > 0 && (
         <Card className="p-4">

@@ -1,9 +1,13 @@
 import type { ILabRepository } from '@/repositories'
 import type { IDockerService } from '@/infrastructure/docker/docker.service'
-import type { FlagSubmitResult, LabSession } from '@/domain'
+import type { FlagSubmitResult, HintUnlockResult, LabSession } from '@/domain'
 
 const MAX_CONCURRENT_SESSIONS = parseInt(process.env.LAB_MAX_CONCURRENT_SESSIONS ?? '3', 10)
 const SESSION_TIMEOUT_HOURS = parseInt(process.env.LAB_SESSION_TIMEOUT_HOURS ?? '2', 10)
+// Deducted once per flag the first time its hint is unlocked — steep enough that solving without
+// help still matters for the score, light enough that a genuinely stuck user isn't punished out
+// of finishing the lab.
+const HINT_PENALTY_RATIO = 0.15
 
 export class LabService {
   constructor(
@@ -84,5 +88,26 @@ export class LabService {
   async stopSession(sessionId: string): Promise<void> {
     await this.dockerService.stopLabEnvironment(sessionId)
     await this.labRepo.updateSessionStatus(sessionId, 'expired')
+  }
+
+  async unlockHint(sessionId: string, flagId: string): Promise<HintUnlockResult> {
+    const session = await this.labRepo.findSession(sessionId)
+    if (!session || session.status !== 'active') throw new Error('Session introuvable ou inactive')
+
+    const lab = await this.labRepo.findById(session.labId)
+    const flag = lab?.flags?.find((f) => f.id === flagId)
+    if (!flag) throw new Error('Flag introuvable')
+
+    const { alreadyUnlocked } = await this.labRepo.unlockHintRecord(sessionId, flagId)
+
+    let penalty = 0
+    if (!alreadyUnlocked) {
+      penalty = Math.round(flag.points * HINT_PENALTY_RATIO)
+      if (penalty > 0) {
+        await this.labRepo.updateSessionStatus(sessionId, 'active', Math.max(0, session.score - penalty))
+      }
+    }
+
+    return { hint: flag.hint, penalty, alreadyUnlocked }
   }
 }

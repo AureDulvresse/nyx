@@ -26,7 +26,20 @@ export function ChatPanel() {
   const { isSpeaking, needsManualPlay, speak, stop: stopSpeaking, retryPlay } = useTextToSpeech()
   const [input, setInput] = useState('')
   const [pendingConfirm, setPendingConfirm] = useState<PendingConfirm | null>(null)
+  const [longWait, setLongWait] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
+
+  // Ollama can take a couple of minutes to load the model into RAM the first time it's used
+  // after being idle — without this, a slow first reply looks indistinguishable from "broken",
+  // and closing/retrying mid-load actually cancels that load and restarts it from zero.
+  useEffect(() => {
+    if (!isPending) {
+      setLongWait(false)
+      return
+    }
+    const timer = setTimeout(() => setLongWait(true), 8000)
+    return () => clearTimeout(timer)
+  }, [isPending])
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })
@@ -111,8 +124,16 @@ export function ChatPanel() {
           </div>
         ))}
         {isPending && (
-          <div className="flex items-center gap-1.5 text-sm text-text-secondary">
-            <Loading03Icon size={14} className="animate-spin" /> Ask Nyx réfléchit...
+          <div className="space-y-1 text-sm text-text-secondary">
+            <div className="flex items-center gap-1.5">
+              <Loading03Icon size={14} className="animate-spin" /> Ask Nyx réfléchit...
+            </div>
+            {longWait && (
+              <p className="text-xs italic">
+                Premier message après une pause : le modèle se recharge en mémoire, ça peut prendre 1 à 3 minutes.
+                Patiente plutôt que de fermer/réessayer — ça repartirait de zéro.
+              </p>
+            )}
           </div>
         )}
         {(error || voiceError) && <p className="text-sm text-red">{error ?? voiceError}</p>}

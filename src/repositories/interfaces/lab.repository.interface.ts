@@ -13,4 +13,5 @@ export interface ILabRepository {
   findSession(sessionId: string): Promise<LabSession | null>
   updateSessionStatus(sessionId: string, status: LabSessionStatus, score?: number, bonusPoints?: number): Promise<LabSession>
   captureFlag(sessionId: string, flagId: string): Promise<{ alreadyCaptured: boolean }>
+  unlockHintRecord(sessionId: string, flagId: string): Promise<{ alreadyUnlocked: boolean }>
 }

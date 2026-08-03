@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { PlayIcon } from 'hugeicons-react'
+import { PlayIcon, Award01Icon } from 'hugeicons-react'
 import { courseRepo, chapterRepo } from '@/repositories'
 import { PageHeader } from '@/components/common/PageHeader'
 import { ProgressRing } from '@/components/common/ProgressRing'
@@ -17,6 +17,8 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   const sortedChapters = [...course.chapters].sort((a, b) => a.number - b.number)
   const nextChapter = sortedChapters.find((c) => c.status !== 'completed') ?? sortedChapters[0]
   const hasStarted = sortedChapters.some((c) => c.status !== 'not_started')
+  const chaptersDone = progress.percentage === 100
+  const examPending = chaptersDone && progress.hasExam && !progress.examPassed
 
   return (
     <div className="space-y-8">
@@ -28,17 +30,26 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
         actions={<ProgressRing percentage={progress.percentage} size={56} strokeWidth={5} />}
       />
 
-      {nextChapter && (
-        <Link href={`/courses/${course.slug}/${nextChapter.number}`}>
-          <Button size="lg" className="gap-2 mb-4">
-            <PlayIcon size={18} />
-            {progress.percentage === 100
-              ? 'Revoir le cours'
-              : hasStarted
-                ? `Continuer — Chapitre ${nextChapter.number}`
-                : 'Commencer le cours'}
+      {examPending ? (
+        <Link href={`/courses/${course.slug}/exam`}>
+          <Button size="lg" variant="success" className="gap-2 mb-4">
+            <Award01Icon size={18} />
+            Passer l'examen final
           </Button>
         </Link>
+      ) : (
+        nextChapter && (
+          <Link href={`/courses/${course.slug}/${nextChapter.number}`}>
+            <Button size="lg" className="gap-2 mb-4">
+              <PlayIcon size={18} />
+              {progress.courseCompleted
+                ? 'Revoir le cours'
+                : hasStarted
+                  ? `Continuer — Chapitre ${nextChapter.number}`
+                  : 'Commencer le cours'}
+            </Button>
+          </Link>
+        )
       )}
 
       <ChapterList courseSlug={course.slug} chapters={course.chapters} />

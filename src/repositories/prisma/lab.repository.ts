@@ -91,4 +91,14 @@ export class PrismaLabRepository implements ILabRepository {
     await prisma.flagCapture.create({ data: { flagId, sessionId } })
     return { alreadyCaptured: false }
   }
+
+  async unlockHintRecord(sessionId: string, flagId: string): Promise<{ alreadyUnlocked: boolean }> {
+    const existing = await prisma.hintUnlock.findUnique({
+      where: { flagId_sessionId: { flagId, sessionId } },
+    })
+    if (existing) return { alreadyUnlocked: true }
+
+    await prisma.hintUnlock.create({ data: { flagId, sessionId } })
+    return { alreadyUnlocked: false }
+  }
 }

@@ -36,6 +36,13 @@ export interface CourseProgress {
   total: number
   completed: number
   percentage: number
+  // Whether this course has a final exam at all — most courses will, but content is being
+  // rolled out course by course, so callers must not assume every course has one yet.
+  hasExam: boolean
+  examPassed: boolean
+  // percentage === 100 AND (no exam yet OR examPassed) — the actual "done" signal to use in UI,
+  // since a course can sit at 100% chapters while its final exam still isn't passed.
+  courseCompleted: boolean
 }
 
 export interface Comment {

@@ -6,8 +6,8 @@ import { dockerLabService } from '@/infrastructure/docker/docker.service'
 import { LabService } from '@/services'
 import { ok, err, ActionResult } from '@/lib/utils/result'
 import { checkRateLimit } from '@/lib/utils/rate-limit'
-import type { LabSession, FlagSubmitResult } from '@/domain'
-import { StartLabSchema, SubmitFlagSchema } from '@/lib/schemas'
+import type { LabSession, FlagSubmitResult, HintUnlockResult } from '@/domain'
+import { StartLabSchema, SubmitFlagSchema, UnlockHintSchema } from '@/lib/schemas'
 
 const labService = new LabService(labRepo, dockerLabService)
 
@@ -42,6 +42,23 @@ export async function submitFlag(
     return ok(result)
   } catch (e) {
     return err(e instanceof Error ? e.message : 'Failed to submit flag')
+  }
+}
+
+export async function unlockHint(
+  input: z.infer<typeof UnlockHintSchema>
+): Promise<ActionResult<HintUnlockResult>> {
+  const v = UnlockHintSchema.safeParse(input)
+  if (!v.success) return err(v.error.message, 'VALIDATION')
+
+  const allowed = await checkRateLimit(`hint-unlock:${v.data.sessionId}`, 10, 30)
+  if (!allowed) return err('Trop de tentatives, patiente quelques secondes.', 'RATE_LIMIT')
+
+  try {
+    const result = await labService.unlockHint(v.data.sessionId, v.data.flagId)
+    return ok(result)
+  } catch (e) {
+    return err(e instanceof Error ? e.message : 'Failed to unlock hint')
   }
 }
 

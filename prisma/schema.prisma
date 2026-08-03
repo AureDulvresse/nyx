@@ -27,6 +27,7 @@ model Course {
   coverImage  String?
   dependsOn   Json      @default("[]")
   chapters    Chapter[]
+  exam        CourseExam?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
@@ -103,6 +104,35 @@ model QuizAttempt {
   createdAt DateTime @default(now())
 
   @@index([quizId])
+  @@index([createdAt])
+}
+
+// Examen final de fin de cours (façon certification) — distinct des quiz de chapitre : un seul
+// par cours, couvre l'ensemble des chapitres, et sa réussite conditionne le statut "terminé" du
+// cours (voir chapterRepo.getProgressByCourse).
+model CourseExam {
+  id                String        @id @default(cuid())
+  courseId          String        @unique
+  course            Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title             String
+  questions         Json
+  passingPercentage Int           @default(70)
+  attempts          ExamAttempt[]
+  createdAt         DateTime      @default(now())
+}
+
+model ExamAttempt {
+  id        String     @id @default(cuid())
+  examId    String
+  exam      CourseExam @relation(fields: [examId], references: [id], onDelete: Cascade)
+  score     Int
+  total     Int
+  passed    Boolean
+  answers   Json
+  duration  Int?
+  createdAt DateTime   @default(now())
+
+  @@index([examId])
   @@index([createdAt])
 }
 
@@ -213,14 +243,15 @@ model Lab {
 }
 
 model LabFlag {
-  id       String        @id @default(cuid())
-  labId    String
-  lab      Lab           @relation(fields: [labId], references: [id], onDelete: Cascade)
-  flagId   String
-  hint     String
-  value    String
-  points   Int
-  captures FlagCapture[]
+  id          String        @id @default(cuid())
+  labId       String
+  lab         Lab           @relation(fields: [labId], references: [id], onDelete: Cascade)
+  flagId      String
+  hint        String
+  value       String
+  points      Int
+  captures    FlagCapture[]
+  hintUnlocks HintUnlock[]
 
   @@index([labId])
 }
@@ -237,6 +268,7 @@ model LabSession {
   startedAt   DateTime      @default(now())
   completedAt DateTime?
   captures    FlagCapture[]
+  hintUnlocks HintUnlock[]
 
   @@index([status])
   @@index([startedAt])
@@ -249,6 +281,21 @@ model FlagCapture {
   sessionId  String
   session    LabSession @relation(fields: [sessionId], references: [id])
   capturedAt DateTime   @default(now())
+
+  @@unique([flagId, sessionId])
+  @@index([sessionId])
+}
+
+// Débloque l'indice DB d'un flag (distinct des indices déjà lisibles gratuitement dans le
+// contenu MDX du lab) contre une pénalité de points prélevée sur le score de la session — voir
+// LabService.unlockHint.
+model HintUnlock {
+  id         String     @id @default(cuid())
+  flagId     String
+  flag       LabFlag    @relation(fields: [flagId], references: [id])
+  sessionId  String
+  session    LabSession @relation(fields: [sessionId], references: [id])
+  unlockedAt DateTime   @default(now())
 
   @@unique([flagId, sessionId])
   @@index([sessionId])

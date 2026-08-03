@@ -10,3 +10,8 @@ export const SubmitFlagSchema = z.object({
   flagValue: z.string().min(1).max(256),
   activeElapsedSeconds: z.number().int().min(0).optional(),
 })
+
+export const UnlockHintSchema = z.object({
+  sessionId: z.string().min(1),
+  flagId: z.string().min(1),
+})

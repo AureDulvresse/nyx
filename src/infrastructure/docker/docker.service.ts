@@ -115,6 +115,11 @@ export class DockerLabService implements IDockerService {
       await docker.getNetwork(cached.networkId).remove().catch(() => {})
     }
 
+    // Only decrement if this session was actually still counted as active — otherwise a second
+    // stop call (or one racing with reapStaleSessions) would drag the counter below the real
+    // number of active sessions and start rejecting new ones that should be allowed.
+    if (cached) await cacheService.decr(CACHE_KEYS.labActiveSessions)
+
     await cacheService.del(CACHE_KEYS.labSession(sessionId))
     sessions.delete(sessionId)
   }
@@ -180,6 +185,9 @@ export class DockerLabService implements IDockerService {
     if (cached?.networkId) {
       await docker.getNetwork(cached.networkId).remove().catch(() => {})
     }
+
+    // Same guard as stopLabEnvironment: only decrement if this session was still counted active.
+    if (cached) await cacheService.decr(CACHE_KEYS.tpActiveSessions)
 
     await cacheService.del(CACHE_KEYS.tpSession(sessionId))
     sessions.delete(sessionId)

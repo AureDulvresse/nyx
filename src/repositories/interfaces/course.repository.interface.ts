@@ -2,6 +2,7 @@ import type { Chapter, ChapterStatus, Course, CourseProgress } from '@/domain'
 
 export interface ICourseRepository {
   findAll(): Promise<Course[]>
+  findById(id: string): Promise<Course | null>
   findBySlug(slug: string): Promise<Course | null>
   findWithChapters(slug: string): Promise<(Course & { chapters: Chapter[] }) | null>
   updateCoverImage(id: string, coverImage: string): Promise<Course>

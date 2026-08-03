@@ -67,3 +67,17 @@ export interface FlagSubmitResult {
   totalScore?: number
   bonusPoints?: number
 }
+
+// Client-safe view of a flag: never carries `hint` or `value` — those stay server-side so a
+// locked hint can't just be read out of the page's props/HTML before it's paid for.
+export interface LabFlagPublic {
+  id: string
+  flagId: string
+  points: number
+}
+
+export interface HintUnlockResult {
+  hint: string
+  penalty: number
+  alreadyUnlocked: boolean
+}

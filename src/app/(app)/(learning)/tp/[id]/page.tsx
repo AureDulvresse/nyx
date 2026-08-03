@@ -1,5 +1,7 @@
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { tpRepo } from '@/repositories'
+import { ArrowRight01Icon } from 'hugeicons-react'
+import { tpRepo, chapterRepo, courseRepo } from '@/repositories'
 import { PageHeader } from '@/components/common/PageHeader'
 import { StepItem } from '@/components/features/tp/StepItem'
 import { TPCompleteButton } from '@/components/features/tp/TPCompleteButton'
@@ -10,8 +12,26 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const tp = await tpRepo.findById(id)
   if (!tp) notFound()
 
+  const chapter = await chapterRepo.findById(tp.chapterId)
+  const course = chapter ? await courseRepo.findById(chapter.courseId) : null
+
   return (
     <div className="mx-auto max-w-3xl space-y-8">
+      {course && chapter && (
+        <nav className="flex items-center gap-1.5 text-sm text-text-secondary">
+          <Link href="/courses" className="hover:text-text-primary">
+            Cours
+          </Link>
+          <ArrowRight01Icon size={12} className="shrink-0" />
+          <Link href={`/courses/${course.slug}`} className="hover:text-text-primary">
+            {course.title}
+          </Link>
+          <ArrowRight01Icon size={12} className="shrink-0" />
+          <Link href={`/courses/${course.slug}/${chapter.number}`} className="hover:text-text-primary">
+            {chapter.title}
+          </Link>
+        </nav>
+      )}
       <PageHeader
         title={tp.title}
         description={tp.environment}

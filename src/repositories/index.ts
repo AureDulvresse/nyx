@@ -12,6 +12,7 @@ import { PrismaUserRepository } from './prisma/user.repository'
 import { PrismaSearchRepository } from './prisma/search.repository'
 import { PrismaNotesRepository } from './prisma/notes.repository'
 import { PrismaCommandLogRepository } from './prisma/command-log.repository'
+import { PrismaExamRepository } from './prisma/exam.repository'
 
 export const courseRepo = new PrismaCourseRepository()
 export const chapterRepo = new PrismaChapterRepository()
@@ -29,6 +30,7 @@ export const userRepo = new PrismaUserRepository()
 export const searchRepo = new PrismaSearchRepository()
 export const notesRepo = new PrismaNotesRepository()
 export const commandLogRepo = new PrismaCommandLogRepository()
+export const examRepo = new PrismaExamRepository()
 
 export type {
   ICourseRepository,
@@ -48,4 +50,5 @@ export type {
   ISearchRepository,
   INotesRepository,
   ICommandLogRepository,
+  IExamRepository,
 } from './interfaces'

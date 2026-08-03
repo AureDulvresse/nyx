@@ -46,7 +46,7 @@ export function LearningPathsPage({
                   {pathCourses.map((course, i) => {
                     const progress = progressBySlug.get(course.slug)
                     const Icon = IconMap[course.icon] ?? Icons.BookOpen01Icon
-                    const done = progress ? progress.percentage === 100 : false
+                    const done = progress ? progress.courseCompleted : false
                     return (
                       <li key={course.slug}>
                         <Link
