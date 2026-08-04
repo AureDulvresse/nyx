@@ -73,11 +73,12 @@ Ce chapitre suppose une connaissance de base de la syntaxe Python (variables, fo
 
 ## Lab — Mise en Pratique
 
-**Environnement** : Kali Linux (terminal Nyx Shell)
+**Environnement** : Python 3 (terminal Nyx Shell ou environnement local avec `pandas`/`numpy`/`matplotlib` installés)
 
 <Steps steps={[
-  { title: "Vérifier l'environnement Python", description: "Vérifie la version de Python installée et installe les bibliothèques essentielles.", code: 'python3 --version\npip install numpy pandas matplotlib seaborn scikit-learn' },
-  { title: "Créer et afficher un DataFrame simple", description: "Dans un script connexions.py, crée un DataFrame de 3 connexions réseau fictives (durée, port) et affiche ses statistiques descriptives, puis exécute-le.", code: 'python3 connexions.py' },
+  { title: "Vérifier l'installation des bibliothèques", description: "Importe NumPy, Pandas et Matplotlib pour confirmer que l'installation est correcte.", code: 'import numpy as np\nimport pandas as pd\nimport matplotlib\n\nprint("Installation OK : NumPy, Pandas et Matplotlib importes avec succes.")' },
+  { title: "Créer un DataFrame de connexions réseau", description: "Reprends l'exemple du chapitre : crée un tableau NumPy de durées de connexion et un DataFrame associant durée et port.", code: 'import numpy as np\nimport pandas as pd\n\ndurees = np.array([12, 45, 8, 230, 15, 9])\ndf = pd.DataFrame({\n    "duree": durees,\n    "port": [80, 443, 22, 443, 80, 22]\n})\nprint(df.head())' },
+  { title: "Afficher les statistiques descriptives", description: "Calcule les statistiques descriptives du DataFrame pour obtenir un premier aperçu des données.", code: 'print(df.describe())' },
 ]} />
 
 ## En résumé

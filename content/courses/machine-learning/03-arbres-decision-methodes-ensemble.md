@@ -74,11 +74,13 @@ Contrairement au bagging qui entraîne des arbres indépendamment puis les combi
 
 ## Lab — Mise en Pratique
 
-**Environnement** : Réflexion guidée (sans terminal)
+**Environnement** : Python 3 (terminal Nyx Shell ou environnement local avec `scikit-learn`/`pandas`/`numpy` installés)
 
 <Steps steps={[
-  { title: "Expliquer pourquoi la diversité améliore la performance", description: "Pourquoi combiner de nombreux arbres légèrement différents (bagging) donne-t-il généralement de meilleurs résultats qu'un seul arbre très profond ?" },
-  { title: "Choisir entre Random Forest et Gradient Boosting", description: "Pour un projet nécessitant un entraînement rapide sur une grande quantité de données avec des ressources de calcul limitées, quelle méthode d'ensemble privilégier, et pourquoi ?" },
+  { title: "Préparer un petit jeu de données", description: "Reconstruis en données le scénario du diagramme ci-dessus : taille de fichier (Mo) et présence d'une macro, pour prédire si le fichier est malveillant.", code: "import numpy as np\nX = np.array([[0.5, 0], [2, 1], [3, 1], [0.2, 0], [5, 1], [1, 0], [4, 0], [6, 1]])\ny = np.array([0, 1, 1, 0, 1, 0, 0, 1])  # 0=benin, 1=malveillant" },
+  { title: "Construire un arbre de décision isolé", description: "Entraîne un DecisionTreeClassifier et affiche les questions qu'il pose à chaque nœud — comparable au diagramme de décision vu plus haut.", code: "from sklearn.tree import DecisionTreeClassifier, export_text\nclf = DecisionTreeClassifier(max_depth=2, random_state=0).fit(X, y)\nprint(export_text(clf, feature_names=['taille_mo', 'a_macro']))" },
+  { title: "Entraîner une Random Forest (bagging)", description: "Entraîne une forêt aléatoire sur les mêmes données et inspecte l'importance de chaque variable dans la décision finale.", code: "from sklearn.ensemble import RandomForestClassifier\nrf = RandomForestClassifier(n_estimators=100, random_state=0).fit(X, y)\nprint('importance des variables:', rf.feature_importances_)" },
+  { title: "Comparer avec le Gradient Boosting", description: "Entraîne un Gradient Boosting et compare ses scores en validation croisée à ceux de la forêt aléatoire, pour relier au tableau comparatif bagging vs boosting.", code: "from sklearn.ensemble import GradientBoostingClassifier\nfrom sklearn.model_selection import cross_val_score\ngb = GradientBoostingClassifier(random_state=0)\nprint('scores Gradient Boosting (cv=3):', cross_val_score(gb, X, y, cv=3))" },
 ]} />
 
 ## En résumé

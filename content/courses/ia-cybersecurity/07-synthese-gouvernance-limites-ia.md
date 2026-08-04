@@ -72,11 +72,12 @@ Le principal risque de gouvernance n'est pas l'IA elle-même, mais une confiance
 
 ## Lab — Mise en Pratique
 
-**Environnement** : Réflexion guidée (sans terminal)
+**Environnement** : Python 3 (terminal Nyx Shell ou environnement local avec `pandas`/`scikit-learn` installés)
 
 <Steps steps={[
-  { title: "Identifier une décision de gouvernance manquante", description: "Une entreprise déploie un agent IA de blocage automatique de comptes suspects sans documentation ni processus de contestation pour l'utilisateur concerné. Quel principe de gouvernance manque, et quel risque cela fait-il courir ?" },
-  { title: "Résumer une limite clé", description: "Pourquoi ne faut-il jamais traiter la sortie d'un modèle de sécurité basé sur l'IA comme une vérité incontestable ?" },
+  { title: "Construire un journal de décisions automatisées", description: "Rassemble un petit historique de décisions prises par des agents IA, avec leur justification et leur niveau de revue humaine.", code: 'import pandas as pd\n\ndecisions = pd.DataFrame({\n    "action": ["blocage_compte", "cloture_alerte", "blocage_compte", "cloture_alerte", "escalade"],\n    "justification_presente": [True, False, True, False, True],\n    "revue_humaine": [False, False, True, False, True],\n    "impact_eleve": [True, False, True, False, False]\n})\nprint(decisions)' },
+  { title: "Calculer les métriques de conformité", description: "Mesure la proportion de décisions sans justification et le nombre de décisions à fort impact non revues par un humain.", code: 'taux_sans_justification = (~decisions["justification_presente"]).mean() * 100\ntaux_impact_eleve_non_revu = decisions[decisions["impact_eleve"] & ~decisions["revue_humaine"]].shape[0]\nprint(f"Decisions sans justification: {taux_sans_justification:.0f}%")\nprint(f"Decisions a fort impact non revues par un humain: {taux_impact_eleve_non_revu}")' },
+  { title: "Détecter les violations de gouvernance", description: "Isole les décisions à fort impact jamais revues par un humain — exactement le risque de gouvernance décrit dans ce chapitre.", code: 'violations = decisions[decisions["impact_eleve"] & ~decisions["revue_humaine"]]\nprint("Violations de gouvernance detectees:")\nprint(violations)\n# Toute decision a fort impact (ex: blocage de compte) non revue par un humain\n# represente exactement le risque de gouvernance decrit dans ce chapitre.' },
 ]} />
 
 ## En résumé

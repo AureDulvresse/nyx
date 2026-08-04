@@ -88,11 +88,12 @@ plt.show()
 
 ## Lab — Mise en Pratique
 
-**Environnement** : Kali Linux (terminal Nyx Shell)
+**Environnement** : Python 3 (terminal Nyx Shell ou environnement local avec `pandas`/`numpy`/`matplotlib` installés)
 
 <Steps steps={[
-  { title: "Créer un histogramme de durées de connexion", description: "Génère un histogramme des durées de connexion d'un jeu de données fictif, avec axes et titre correctement légendés." },
-  { title: "Visualiser une matrice de corrélation", description: "Crée un DataFrame avec 3 colonnes numériques et affiche leur matrice de corrélation sous forme de heatmap Seaborn." },
+  { title: "Créer un histogramme des durées de connexion", description: "Génère un histogramme des durées de connexion, avec axes et titre correctement légendés.", code: 'import matplotlib.pyplot as plt\n\ndurees = [12, 450, 8, 230, 15, 9, 600, 45, 20]\n\nplt.hist(durees, bins=10)\nplt.xlabel("Duree de connexion (secondes)")\nplt.ylabel("Nombre de connexions")\nplt.title("Distribution des durees de connexion")\nplt.show()' },
+  { title: "Créer un DataFrame à 3 colonnes numériques", description: "Construis un DataFrame avec trois colonnes numériques corrélées entre elles.", code: 'import pandas as pd\n\ndf = pd.DataFrame({\n    "duree": [12, 450, 8, 230, 15, 9, 600],\n    "octets": [2400, 89000, 1200, 45000, 3000, 1800, 120000],\n    "port": [443, 22, 80, 443, 80, 22, 443]\n})' },
+  { title: "Afficher la matrice de corrélation en heatmap", description: "Calcule et visualise la matrice de corrélation des colonnes numériques avec Seaborn.", code: 'import seaborn as sns\n\nsns.heatmap(df.corr(numeric_only=True), annot=True, cmap="coolwarm")\nplt.show()' },
 ]} />
 
 ## En résumé

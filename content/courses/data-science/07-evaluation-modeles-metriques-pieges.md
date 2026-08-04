@@ -80,11 +80,13 @@ graph LR
 
 ## Lab — Mise en Pratique
 
-**Environnement** : Réflexion guidée (sans terminal)
+**Environnement** : Python 3 (terminal Nyx Shell ou environnement local avec `pandas`/`numpy`/`matplotlib` installés)
 
 <Steps steps={[
-  { title: "Calculer précision et rappel", description: "Un modèle de détection produit 80 vrais positifs, 20 faux positifs, et 10 faux négatifs. Calcule sa précision et son rappel." },
-  { title: "Identifier un piège d'accuracy", description: "Un modèle de détection de fraude annonce 98% d'accuracy sur un jeu de données où seulement 2% des transactions sont frauduleuses. Que faut-il vérifier avant de juger ce modèle réellement performant ?" },
+  { title: "Calculer précision, rappel et F1-score", description: "Un modèle de détection produit 80 vrais positifs, 20 faux positifs, et 10 faux négatifs. Calcule sa précision, son rappel et son F1-score.", code: 'VP, FP, FN = 80, 20, 10\n\nprecision = VP / (VP + FP)\nrappel = VP / (VP + FN)\nf1 = 2 * (precision * rappel) / (precision + rappel)\n\nprint("Precision :", round(precision, 3))\nprint("Rappel :", round(rappel, 3))\nprint("F1-score :", round(f1, 3))' },
+  { title: "Démontrer le piège de l'accuracy", description: "Simule un jeu de données déséquilibré (2% d'attaques) et un modèle 'paresseux' qui prédit toujours 'normal', comme dans l'exemple du modèle de fraude à 98% d'accuracy.", code: 'import pandas as pd\nimport numpy as np\n\nnp.random.seed(2)\nn = 1000\nlabels_reels = np.random.choice(["normal", "attaque"], size=n, p=[0.98, 0.02])\nprediction_paresseuse = np.array(["normal"] * n)\n\naccuracy = (prediction_paresseuse == labels_reels).mean()\nprint("Accuracy du modele paresseux :", round(accuracy, 3))\nprint("Attaques reellement detectees :", ((prediction_paresseuse == "attaque") & (labels_reels == "attaque")).sum())' },
+  { title: "Repérer un surapprentissage via l'écart entraînement/validation", description: "Compare l'accuracy sur l'entraînement et sur la validation à mesure que la complexité du modèle augmente, pour repérer où le surapprentissage apparaît.", code: 'complexites = np.array([1, 2, 3, 4, 5])\naccuracy_entrainement = np.array([0.70, 0.80, 0.90, 0.97, 0.99])\naccuracy_validation = np.array([0.68, 0.78, 0.85, 0.80, 0.72])\n\necart = accuracy_entrainement - accuracy_validation\nprint("Ecart entrainement/validation par complexite :", np.round(ecart, 2))\nprint("Complexite ou le surapprentissage apparait :", complexites[np.argmax(ecart)])' },
+  { title: "Interpréter l'écart observé", description: "Pourquoi un écart important entre l'accuracy sur l'entraînement et sur la validation (comme observé à la complexité 4 ci-dessus) signale-t-il un surapprentissage plutôt qu'une simple variation aléatoire ?" },
 ]} />
 
 ## En résumé

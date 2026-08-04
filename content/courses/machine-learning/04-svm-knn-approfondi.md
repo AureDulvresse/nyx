@@ -68,11 +68,13 @@ Le choix de k influence fortement le résultat — un k trop petit rend le modè
 
 ## Lab — Mise en Pratique
 
-**Environnement** : Réflexion guidée (sans terminal)
+**Environnement** : Python 3 (terminal Nyx Shell ou environnement local avec `scikit-learn`/`pandas`/`numpy` installés)
 
 <Steps steps={[
-  { title: "Expliquer l'intérêt du kernel trick", description: "Pourquoi une SVM avec noyau RBF peut-elle séparer des données qu'une SVM linéaire ne peut pas séparer ?" },
-  { title: "Choisir un k pour k-NN", description: "Pour un jeu de données bruité contenant quelques exemples mal étiquetés, faut-il privilégier un k petit ou un k grand ? Justifie." },
+  { title: "Générer des données non linéairement séparables", description: "Utilise un jeu de données en forme de croissants imbriqués, l'exemple type qu'une droite ne peut pas séparer.", code: "from sklearn.datasets import make_moons\nX, y = make_moons(n_samples=100, noise=0.15, random_state=0)" },
+  { title: "Tester une SVM à noyau linéaire", description: "Entraîne une SVM linéaire sur ces données et observe son score — l'hyperplan ne peut pas bien séparer des croissants.", code: "from sklearn.svm import SVC\nsvm_lin = SVC(kernel='linear').fit(X, y)\nprint('accuracy noyau lineaire:', svm_lin.score(X, y))" },
+  { title: "Appliquer le kernel trick (noyau RBF)", description: "Entraîne la même SVM avec un noyau RBF et compare le score obtenu, pour constater l'effet du kernel trick évoqué plus haut.", code: "svm_rbf = SVC(kernel='rbf', gamma='scale').fit(X, y)\nprint('accuracy noyau RBF:', svm_rbf.score(X, y))" },
+  { title: "Observer l'effet du choix de k en k-NN", description: "Entraîne k-NN avec un k très petit puis un k très grand sur les mêmes données et compare les scores, pour relier au compromis biais-variance vu plus haut.", code: "from sklearn.neighbors import KNeighborsClassifier\nfor k in [1, 5, 20]:\n    knn = KNeighborsClassifier(n_neighbors=k).fit(X, y)\n    print('k=', k, '-> accuracy:', knn.score(X, y))" },
 ]} />
 
 ## En résumé

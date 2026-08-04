@@ -74,11 +74,13 @@ Sans standardisation, une variable exprimée en millions (taille d'un transfert 
 
 ## Lab — Mise en Pratique
 
-**Environnement** : Réflexion guidée (sans terminal)
+**Environnement** : Python 3 (terminal Nyx Shell ou environnement local avec `pandas`/`numpy`/`matplotlib` installés)
 
 <Steps steps={[
-  { title: "Choisir un traitement de valeurs manquantes", description: "Un jeu de données de connexions réseau a 2% de valeurs manquantes réparties uniformément sur une colonne peu importante. Suppression ou imputation ? Justifie." },
-  { title: "Distinguer erreur et signal", description: "Un pic isolé de trafic sortant vers une IP inhabituelle apparaît dans un jeu de données réseau. Faut-il le traiter comme une erreur à nettoyer ou comme un signal à investiguer ? Justifie." },
+  { title: "Créer un jeu de connexions réseau brut", description: "Construis un petit DataFrame de connexions contenant une valeur manquante, un doublon exact et une valeur de taille clairement aberrante — les trois problèmes vus dans ce chapitre.", code: 'import pandas as pd\nimport numpy as np\n\ndata = {\n    "ip_source": ["10.0.0.5", "10.0.0.6", "10.0.0.6", "10.0.0.7", "10.0.0.8"],\n    "duree_s": [12, 45, 45, np.nan, 9],\n    "taille_octets": [2400, 5100, 5100, 3200, 9000000]\n}\ndf = pd.DataFrame(data)\nprint(df)' },
+  { title: "Traiter les valeurs manquantes et les doublons", description: "Impute la durée manquante par la médiane (robuste aux valeurs extrêmes) puis supprime les lignes strictement dupliquées.", code: '# Imputer la duree manquante par la mediane (robuste aux valeurs extremes)\ndf["duree_s"] = df["duree_s"].fillna(df["duree_s"].median())\n\n# Supprimer les doublons exacts\ndf = df.drop_duplicates()\nprint(df)' },
+  { title: "Standardiser une colonne (z-score)", description: "Standardise la taille en octets — la valeur aberrante de 9 000 000 octets doit ressortir avec un z-score nettement supérieur aux autres.", code: 'moyenne = df["taille_octets"].mean()\necart_type = df["taille_octets"].std()\ndf["taille_standardisee"] = (df["taille_octets"] - moyenne) / ecart_type\nprint(df[["taille_octets", "taille_standardisee"]])' },
+  { title: "Relier ce nettoyage aux données de sécurité", description: "Un jeu de données de connexions réseau a 2% de valeurs manquantes réparties uniformément sur une colonne peu importante : suppression ou imputation, et pourquoi ? La ligne à 9 000 000 octets isolée ci-dessus pourrait aussi être une exfiltration réelle plutôt qu'une erreur de capture : faut-il la traiter comme une erreur à nettoyer ou comme un signal à investiguer ? Justifie les deux réponses." },
 ]} />
 
 ## En résumé

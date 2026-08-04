@@ -64,10 +64,12 @@ Sauter directement à la modélisation sans comprendre la qualité et les biais 
 
 ## Lab — Mise en Pratique
 
-**Environnement** : Réflexion guidée (sans terminal)
+**Environnement** : Python 3 (terminal Nyx Shell ou environnement local avec `pandas`/`numpy`/`matplotlib` installés)
 
 <Steps steps={[
-  { title: "Identifier une étape manquante", description: "Une équipe entraîne directement un modèle de détection de phishing sur un jeu de données brut téléchargé en ligne, sans l'explorer ni le nettoyer au préalable. Quelles étapes du cycle de vie ont été sautées, et quel risque cela fait-il courir ?" },
+  { title: "Charger un jeu de données brut sans le nettoyer", description: "Reproduis l'erreur décrite plus haut : charge un petit jeu d'emails avec des valeurs manquantes et un doublon, sans rien corriger, et observe ce que révèle un simple coup d'œil.", code: 'import pandas as pd\nimport numpy as np\n\ndata = {\n    "email_id": [1, 2, 3, 3, 4, 5],\n    "urgence_langage": [1, 0, 1, 1, np.nan, 0],\n    "lien_raccourci": [1, 0, 1, 1, 0, np.nan],\n    "label": ["phishing", "legitime", "phishing", "phishing", "legitime", "legitime"]\n}\ndf = pd.DataFrame(data)\nprint(df.head())\nprint(df.info())' },
+  { title: "Quantifier les problèmes avant de foncer vers la modélisation", description: "Avant tout entraînement, mesure explicitement l'ampleur des valeurs manquantes et des doublons — l'étape que l'équipe de l'exercice précédent a sautée.", code: 'print("Valeurs manquantes par colonne :")\nprint(df.isna().sum())\nprint("Lignes dupliquees :", df.duplicated().sum())' },
+  { title: "Identifier une étape manquante", description: "Une équipe entraîne directement un modèle de détection de phishing sur un jeu de données brut téléchargé en ligne, sans l'explorer ni le nettoyer au préalable, comme dans l'exemple ci-dessus. Quelles étapes du cycle de vie ont été sautées, et quel risque cela fait-il courir ?" },
   { title: "Distinguer IA, ML et data science", description: "Un pare-feu qui bloque le trafic selon une liste de règles fixes relève-t-il du machine learning ? Justifie." },
 ]} />
 

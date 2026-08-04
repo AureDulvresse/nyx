@@ -8,6 +8,7 @@ import {
   DashboardBrowsingIcon,
   ChartBarLineIcon,
   GlobalSearchIcon,
+  CloudServerIcon,
 } from 'hugeicons-react'
 import type { LabCategory } from '@/domain'
 
@@ -24,4 +25,5 @@ export const LAB_CATEGORY_CONFIG: Record<
   soc: { icon: DashboardBrowsingIcon, color: 'text-red', bg: 'bg-red/15', label: 'SOC' },
   ds: { icon: ChartBarLineIcon, color: 'text-pink-400', bg: 'bg-pink-400/15', label: 'Data Science' },
   osint: { icon: GlobalSearchIcon, color: 'text-purple', bg: 'bg-purple/15', label: 'OSINT' },
+  devops: { icon: CloudServerIcon, color: 'text-sky-400', bg: 'bg-sky-400/15', label: 'DevOps' },
 }

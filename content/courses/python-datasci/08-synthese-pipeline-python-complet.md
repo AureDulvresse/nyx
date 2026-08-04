@@ -95,11 +95,12 @@ Structurer le code en fonctions distinctes (charger, nettoyer, explorer, entraî
 
 ## Lab — Mise en Pratique
 
-**Environnement** : Kali Linux (terminal Nyx Shell)
+**Environnement** : Python 3 (terminal Nyx Shell ou environnement local avec `pandas`/`numpy`/`matplotlib` installés)
 
 <Steps steps={[
-  { title: "Structurer un pipeline en fonctions", description: "Reprends un script d'analyse écrit dans les chapitres précédents et restructure-le en fonctions distinctes (charger, nettoyer, explorer, entraîner)." },
-  { title: "Documenter une décision de nettoyage", description: "Pour un choix de nettoyage que tu as fait dans un lab précédent (imputation, suppression de doublons...), rédige une ligne de commentaire expliquant pourquoi ce choix a été fait." },
+  { title: "Structurer le chargement et le nettoyage en fonctions", description: "Reprends un script d'analyse précédent et sépare-le en fonctions charger_donnees et nettoyer.", code: 'import pandas as pd\n\ndef charger_donnees(chemin):\n    return pd.read_csv(chemin)\n\ndef nettoyer(df):\n    df = df.drop_duplicates()\n    df["timestamp"] = pd.to_datetime(df["timestamp"])\n    for col in df.select_dtypes(include="number").columns:\n        df[col] = df[col].fillna(df[col].median())\n    return df' },
+  { title: "Ajouter les fonctions d'exploration et d'entraînement", description: "Complète le pipeline avec les fonctions explorer et entrainer_modele.", code: 'from sklearn.model_selection import train_test_split\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.metrics import classification_report\n\ndef explorer(df):\n    print(df.describe())\n    print(df.corr(numeric_only=True))\n\ndef entrainer_modele(df, colonnes_features, colonne_cible):\n    X, y = df[colonnes_features], df[colonne_cible]\n    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)\n    modele = RandomForestClassifier(n_estimators=200, random_state=42)\n    modele.fit(X_train, y_train)\n    print(classification_report(y_test, modele.predict(X_test)))\n    return modele' },
+  { title: "Exécuter le pipeline complet", description: "Assemble et exécute les quatre fonctions à la suite sur un jeu de données réel.", code: 'df = charger_donnees("connexions.csv")\ndf = nettoyer(df)\nexplorer(df)\nmodele = entrainer_modele(df, ["duree_s", "octets", "port"], "est_suspect")' },
 ]} />
 
 ## En résumé

@@ -93,11 +93,13 @@ Le filtrage booléen NumPy (`connexions > 200`) est l'un des outils les plus uti
 
 ## Lab — Mise en Pratique
 
-**Environnement** : Kali Linux (terminal Nyx Shell)
+**Environnement** : Python 3 (terminal Nyx Shell ou environnement local avec `pandas`/`numpy`/`matplotlib` installés)
 
 <Steps steps={[
-  { title: "Calculer un produit scalaire avec NumPy", description: "Vérifie en code le calcul du chapitre 1 du cours Algèbre Linéaire.", code: 'python3 -c "import numpy as np; print(np.dot([2,3,1],[1,0,4]))"' },
-  { title: "Filtrer des connexions suspectes", description: "Écris un script qui filtre, dans un tableau de durées de connexion, celles dépassant 300 secondes." },
+  { title: "Créer un vecteur et une matrice NumPy", description: "Recrée le vecteur et la matrice d'exemple du chapitre et affiche leurs dimensions.", code: 'import numpy as np\n\nv = np.array([15, 2, 1])\nM = np.array([\n    [15, 2, 1],\n    [2, 45, 0],\n    [8, 12, 1]\n])\n\nprint(v.shape)\nprint(M.shape)' },
+  { title: "Calculer un produit scalaire et une norme", description: "Vérifie en code le calcul du chapitre 1 du cours Algèbre Linéaire à l'aide de NumPy.", code: 'v1 = np.array([2, 3, 1])\nv2 = np.array([1, 0, 4])\n\nprint(np.dot(v1, v2))\nprint(np.linalg.norm(v1))' },
+  { title: "Comparer boucle Python et vectorisation", description: "Additionne deux vecteurs avec une boucle explicite puis avec la vectorisation NumPy, pour constater l'équivalence du résultat.", code: 'resultat_boucle = []\nfor i in range(len(v1)):\n    resultat_boucle.append(v1[i] + v2[i])\n\nresultat_vectorise = v1 + v2\nprint(resultat_boucle)\nprint(resultat_vectorise)' },
+  { title: "Filtrer des connexions suspectes", description: "Filtre, dans un tableau de durées de connexion, celles dépassant 300 secondes.", code: 'connexions = np.array([12, 450, 8, 230, 15, 9, 600])\nsuspectes = connexions[connexions > 300]\nprint(suspectes)' },
 ]} />
 
 ## En résumé

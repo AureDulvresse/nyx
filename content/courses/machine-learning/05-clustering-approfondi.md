@@ -78,11 +78,13 @@ graph TD
 
 ## Lab — Mise en Pratique
 
-**Environnement** : Réflexion guidée (sans terminal)
+**Environnement** : Python 3 (terminal Nyx Shell ou environnement local avec `scikit-learn`/`pandas`/`numpy` installés)
 
 <Steps steps={[
-  { title: "Choisir une méthode de clustering", description: "Pour détecter des connexions réseau anormales parmi un grand volume de trafic normal, quelle méthode de clustering privilégier, et pourquoi ?" },
-  { title: "Expliquer la limite de k-means", description: "Pourquoi k-means peine-t-il à regrouper correctement des données en forme de croissants imbriqués, contrairement à DBSCAN ?" },
+  { title: "Générer des données en croissants imbriqués", description: "Crée un jeu de données dont la forme n'est pas sphérique, exactement le cas limite de k-means évoqué plus haut.", code: "from sklearn.datasets import make_moons\nX, y_true = make_moons(n_samples=200, noise=0.05, random_state=0)" },
+  { title: "Appliquer k-means", description: "Partitionne ces données avec k-means (k=2) et observe que la frontière sphérique imposée découpe mal les deux croissants.", code: "from sklearn.cluster import KMeans\nkm = KMeans(n_clusters=2, n_init=10, random_state=0).fit(X)\nprint('labels k-means (20 premiers):', km.labels_[:20])" },
+  { title: "Appliquer DBSCAN", description: "Sur les mêmes données, exécute DBSCAN et compare : il doit retrouver les deux croissants et identifier les points de bruit isolés.", code: "from sklearn.cluster import DBSCAN\ndb = DBSCAN(eps=0.2, min_samples=5).fit(X)\nprint('labels DBSCAN (20 premiers):', db.labels_[:20])\nprint('nombre de points de bruit:', (db.labels_ == -1).sum())" },
+  { title: "Appliquer le clustering hiérarchique", description: "Termine par un clustering hiérarchique sur les mêmes données et compare les trois résultats obtenus, en te reliant au tableau comparatif des trois méthodes vu plus haut.", code: "from sklearn.cluster import AgglomerativeClustering\nagg = AgglomerativeClustering(n_clusters=2).fit(X)\nprint('labels hierarchique (20 premiers):', agg.labels_[:20])" },
 ]} />
 
 ## En résumé

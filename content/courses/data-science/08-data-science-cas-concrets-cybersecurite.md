@@ -67,11 +67,13 @@ Le défi "adversarial" de la détection de fraude rejoint une préoccupation cen
 
 ## Lab — Mise en Pratique
 
-**Environnement** : Réflexion guidée (sans terminal)
+**Environnement** : Python 3 (terminal Nyx Shell ou environnement local avec `pandas`/`numpy`/`matplotlib` installés)
 
 <Steps steps={[
-  { title: "Proposer des caractéristiques", description: "Pour un modèle de détection de comptes utilisateurs compromis, propose 4 caractéristiques pertinentes à extraire des données de connexion." },
-  { title: "Identifier le défi adversarial", description: "En quoi la détection de fraude financière diffère-t-elle de la plupart des problèmes de classification classiques, du fait du comportement actif des fraudeurs ?" },
+  { title: "Construire un tableau de caractéristiques d'emails", description: "Reprends les caractéristiques du cas 1 (lien raccourci, langage urgent, pièce jointe exécutable) sous forme de DataFrame étiqueté.", code: 'import pandas as pd\n\nemails = pd.DataFrame({\n    "lien_raccourci": [1, 0, 1, 0],\n    "langage_urgent": [1, 0, 1, 0],\n    "piece_jointe_exe": [1, 0, 0, 0],\n    "label": ["phishing", "legitime", "phishing", "legitime"]\n})\nprint(emails)' },
+  { title: "Calculer un score de risque simple", description: "Combine ces caractéristiques en un score de risque basique, la même logique qu'un modèle de classification supervisée simplifié.", code: 'emails["score_risque"] = emails[["lien_raccourci", "langage_urgent", "piece_jointe_exe"]].sum(axis=1)\nprint(emails[["score_risque", "label"]])' },
+  { title: "Calculer l'entropie du trafic pour la détection d'intrusion", description: "Reprends la caractéristique d'entropie du trafic mentionnée au cas 2 et calcule-la sur une distribution de ports observés.", code: 'import numpy as np\n\nports = pd.Series([80, 80, 443, 443, 443, 22, 8080, 8080, 8080, 8080])\nprobabilites = ports.value_counts(normalize=True)\nentropie = -np.sum(probabilites * np.log2(probabilites))\nprint("Entropie du trafic (ports) :", round(entropie, 3))' },
+  { title: "Proposer des caractéristiques et identifier le défi adversarial", description: "En t'inspirant du tableau de caractéristiques ci-dessus, propose 4 caractéristiques pertinentes à extraire des données de connexion pour détecter un compte utilisateur compromis. En quoi la détection de fraude financière diffère-t-elle par ailleurs de la plupart des problèmes de classification classiques, du fait du comportement actif des fraudeurs ?" },
 ]} />
 
 ## En résumé

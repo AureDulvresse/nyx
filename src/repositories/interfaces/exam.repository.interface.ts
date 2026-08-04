@@ -5,4 +5,5 @@ export interface IExamRepository {
   findById(id: string): Promise<CourseExam | null>
   recordAttempt(examId: string, result: ExamAttemptResult): Promise<ExamAttempt>
   hasPassed(examId: string): Promise<boolean>
+  findLatestAttempt(examId: string): Promise<ExamAttempt | null>
 }

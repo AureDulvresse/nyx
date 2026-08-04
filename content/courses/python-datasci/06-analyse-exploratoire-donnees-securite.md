@@ -99,11 +99,13 @@ Exemple d'observations formulées à l'issue d'une EDA :
 
 ## Lab — Mise en Pratique
 
-**Environnement** : Kali Linux (terminal Nyx Shell)
+**Environnement** : Python 3 (terminal Nyx Shell ou environnement local avec `pandas`/`numpy`/`matplotlib` installés)
 
 <Steps steps={[
-  { title: "Mener une EDA complète", description: "À partir d'un export de logs réseau fictif, enchaîne chargement, nettoyage, statistiques descriptives et visualisation." },
-  { title: "Formuler deux observations exploitables", description: "À partir des résultats obtenus, rédige deux observations spécifiques et vérifiables, à la manière de l'exemple ci-dessus." },
+  { title: "Charger et inspecter le jeu de données", description: "Charge un export de logs réseau fictif et affiche sa forme, son aperçu et ses valeurs manquantes.", code: 'import pandas as pd\n\ndf = pd.read_csv("connexions.csv")\n\nprint(df.shape)\nprint(df.head())\nprint(df.isnull().sum())' },
+  { title: "Nettoyer le jeu de données", description: "Supprime les doublons, convertis les types puis impute les valeurs manquantes numériques par la médiane.", code: 'df = df.drop_duplicates()\ndf["timestamp"] = pd.to_datetime(df["timestamp"])\ndf["octets"] = pd.to_numeric(df["octets"], errors="coerce")\ndf["octets"] = df["octets"].fillna(df["octets"].median())' },
+  { title: "Explorer statistiquement et visualiser", description: "Calcule les statistiques descriptives et les corrélations, puis visualise la distribution du volume de données.", code: 'import seaborn as sns\nimport matplotlib.pyplot as plt\n\nprint(df.describe())\nprint(df.corr(numeric_only=True))\n\nsns.histplot(df["octets"], bins=30)\nplt.title("Distribution du volume de donnees")\nplt.show()' },
+  { title: "Formuler des observations exploitables", description: "Identifie les connexions dont le volume dépasse largement la médiane, une base concrète pour rédiger une observation chiffrée et vérifiable.", code: 'seuil = df["octets"].median() * 10\nsuspectes = df[df["octets"] > seuil]\nprint(suspectes[["ip_source", "port", "octets"]])' },
 ]} />
 
 ## En résumé

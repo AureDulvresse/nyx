@@ -73,11 +73,12 @@ Ces techniques de régularisation s'ajoutent aux principes déjà vus au cours M
 
 ## Lab — Mise en Pratique
 
-**Environnement** : Réflexion guidée (sans terminal)
+**Environnement** : Python 3 (terminal Nyx Shell ou environnement local avec `numpy` installé — pas besoin de framework deep learning complet pour ces exercices)
 
 <Steps steps={[
-  { title: "Expliquer l'intérêt des GPU", description: "Pourquoi un GPU, conçu à l'origine pour le rendu graphique, est-il particulièrement adapté à l'entraînement d'un réseau de neurones profond ?" },
-  { title: "Choisir une technique de régularisation", description: "Un modèle de deep learning atteint une excellente performance sur les données d'entraînement mais une performance médiocre sur les données de validation. Quelles techniques de régularisation de ce chapitre pourraient aider, et pourquoi ?" },
+  { title: "Comparer batch complet, mini-batch et exemple unique", description: "Calcule le gradient d'une régression simple sur l'ensemble complet des données, sur un seul exemple, puis sur un mini-batch, pour observer la différence décrite dans ce chapitre.", code: "import numpy as np\nnp.random.seed(0)\n\n# Jeu de donnees jouet : 20 exemples, relation y = 2x + bruit\nX = np.random.randn(20)\ny = 2 * X + np.random.randn(20) * 0.1\n\nw = 0.0\n\ndef gradient(w, X_batch, y_batch):\n    y_pred = w * X_batch\n    error = y_pred - y_batch\n    return np.mean(2 * error * X_batch)\n\nprint('Gradient (batch complet, 20 exemples) :', gradient(w, X, y))\nprint('Gradient (1 seul exemple)             :', gradient(w, X[:1], y[:1]))\nprint('Gradient (mini-batch de 4 exemples)   :', gradient(w, X[:4], y[:4]))" },
+  { title: "Mesurer la stabilité du gradient selon la taille du batch", description: "Compare la variabilité (écart-type) du gradient calculé exemple par exemple à celle calculée par mini-batchs, pour visualiser le compromis stabilité/parallélisation.", code: "single_grads = [gradient(w, X[i:i+1], y[i:i+1]) for i in range(20)]\nmini_batch_grads = [gradient(w, X[i:i+4], y[i:i+4]) for i in range(0, 20, 4)]\n\nprint('Ecart-type gradient (exemple par exemple) :', np.std(single_grads))\nprint('Ecart-type gradient (mini-batchs de 4)    :', np.std(mini_batch_grads))\n# Le mini-batch lisse la variabilite du gradient par rapport a un seul exemple,\n# tout en restant bien moins couteux que le batch complet." },
+  { title: "Implémenter le dropout à la main", description: "Applique un masque de dropout à une couche de 8 neurones et observe la mise à l'échelle des activations restantes, comme décrit dans la section sur la régularisation.", code: "activations = np.array([0.9, 0.2, 0.7, 0.5, 0.3, 0.8, 0.1, 0.6])\ndropout_rate = 0.5\n\nmask = (np.random.rand(*activations.shape) > dropout_rate).astype(float)\nactivations_dropped = activations * mask / (1 - dropout_rate)\n\nprint('Activations originales    :', activations)\nprint('Masque de dropout         :', mask)\nprint('Activations apres dropout :', np.round(activations_dropped, 2))" },
 ]} />
 
 ## En résumé

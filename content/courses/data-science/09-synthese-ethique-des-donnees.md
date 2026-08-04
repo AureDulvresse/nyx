@@ -71,11 +71,12 @@ Rappel du cours Droit et Réglementation (chapitre 2) : le principe de minimisat
 
 ## Lab — Mise en Pratique
 
-**Environnement** : Réflexion guidée (sans terminal)
+**Environnement** : Python 3 (terminal Nyx Shell ou environnement local avec `pandas`/`numpy`/`matplotlib` installés)
 
 <Steps steps={[
-  { title: "Identifier un biais potentiel", description: "Un modèle de détection d'anomalies est entraîné uniquement sur le trafic réseau capturé pendant les heures de bureau. Quel biais cela introduit-il, et quel risque concret en découle-t-il ?" },
-  { title: "Appliquer le principe de minimisation", description: "Un modèle de détection de fraude n'a besoin que du montant, de l'heure et de la localisation d'une transaction. Pourquoi serait-il problématique de conserver également le nom complet et l'historique d'achats détaillé du client si ces données ne sont pas utilisées par le modèle ?" },
+  { title: "Détecter un biais silencieux par sous-groupe", description: "Simule des résultats de détection sur deux infrastructures (Linux, Windows) et calcule le taux de faux négatifs par sous-groupe — le biais de l'exemple du chapitre n'apparaîtrait pas dans une métrique globale.", code: 'import pandas as pd\n\nresultats = pd.DataFrame({\n    "infrastructure": ["linux"]*5 + ["windows"]*5,\n    "attaque_reelle": [1, 1, 1, 0, 1, 1, 1, 0, 1, 1],\n    "detectee": [1, 1, 1, 0, 1, 0, 0, 0, 1, 0]\n})\n\nresultats["faux_negatif"] = (resultats["attaque_reelle"] == 1) & (resultats["detectee"] == 0)\ntaux_fn_par_infra = resultats.groupby("infrastructure")["faux_negatif"].mean()\nprint(taux_fn_par_infra)' },
+  { title: "Appliquer le principe de minimisation des données", description: "Sélectionne uniquement les colonnes réellement nécessaires au modèle de détection de fraude dans un DataFrame de transactions contenant des données personnelles superflues.", code: 'transactions = pd.DataFrame({\n    "montant": [120, 45, 900],\n    "heure": [14, 22, 3],\n    "localisation": ["Paris", "Lyon", "Paris"],\n    "nom_complet": ["Jean D.", "Awa K.", "Marc L."],\n    "historique_achats": [["livre", "cafe"], ["essence"], ["electronique", "voyage"]]\n})\n\n# Le modele de detection de fraude n a besoin que de ces trois colonnes\ncolonnes_necessaires = ["montant", "heure", "localisation"]\ndonnees_minimisees = transactions[colonnes_necessaires]\nprint(donnees_minimisees)' },
+  { title: "Interpréter le biais et la minimisation", description: "Le tableau ci-dessus montre un taux de faux négatifs bien plus élevé sur l'infrastructure Windows : quel biais cela révèle-t-il, et quel risque concret en découle-t-il ? Par ailleurs, pourquoi serait-il problématique de conserver le nom complet et l'historique d'achats détaillé du client dans le DataFrame de transactions, alors que le modèle n'utilise que montant/heure/localisation ?" },
 ]} />
 
 ## En résumé

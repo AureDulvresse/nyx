@@ -66,12 +66,16 @@ Le choix du seuil d'erreur de reconstruction au-delà duquel une observation est
 
 ## Lab — Mise en Pratique
 
-**Environnement** : Réflexion guidée (sans terminal)
+**Environnement** : Python 3 (terminal Nyx Shell ou environnement local avec `pandas`/`scikit-learn` installés)
 
 <Steps steps={[
-  { title: "Expliquer le principe de détection", description: "Pourquoi une connexion réseau très différente du trafic habituel produit-elle une erreur de reconstruction élevée dans un autoencodeur entraîné uniquement sur du trafic normal ?" },
-  { title: "Choisir entre clustering et autoencodeur", description: "Pour détecter des anomalies dans des images de captures d'écran (haute dimension), clustering classique ou autoencodeur serait-il plus adapté ? Justifie." },
+  { title: "Générer un trafic majoritairement normal", description: "Construis un petit jeu de connexions réseau, essentiellement normales, avec quelques anomalies injectées.", code: 'import numpy as np\nimport pandas as pd\n\nnp.random.seed(42)\nnormal = pd.DataFrame({\n    "duree_s": np.random.normal(5, 1, 20),\n    "octets": np.random.normal(600, 100, 20)\n})\nanomalies = pd.DataFrame({\n    "duree_s": [400, 350, 420],\n    "octets": [90000, 85000, 95000]\n})\ntrafic = pd.concat([normal, anomalies], ignore_index=True)\nprint(trafic.tail(6))' },
+  { title: "Entraîner une Isolation Forest sur ce trafic", description: "Utilise IsolationForest comme substitut pratique à l'autoencodeur pour détecter les connexions qui s'écartent du comportement normal.", code: 'from sklearn.ensemble import IsolationForest\n\nmodele = IsolationForest(contamination=0.15, random_state=42)\nmodele.fit(trafic)\ntrafic["anomalie"] = modele.predict(trafic)  # -1 = anomalie, 1 = normal\nprint(trafic["anomalie"].value_counts())' },
+  { title: "Examiner les connexions signalées", description: "Trie les connexions par score de décision : un score très bas joue ici le même rôle qu'une erreur de reconstruction élevée dans un autoencodeur.", code: 'trafic["score"] = modele.score_samples(trafic[["duree_s", "octets"]])\nsuspectes = trafic[trafic["anomalie"] == -1].sort_values("score")\nprint(suspectes)\n# Un score tres bas ~ une erreur de reconstruction elevee dans un autoencodeur:\n# plus la connexion s\'ecarte du trafic normal appris, plus elle est signalee.' },
+  { title: "Ajuster le seuil et observer le compromis", description: "Fais varier le taux de contamination (équivalent du seuil de reconstruction) et observe l'effet sur le nombre d'alertes.", code: 'for c in [0.05, 0.15, 0.30]:\n    m = IsolationForest(contamination=c, random_state=42).fit(trafic[["duree_s", "octets"]])\n    n_anomalies = (m.predict(trafic[["duree_s", "octets"]]) == -1).sum()\n    print(f"contamination={c} -> {n_anomalies} connexions signalees")' },
 ]} />
+
+Pour aller plus loin sur un vrai jeu de données, essaie le lab **ds-001 — Le Trafic Suspect** (détection d'anomalies réseau par IsolationForest).
 
 ## En résumé
 

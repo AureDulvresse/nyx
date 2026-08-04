@@ -85,11 +85,13 @@ Un fichier de logs exporté au format CSV charge presque toujours les dates comm
 
 ## Lab — Mise en Pratique
 
-**Environnement** : Kali Linux (terminal Nyx Shell)
+**Environnement** : Python 3 (terminal Nyx Shell ou environnement local avec `pandas`/`numpy`/`matplotlib` installés)
 
 <Steps steps={[
-  { title: "Détecter les valeurs manquantes", description: "Charge un DataFrame de logs fictifs avec des valeurs manquantes et affiche la proportion de valeurs manquantes par colonne." },
-  { title: "Nettoyer un jeu de données", description: "Supprime les doublons puis impute les valeurs manquantes numériques par la médiane de leur colonne." },
+  { title: "Charger un DataFrame avec valeurs manquantes", description: "Recrée le DataFrame d'exemple contenant des valeurs manquantes et affiche leur proportion par colonne.", code: 'import pandas as pd\nimport numpy as np\n\ndf = pd.DataFrame({\n    "ip": ["10.0.0.5", "10.0.0.12", None, "10.0.0.5"],\n    "port": [443, np.nan, 80, 443]\n})\n\nprint(df.isnull().mean())' },
+  { title: "Supprimer les doublons", description: "Détecte puis supprime les lignes dupliquées du DataFrame.", code: 'print(df.duplicated().sum())\ndf_sans_doublons = df.drop_duplicates()\nprint(df_sans_doublons)' },
+  { title: "Imputer les valeurs manquantes par la médiane", description: "Remplace les valeurs manquantes numériques de la colonne port par sa médiane.", code: 'df["port"] = df["port"].fillna(df["port"].median())\nprint(df)' },
+  { title: "Convertir une colonne en type numérique", description: "Force la conversion de la colonne port en type numérique, les valeurs invalides devenant NaN.", code: 'df["port"] = pd.to_numeric(df["port"], errors="coerce")\nprint(df.dtypes)' },
 ]} />
 
 ## En résumé

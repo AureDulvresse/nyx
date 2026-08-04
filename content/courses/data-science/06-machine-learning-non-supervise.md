@@ -67,11 +67,13 @@ La détection d'anomalies non supervisée produit inévitablement des faux posit
 
 ## Lab — Mise en Pratique
 
-**Environnement** : Réflexion guidée (sans terminal)
+**Environnement** : Python 3 (terminal Nyx Shell ou environnement local avec `pandas`/`numpy`/`matplotlib` installés)
 
 <Steps steps={[
-  { title: "Justifier le choix du non supervisé", description: "Pourquoi une équipe de sécurité qui veut détecter des attaques encore jamais documentées choisirait-elle une approche non supervisée plutôt que supervisée ?" },
-  { title: "Anticiper un faux positif", description: "Un employé en voyage se connecte depuis un pays inhabituel pour la première fois. Pourquoi un système de détection d'anomalies non supervisé pourrait-il le signaler à tort, et comment un analyste SOC devrait-il réagir ?" },
+  { title: "Créer un jeu de connexions avec un point isolé", description: "Génère deux groupes de comportements réseau normaux (navigation, sauvegardes) plus un point clairement isolé, comme dans le schéma du chapitre.", code: 'import numpy as np\n\nnp.random.seed(1)\ncluster_navigation = np.random.normal([20, 5], 2, size=(20, 2))     # duree, volume\ncluster_sauvegardes = np.random.normal([300, 800], 15, size=(15, 2))\npoint_isole = np.array([[900, 50]])                                   # comportement inhabituel\n\nX = np.vstack([cluster_navigation, cluster_sauvegardes, point_isole])\nprint(X.shape)' },
+  { title: "Implémenter les étapes du k-means", description: "Initialise deux centres au hasard, puis répète assignation et recalcul des centres jusqu'à stabilisation — les quatre étapes décrites plus haut.", code: 'k = 2\ncentres = X[np.random.choice(len(X), k, replace=False)]\n\nfor iteration in range(10):\n    distances = np.array([np.linalg.norm(X - centre, axis=1) for centre in centres])\n    assignations = np.argmin(distances, axis=0)\n    centres = np.array([X[assignations == c].mean(axis=0) for c in range(k)])\n\nprint("Centres finaux :", centres)' },
+  { title: "Repérer l'anomalie", description: "Identifie le point le plus éloigné du centre de son propre cluster : c'est l'anomalie candidate à investiguer, sans avoir utilisé aucune étiquette d'attaque.", code: 'distances_au_centre = np.linalg.norm(X - centres[assignations], axis=1)\nindice_anomalie = np.argmax(distances_au_centre)\nprint("Point le plus eloigne de son cluster (anomalie candidate) :", X[indice_anomalie])' },
+  { title: "Anticiper un faux positif malgré le clustering", description: "Pourquoi une équipe de sécurité qui veut détecter des attaques encore jamais documentées choisirait-elle une approche non supervisée comme celle ci-dessus plutôt que supervisée ? Si le point isolé détecté à l'étape précédente correspondait en réalité à un employé en déplacement se connectant depuis un pays inhabituel, pourquoi le système le signalerait-il à tort, et comment un analyste SOC devrait-il réagir ?" },
 ]} />
 
 ## En résumé

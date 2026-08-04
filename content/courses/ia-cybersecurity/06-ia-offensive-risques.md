@@ -66,11 +66,12 @@ Ce défi rejoint directement celui de la détection de fraude vu au cours Data S
 
 ## Lab — Mise en Pratique
 
-**Environnement** : Réflexion guidée (sans terminal)
+**Environnement** : Python 3 (terminal Nyx Shell ou environnement local avec `pandas`/`scikit-learn` installés)
 
 <Steps steps={[
-  { title: "Identifier un vecteur de prompt injection", description: "Un agent IA résume automatiquement le contenu des pages web visitées par un utilisateur. Comment un attaquant pourrait-il exploiter cette capacité via une page web piégée ?" },
-  { title: "Proposer une contre-mesure deepfake", description: "Propose une procédure de vérification qu'une entreprise pourrait mettre en place pour se protéger d'une fraude par deepfake audio imitant la voix d'un dirigeant." },
+  { title: "Entraîner un petit classifieur de phishing", description: "Reconstitue un classifieur TF-IDF + Naive Bayes minimal, comme celui du chapitre 3, pour servir de cible à l'attaque adversariale.", code: 'from sklearn.feature_extraction.text import TfidfVectorizer\nfrom sklearn.naive_bayes import MultinomialNB\n\nemails = [\n    "Urgent, votre compte a ete bloque, cliquez ici pour le reactiver",\n    "Felicitations vous avez gagne un prix, cliquez vite pour le reclamer",\n    "Bonjour, voici le compte-rendu de la reunion de ce matin",\n    "Merci de trouver ci-joint la facture du mois"\n]\nlabels = ["phishing", "phishing", "legitime", "legitime"]\n\nvectoriseur = TfidfVectorizer()\nX = vectoriseur.fit_transform(emails)\nclassifieur = MultinomialNB().fit(X, labels)' },
+  { title: "Vérifier qu'il détecte un email de phishing", description: "Confirme que le modèle classe correctement un email de phishing évident avant de tenter de le tromper.", code: 'email_test = ["Alerte: cliquez ici en urgence pour reactiver votre compte bloque"]\nX_test = vectoriseur.transform(email_test)\nprint("Prediction initiale:", classifieur.predict(X_test)[0])\nprint("Probabilites:", dict(zip(classifieur.classes_, classifieur.predict_proba(X_test)[0])))' },
+  { title: "Perturber légèrement le texte (attaque adversariale)", description: "Modifie quelques caractères des mots-clés sans changer le sens perçu par un humain, et observe l'effet sur la classification.", code: 'email_perturbe = ["Alerte : cl1quez ici en urg3nce pour r34ctiver votre compte bl0que"]\nX_perturbe = vectoriseur.transform(email_perturbe)\nprint("Prediction apres perturbation:", classifieur.predict(X_perturbe)[0])\nprint("Probabilites:", dict(zip(classifieur.classes_, classifieur.predict_proba(X_perturbe)[0])))\n# Un lecteur humain comprend toujours le message, mais les mots-cles\n# ont change assez pour tromper le vectoriseur TF-IDF entraine sur les mots exacts.' },
 ]} />
 
 ## En résumé

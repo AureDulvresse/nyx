@@ -11,13 +11,13 @@ export function ExamNav({
 }: {
   questions: QuizQuestion[]
   currentIndex: number
-  answersByQuestion: Record<string, number>
+  answersByQuestion: Record<string, number[]>
   onGoTo: (index: number) => void
 }) {
   return (
     <div className="flex flex-wrap gap-1.5">
       {questions.map((q, i) => {
-        const answered = answersByQuestion[q.id] !== undefined
+        const answered = (answersByQuestion[q.id]?.length ?? 0) > 0
         const current = i === currentIndex
         return (
           <button

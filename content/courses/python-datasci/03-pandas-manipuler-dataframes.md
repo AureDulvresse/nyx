@@ -85,11 +85,13 @@ top3 = df.nlargest(3, "octets")
 
 ## Lab — Mise en Pratique
 
-**Environnement** : Kali Linux (terminal Nyx Shell)
+**Environnement** : Python 3 (terminal Nyx Shell ou environnement local avec `pandas`/`numpy`/`matplotlib` installés)
 
 <Steps steps={[
-  { title: "Créer et filtrer un DataFrame de connexions", description: "Crée un DataFrame de connexions réseau fictives et filtre celles dont le volume dépasse 100 000 octets." },
-  { title: "Agréger par IP source", description: "Utilise groupby pour calculer le volume total de données par IP source, puis identifie l'IP ayant transféré le plus de données." },
+  { title: "Créer un DataFrame de connexions", description: "Recrée le DataFrame de connexions réseau de l'exemple du chapitre.", code: 'import pandas as pd\n\ndf = pd.DataFrame({\n    "ip_source": ["10.0.0.5", "10.0.0.12", "10.0.0.5", "192.168.1.3"],\n    "port": [443, 22, 80, 443],\n    "duree_s": [12, 340, 8, 450],\n    "octets": [2400, 890000, 1200, 15000]\n})\nprint(df.head())' },
+  { title: "Filtrer les connexions volumineuses", description: "Filtre les connexions dont le volume dépasse 100 000 octets.", code: 'volumineuses = df[df["octets"] > 100000]\nprint(volumineuses)' },
+  { title: "Agréger le volume par IP source", description: "Utilise groupby pour calculer le volume total de données par IP source, puis identifie l'IP ayant transféré le plus de données.", code: 'par_ip = df.groupby("ip_source")["octets"].sum()\nprint(par_ip.sort_values(ascending=False))' },
+  { title: "Identifier les connexions les plus volumineuses", description: "Utilise nlargest pour isoler les 2 connexions avec le plus gros volume.", code: 'top2 = df.nlargest(2, "octets")\nprint(top2)' },
 ]} />
 
 ## En résumé

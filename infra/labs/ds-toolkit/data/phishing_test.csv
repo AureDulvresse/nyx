@@ -1,0 +1,4 @@
+id,sender,subject,body_snippet,message_id
+1,helpdesk@entreprise-cor9-support.com,Action requise: verification de securite immediate,"Votre compte presente une activite anormale. Verifiez votre identite dans les 24h sous peine de suspension definitive: http://entreprise-cor9-support.com/verify-now",FLAG{naive_bayes_email_suspect}
+2,sophie.bernard@entreprise-corp.fr,Point hebdomadaire equipe,"Bonjour, petit recapitulatif des sujets abordes lors du point hebdomadaire de ce matin. Rien d'urgent, bon week-end a tous.",msg-7f21a9
+3,commandes@fournisseur-materiel.fr,Confirmation de commande #48213,"Nous confirmons la bonne reception de votre commande de materiel informatique. Livraison prevue sous 5 jours ouvres.",msg-3d84c2

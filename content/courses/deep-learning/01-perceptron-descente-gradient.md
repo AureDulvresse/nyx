@@ -73,11 +73,13 @@ Rappel du cours Machine Learning (chapitre 2) : la descente de gradient ajuste p
 
 ## Lab — Mise en Pratique
 
-**Environnement** : Réflexion guidée (sans terminal)
+**Environnement** : Python 3 (terminal Nyx Shell ou environnement local avec `numpy` installé — pas besoin de framework deep learning complet pour ces exercices)
 
 <Steps steps={[
-  { title: "Expliquer le rôle de la fonction d'activation", description: "Pourquoi un réseau de neurones sans fonction d'activation non linéaire, même avec de nombreuses couches, ne pourrait-il modéliser que des relations linéaires ?" },
-  { title: "Identifier la limite du perceptron isolé", description: "Pourquoi un perceptron isolé ne peut-il pas apprendre la fonction logique XOR ?" },
+  { title: "Implémenter un perceptron avec numpy", description: "Définis un perceptron à 3 entrées et calcule sa sortie via une somme pondérée suivie de la sigmoïde, exactement comme décrit dans ce chapitre.", code: "import numpy as np\n\nx = np.array([0.5, -0.2, 0.1])\nw = np.array([0.4, 0.3, -0.5])\nb = 0.1\n\ndef sigmoid(z):\n    return 1 / (1 + np.exp(-z))\n\ndef forward(x, w, b):\n    return sigmoid(np.dot(w, x) + b)\n\ny_pred = forward(x, w, b)\nprint('Sortie du perceptron :', y_pred)" },
+  { title: "Appliquer un pas de descente de gradient", description: "Calcule l'erreur puis ajuste manuellement les poids et le biais, en suivant les mêmes étapes que la section précédente de ce chapitre.", code: "y_true = 1.0\nlearning_rate = 0.1\n\nerror = y_pred - y_true\n# derivee de la sigmoide : sigmoid(z) * (1 - sigmoid(z))\ngrad_w = error * y_pred * (1 - y_pred) * x\ngrad_b = error * y_pred * (1 - y_pred)\n\nw = w - learning_rate * grad_w\nb = b - learning_rate * grad_b\nprint('Nouveaux poids :', w)\nprint('Nouveau biais :', b)" },
+  { title: "Vérifier que l'erreur a diminué", description: "Recalcule la sortie du perceptron avec les poids mis à jour et compare l'erreur avant et après ce pas de gradient.", code: "y_pred_new = forward(x, w, b)\nprint('Erreur avant :', abs(y_pred - y_true))\nprint('Erreur apres :', abs(y_pred_new - y_true))" },
+  { title: "Constater la limite du perceptron sur XOR", description: "Entraîne ce même perceptron sur la fonction logique XOR pendant 2000 époques et observe qu'il ne parvient jamais à la séparer correctement, confirmant la limite historique décrite dans ce chapitre.", code: "np.random.seed(42)\nX_xor = np.array([[0,0],[0,1],[1,0],[1,1]])\ny_xor = np.array([0,1,1,0])\nw = np.random.randn(2)\nb = 0.0\nlr = 0.5\n\nfor epoch in range(2000):\n    for xi, yi in zip(X_xor, y_xor):\n        y_hat = forward(xi, w, b)\n        err = y_hat - yi\n        w -= lr * err * y_hat * (1 - y_hat) * xi\n        b -= lr * err * y_hat * (1 - y_hat)\n\nfor xi in X_xor:\n    print(xi, '->', round(forward(xi, w, b), 2))" },
 ]} />
 
 ## En résumé

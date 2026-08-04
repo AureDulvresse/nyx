@@ -1,0 +1,27 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        env:
+          AWS_ACCESS_KEY_ID: AKIAIOSFODNN7EXAMPLE
+          AWS_SECRET_ACCESS_KEY: "FLAG{secret_en_clair_dans_le_pipeline}"
+        run: |
+          aws s3 sync ./dist s3://nyx-corp-prod-bucket --delete
+
+      - name: Notify Slack
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+            --data '{"text":"Deploy terminé avec succès"}' \
+            https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX
+
+      - name: Restart production containers
+        run: ssh -o StrictHostKeyChecking=no deploy@prod.nyxcorp.internal "docker compose up -d --force-recreate"

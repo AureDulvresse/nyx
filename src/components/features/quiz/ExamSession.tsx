@@ -12,6 +12,7 @@ import type { CourseExam } from '@/domain'
 
 export function ExamSession({ exam, courseSlug }: { exam: CourseExam; courseSlug: string }) {
   const {
+    shuffledQuestions,
     currentIndex,
     currentQuestion,
     total,
@@ -33,6 +34,7 @@ export function ExamSession({ exam, courseSlug }: { exam: CourseExam; courseSlug
     return (
       <ExamResult
         result={result}
+        questions={shuffledQuestions}
         passingPercentage={exam.passingPercentage}
         courseSlug={courseSlug}
         onRetry={() => {
@@ -47,7 +49,7 @@ export function ExamSession({ exam, courseSlug }: { exam: CourseExam; courseSlug
     <div key={key} className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <ExamNav
-          questions={exam.questions}
+          questions={shuffledQuestions}
           currentIndex={currentIndex}
           answersByQuestion={answersByQuestion}
           onGoTo={goTo}
@@ -67,7 +69,7 @@ export function ExamSession({ exam, courseSlug }: { exam: CourseExam; courseSlug
         question={currentQuestion}
         index={currentIndex}
         total={total}
-        selected={answersByQuestion[currentQuestion.id]}
+        selected={answersByQuestion[currentQuestion.id] ?? []}
         onSelect={select}
       />
 

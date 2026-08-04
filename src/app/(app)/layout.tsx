@@ -1,6 +1,7 @@
 import { Sidebar } from "@/components/features/layout/Sidebar";
 import { Header } from "@/components/features/layout/Header";
 import { AskNyxWidget } from "@/components/features/assistant/AskNyxWidget";
+import { ToastContainer } from "@/components/ui/toast";
 import { statsRepo } from "@/repositories";
 import { calculateStreak, calculateScore } from "@/services";
 import { auth } from "@/auth";
@@ -30,6 +31,7 @@ export default async function AppLayout({
         <main className="flex-1 px-4 py-6 lg:px-8">{children}</main>
       </div>
       <AskNyxWidget />
+      <ToastContainer />
     </div>
   );
 }

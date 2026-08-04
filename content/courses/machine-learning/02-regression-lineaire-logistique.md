@@ -73,11 +73,13 @@ Sinon → classe 0 (ex : légitime)
 
 ## Lab — Mise en Pratique
 
-**Environnement** : Kali Linux (terminal Nyx Shell)
+**Environnement** : Python 3 (terminal Nyx Shell ou environnement local avec `scikit-learn`/`pandas`/`numpy` installés)
 
 <Steps steps={[
-  { title: "Entraîner une régression avec scikit-learn", description: "Rappel du cours Python pour la Data Science (chapitre 7) : entraîne un modèle LinearRegression sur un petit jeu de données et affiche ses coefficients." },
-  { title: "Expliquer le rôle du taux d'apprentissage", description: "Pourquoi un taux d'apprentissage trop élevé peut-il empêcher un modèle de converger vers un minimum d'erreur ?" },
+  { title: "Préparer un petit jeu de données", description: "Construis un jeu de données jouet où x représente des heures d'étude et y le score obtenu à un examen.", code: "import numpy as np\nX = np.array([[1], [2], [3], [4], [5]])\ny = np.array([50, 55, 65, 70, 80])" },
+  { title: "Entraîner une régression linéaire avec scikit-learn", description: "Rappel du cours Python pour la Data Science (chapitre 7) : entraîne un modèle LinearRegression et lis les paramètres a et b appris, au sens de y = a*x + b.", code: "from sklearn.linear_model import LinearRegression\nreg = LinearRegression().fit(X, y)\nprint('a (pente):', reg.coef_[0])\nprint('b (intercept):', reg.intercept_)" },
+  { title: "Passer à la régression logistique", description: "Transforme le problème en classification binaire (score >= 65 -> réussite) et entraîne une LogisticRegression pour obtenir une probabilité de réussite, au sens de la fonction sigmoïde vue plus haut.", code: "from sklearn.linear_model import LogisticRegression\ny_classe = (y >= 65).astype(int)\nclf = LogisticRegression().fit(X, y_classe)\nproba = clf.predict_proba(X)\nprint('probabilites de reussite:', proba[:, 1])" },
+  { title: "Observer l'effet du taux d'apprentissage", description: "Entraîne un SGDRegressor avec un taux d'apprentissage très petit puis très grand, et compare les coefficients obtenus pour constater qu'un taux trop élevé déstabilise la convergence.", code: "from sklearn.linear_model import SGDRegressor\nfor lr in [0.001, 1.0]:\n    sgd = SGDRegressor(eta0=lr, learning_rate='constant', max_iter=50).fit(X, y)\n    print('eta0=', lr, '-> coef:', sgd.coef_, 'intercept:', sgd.intercept_)" },
 ]} />
 
 ## En résumé

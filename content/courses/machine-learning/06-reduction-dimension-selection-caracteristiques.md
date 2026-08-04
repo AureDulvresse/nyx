@@ -67,11 +67,13 @@ Il ne faut pas confondre réduction de dimension et sélection de caractéristiq
 
 ## Lab — Mise en Pratique
 
-**Environnement** : Réflexion guidée (sans terminal)
+**Environnement** : Python 3 (terminal Nyx Shell ou environnement local avec `scikit-learn`/`pandas`/`numpy` installés)
 
 <Steps steps={[
-  { title: "Identifier un cas d'usage du fléau de la dimension", description: "Pourquoi un modèle k-NN entraîné sur 500 caractéristiques réseau pourrait-il moins bien fonctionner qu'un modèle entraîné sur les 20 caractéristiques les plus pertinentes ?" },
-  { title: "Choisir entre ACP et sélection de caractéristiques", description: "Pour un analyste SOC qui doit pouvoir expliquer à un manager quelles variables réseau ont motivé une alerte, l'ACP ou la sélection de caractéristiques est-elle préférable ? Justifie." },
+  { title: "Générer un jeu de données à haute dimension", description: "Crée un jeu de données synthétique avec de nombreuses caractéristiques corrélées, comparable à des caractéristiques réseau extraites pour la détection d'intrusion.", code: "from sklearn.datasets import make_classification\nX, y = make_classification(n_samples=200, n_features=20, n_informative=5, random_state=0)" },
+  { title: "Centrer et normaliser les données", description: "Rappel de la première étape de l'ACP décrite plus haut : chaque variable doit être centrée et mise à la même échelle avant tout calcul de composantes.", code: "from sklearn.preprocessing import StandardScaler\nX_scaled = StandardScaler().fit_transform(X)" },
+  { title: "Appliquer l'ACP et inspecter la variance expliquée", description: "Réduis les 20 variables à 5 composantes principales et observe quelle part de la variance totale ces composantes préservent.", code: "from sklearn.decomposition import PCA\npca = PCA(n_components=5).fit(X_scaled)\nratios = pca.explained_variance_ratio_\nprint('variance expliquee par composante:', ratios)\nprint('variance cumulee:', ratios.sum())" },
+  { title: "Comparer avec la sélection de caractéristiques", description: "Utilise l'importance des variables d'une Random Forest (chapitre 3) pour sélectionner directement les variables originales les plus pertinentes, et compare l'interprétabilité de ce résultat à celui de l'ACP.", code: "from sklearn.ensemble import RandomForestClassifier\nfrom sklearn.feature_selection import SelectFromModel\nrf = RandomForestClassifier(random_state=0).fit(X, y)\nselector = SelectFromModel(rf, prefit=True, max_features=5)\nprint('variables originales conservees:', selector.get_support())" },
 ]} />
 
 ## En résumé

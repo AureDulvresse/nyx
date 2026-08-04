@@ -61,11 +61,13 @@ Rappel du cours Python pour la Data Science (chapitre 7) : scikit-learn permet d
 
 ## Lab — Mise en Pratique
 
-**Environnement** : Réflexion guidée (sans terminal)
+**Environnement** : Python 3 (terminal Nyx Shell ou environnement local avec `scikit-learn`/`pandas`/`numpy` installés)
 
 <Steps steps={[
-  { title: "Distinguer les trois paradigmes", description: "Pour chacun de ces cas, identifie le paradigme (supervisé, non supervisé, par renforcement) : classer des emails en phishing/légitime, regrouper des malwares similaires sans étiquette, entraîner un agent à optimiser une stratégie de défense réseau par essais successifs." },
-  { title: "Expliquer l'intérêt d'approfondir", description: "Pourquoi comprendre le détail mathématique d'un algorithme (au-delà du simple `.fit()`/`.predict()` de scikit-learn) permet-il de mieux l'ajuster à un problème spécifique ?" },
+  { title: "Créer un petit jeu de données étiqueté", description: "Construis manuellement un jeu de données jouet (points 2D + étiquette connue) qui servira aux deux paradigmes comparés ci-dessous.", code: "import numpy as np\nX = np.array([[1, 2], [1.5, 1.8], [5, 8], [8, 8], [1, 0.6], [9, 11]])\ny = np.array([0, 0, 1, 1, 0, 1])  # etiquettes connues (paradigme supervise)" },
+  { title: "Apprendre à partir des étiquettes (supervisé)", description: "Entraîne un classifieur qui utilise directement les étiquettes y — rappel du cours Python pour la Data Science (chapitre 7).", code: "from sklearn.linear_model import LogisticRegression\nclf = LogisticRegression().fit(X, y)\nprint('predictions supervisees:', clf.predict(X))" },
+  { title: "Découvrir une structure sans étiquette (non supervisé)", description: "Sur les mêmes points, exécute un clustering qui ne reçoit jamais y — il doit retrouver une structure similaire par lui-même.", code: "from sklearn.cluster import KMeans\nkm = KMeans(n_clusters=2, n_init=10, random_state=0).fit(X)\nprint('groupes non supervises:', km.labels_)" },
+  { title: "Comparer les deux paradigmes", description: "Compare les résultats des deux étapes précédentes : le modèle supervisé a appris de y, le clustering a dû redécouvrir une structure proche sans jamais le voir. Explique en une phrase pourquoi l'apprentissage par renforcement (un troisième paradigme) ne peut être illustré par aucun des deux blocs de code ci-dessus.", code: "from sklearn.metrics import accuracy_score, adjusted_rand_score\nprint('accuracy supervise:', accuracy_score(y, clf.predict(X)))\nprint('accord non supervise (ARI):', adjusted_rand_score(y, km.labels_))" },
 ]} />
 
 ## En résumé

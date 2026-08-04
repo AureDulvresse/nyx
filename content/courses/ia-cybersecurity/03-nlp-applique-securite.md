@@ -68,12 +68,16 @@ Le "log parsing" ou "log clustering" utilise des techniques NLP pour regrouper a
 
 ## Lab — Mise en Pratique
 
-**Environnement** : Réflexion guidée (sans terminal)
+**Environnement** : Python 3 (terminal Nyx Shell ou environnement local avec `pandas`/`scikit-learn` installés)
 
 <Steps steps={[
-  { title: "Choisir une technique de vectorisation", description: "Pour distinguer des emails de phishing du courrier professionnel légitime, pourquoi les embeddings capturent-ils mieux le sens que le simple sac de mots ?" },
-  { title: "Identifier un défi de log parsing", description: "Pourquoi deux messages de log signalant la même erreur applicative, mais avec des identifiants de session différents, posent-ils un défi pour un comptage exact de fréquence ?" },
+  { title: "Constituer un petit corpus d'emails", description: "Rassemble quelques emails de phishing et quelques emails légitimes étiquetés, comme base d'entraînement.", code: 'emails = [\n    "Urgent, votre compte a ete bloque, cliquez ici pour le reactiver immediatement",\n    "Felicitations vous avez gagne un prix, cliquez vite pour reclamer votre cadeau",\n    "Bonjour, voici le compte-rendu de la reunion de projet de ce matin",\n    "Merci de trouver ci-joint la facture du mois pour le service consulting",\n    "Action requise: verifiez vos identifiants de connexion sous 24h sinon suspension",\n    "Rappel: la reunion d\'equipe est deplacee a 15h en salle B"\n]\nlabels = ["phishing", "phishing", "legitime", "legitime", "phishing", "legitime"]' },
+  { title: "Vectoriser le corps des emails avec TF-IDF", description: "Transforme le texte brut en vecteurs numériques exploitables par un modèle.", code: 'from sklearn.feature_extraction.text import TfidfVectorizer\n\nvectoriseur = TfidfVectorizer()\nX = vectoriseur.fit_transform(emails)\nprint("Vocabulaire:", len(vectoriseur.vocabulary_), "mots")\nprint("Forme de la matrice TF-IDF:", X.shape)' },
+  { title: "Classifier avec un modèle supervisé (Naive Bayes)", description: "Réutilise une technique de classification supervisée sur ce vecteur texte, comme au cours Data Science Complète.", code: 'from sklearn.naive_bayes import MultinomialNB\n\nclassifieur = MultinomialNB()\nclassifieur.fit(X, labels)\nprint("Precision sur le corpus d\'entrainement:", classifieur.score(X, labels))' },
+  { title: "Tester sur un nouvel email", description: "Vérifie que le classifieur généralise à un email jamais vu lors de l'entraînement.", code: 'nouvel_email = ["Alerte de securite: cliquez ici en urgence pour eviter la fermeture de votre compte"]\nX_nouveau = vectoriseur.transform(nouvel_email)\nprediction = classifieur.predict(X_nouveau)\nprint("Classification:", prediction[0])' },
 ]} />
+
+Pour aller plus loin sur un vrai jeu de données, essaie le lab **ds-002 — Le Filtre à Phishing** (classification d'emails par Naive Bayes).
 
 ## En résumé
 

@@ -3,12 +3,14 @@
 import { useState, useTransition } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { useToast } from '@/hooks/useToast'
 import type { FlagSubmitResult } from '@/domain'
 
 export function FlagForm({ onSubmit }: { onSubmit: (flag: string) => Promise<FlagSubmitResult> }) {
   const [value, setValue] = useState('')
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
   const [isPending, startTransition] = useTransition()
+  const toast = useToast()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -16,12 +18,11 @@ export function FlagForm({ onSubmit }: { onSubmit: (flag: string) => Promise<Fla
     startTransition(async () => {
       const result = await onSubmit(value.trim())
       if (result.success) {
-        setFeedback({
-          type: 'success',
-          message: result.labCompleted
-            ? `Lab terminé ! Score final : ${result.totalScore}${result.bonusPoints ? ` (dont +${result.bonusPoints} bonus rapidité)` : ''}`
-            : `+${result.points} points`,
-        })
+        const message = result.labCompleted
+          ? `Lab terminé ! Score final : ${result.totalScore}${result.bonusPoints ? ` (dont +${result.bonusPoints} bonus rapidité)` : ''}`
+          : `+${result.points} points`
+        setFeedback({ type: 'success', message })
+        toast.success(result.labCompleted ? message : `Flag capturé — ${message}`)
         setValue('')
       } else {
         setFeedback({ type: 'error', message: 'Flag incorrect ou déjà capturé.' })

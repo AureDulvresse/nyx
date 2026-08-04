@@ -1,9 +1,10 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { Search01Icon, Add01Icon } from 'hugeicons-react'
+import { Search01Icon, Add01Icon, FolderLibraryIcon } from 'hugeicons-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { EmptyState } from '@/components/common/EmptyState'
 import { ProjectCard } from './ProjectCard'
 import { NewProjectModal } from './NewProjectModal'
 import { PROJECT_CATEGORY_CONFIG, PROJECT_STATUS_LABELS } from '@/lib/project-category'
@@ -32,6 +33,14 @@ export function ProjectsExplorer({ projects }: { projects: Project[] }) {
         (!q || p.title.toLowerCase().includes(q) || p.description.toLowerCase().includes(q))
     )
   }, [projects, category, type, status, query])
+
+  const hasActiveFilters = Boolean(query || category || type || status)
+  const resetFilters = () => {
+    setQuery('')
+    setCategory(null)
+    setType(null)
+    setStatus(null)
+  }
 
   return (
     <div className="space-y-6">
@@ -137,7 +146,22 @@ export function ProjectsExplorer({ projects }: { projects: Project[] }) {
           ))}
         </div>
       ) : (
-        <p className="py-10 text-center text-text-secondary">Aucun projet ne correspond à ces filtres.</p>
+        <EmptyState
+          icon={FolderLibraryIcon}
+          title={hasActiveFilters ? 'Aucun projet ne correspond à ces filtres' : 'Aucun projet pour le moment'}
+          description={hasActiveFilters ? undefined : 'Crée ton premier projet pour suivre tes travaux personnels.'}
+          action={
+            hasActiveFilters ? (
+              <Button variant="secondary" size="sm" onClick={resetFilters}>
+                Réinitialiser les filtres
+              </Button>
+            ) : (
+              <Button size="sm" onClick={() => setShowNewModal(true)}>
+                <Add01Icon size={16} /> Nouveau projet
+              </Button>
+            )
+          }
+        />
       )}
 
       {showNewModal && <NewProjectModal onClose={() => setShowNewModal(false)} />}

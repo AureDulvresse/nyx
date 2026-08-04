@@ -69,11 +69,12 @@ La même capacité générative qui permet à un analyste de gagner un temps pr�
 
 ## Lab — Mise en Pratique
 
-**Environnement** : Réflexion guidée (sans terminal)
+**Environnement** : Python 3 (terminal Nyx Shell ou environnement local avec `pandas`/`scikit-learn` installés)
 
 <Steps steps={[
-  { title: "Distinguer ML classique et deep learning", description: "Pourquoi un jeu de données de seulement quelques centaines d'exemples se prête-t-il mieux à un modèle du cours Data Science Complète (k-NN, arbre) qu'à un réseau de neurones profond ?" },
-  { title: "Identifier un usage dual-use", description: "Propose un usage défensif et un usage offensif possibles d'un LLM capable de générer du texte convaincant en français." },
+  { title: "Créer un jeu de données minuscule", description: "Construis un petit tableau de connexions réseau (durée, octets envoyés) étiquetées normal/suspect, comme au cours Data Science Complète.", code: 'import pandas as pd\n\ndata = pd.DataFrame({\n    "duree_s": [2, 300, 1, 250, 3, 280, 2, 310, 1, 4],\n    "octets_envoyes": [500, 50000, 400, 48000, 600, 52000, 550, 51000, 300, 700],\n    "label": ["normal", "suspect", "normal", "suspect", "normal", "suspect", "normal", "suspect", "normal", "normal"]\n})\nprint(data)' },
+  { title: "Entraîner un modèle classique (k-NN)", description: "Entraîne un k-NN sur ce jeu de seulement 10 exemples et mesure sa précision.", code: 'from sklearn.model_selection import train_test_split\nfrom sklearn.neighbors import KNeighborsClassifier\n\nX = data[["duree_s", "octets_envoyes"]]\ny = data["label"]\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)\n\nknn = KNeighborsClassifier(n_neighbors=3)\nknn.fit(X_train, y_train)\nprint("Precision k-NN (ML classique):", knn.score(X_test, y_test))' },
+  { title: "Entraîner un réseau de neurones (MLP) sur les mêmes données", description: "Entraîne un MLPClassifier sur le même jeu minuscule et compare sa précision à celle du k-NN.", code: 'from sklearn.neural_network import MLPClassifier\n\nmlp = MLPClassifier(hidden_layer_sizes=(16, 16), max_iter=2000, random_state=42)\nmlp.fit(X_train, y_train)\nprint("Precision MLP (reseau de neurones):", mlp.score(X_test, y_test))\n# Avec seulement 10 exemples, le MLP ne peut pas exploiter son avantage:\n# il lui faudrait des milliers d\'observations pour depasser le k-NN.' },
 ]} />
 
 ## En résumé

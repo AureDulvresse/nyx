@@ -1,4 +1,4 @@
-export type LabCategory = 'web' | 'network' | 'exploitation' | 'dfir' | 'ad' | 'crypto' | 'soc' | 'ds' | 'osint'
+export type LabCategory = 'web' | 'network' | 'exploitation' | 'dfir' | 'ad' | 'crypto' | 'soc' | 'ds' | 'osint' | 'devops'
 export type LabDifficulty = 'beginner' | 'intermediate' | 'advanced'
 export type LabSessionStatus = 'active' | 'completed' | 'failed' | 'expired'
 

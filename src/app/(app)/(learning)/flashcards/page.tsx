@@ -1,5 +1,7 @@
+import { Cards01Icon } from 'hugeicons-react'
 import { flashcardRepo } from '@/repositories'
 import { PageHeader } from '@/components/common/PageHeader'
+import { EmptyState } from '@/components/common/EmptyState'
 import { DeckCard } from '@/components/features/flashcards/DeckCard'
 
 export default async function Page() {
@@ -19,7 +21,11 @@ export default async function Page() {
           ))}
         </div>
       ) : (
-        <p className="py-10 text-center text-text-secondary">Aucune flashcard disponible pour le moment.</p>
+        <EmptyState
+          icon={Cards01Icon}
+          title="Aucune flashcard disponible"
+          description="Les decks de flashcards sont générés à partir des chapitres — reviens ici une fois quelques chapitres explorés."
+        />
       )}
     </div>
   )

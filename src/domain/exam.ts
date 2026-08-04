@@ -14,7 +14,9 @@ export interface ExamAttemptResult {
   total: number
   percentage: number
   passed: boolean
-  answers: { questionId: string; chosen: number; correct: boolean }[]
+  // Always an array, even for single-answer questions (a 1-element array) — lets grading use one
+  // uniform set-equality check instead of branching between single/multi question types.
+  answers: { questionId: string; chosen: number[]; correct: boolean }[]
   duration: number
 }
 

@@ -67,11 +67,13 @@ La dérive de concept (concept drift) est particulièrement critique en cybersé
 
 ## Lab — Mise en Pratique
 
-**Environnement** : Réflexion guidée (sans terminal)
+**Environnement** : Python 3 (terminal Nyx Shell ou environnement local avec `scikit-learn`/`pandas`/`numpy` installés)
 
 <Steps steps={[
-  { title: "Identifier une fuite de données", description: "Une équipe normalise l'intégralité de son jeu de données avant de le diviser en train/test. Pourquoi cela biaise-t-il l'évaluation finale du modèle ?" },
-  { title: "Choisir la bonne métrique", description: "Pour un modèle de détection d'intrusion où manquer une attaque réelle est bien plus coûteux qu'une fausse alerte, faut-il privilégier la précision ou le rappel ? Justifie." },
+  { title: "Générer un jeu de données déséquilibré", description: "Simule un scénario de détection d'intrusion où les attaques réelles ne représentent que 5% du trafic.", code: "from sklearn.datasets import make_classification\nX, y = make_classification(n_samples=1000, weights=[0.95, 0.05], random_state=0)  # 5% d attaques" },
+  { title: "Évaluer sans fuite de données via k-fold", description: "Construis un pipeline qui normalise les données à l'intérieur de chaque pli de validation croisée, pour éviter la fuite de données décrite plus haut.", code: "from sklearn.model_selection import cross_val_score, StratifiedKFold\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\npipe = Pipeline([('scaler', StandardScaler()), ('clf', LogisticRegression())])\nscores = cross_val_score(pipe, X, y, cv=StratifiedKFold(5), scoring='accuracy')\nprint('accuracy par pli:', scores)" },
+  { title: "Démasquer une exactitude trompeuse", description: "Rappel du piège des jeux déséquilibrés vu plus haut : calcule précision et rappel séparément, l'exactitude seule masquerait un modèle inutile qui prédit toujours la classe majoritaire.", code: "from sklearn.model_selection import cross_val_predict\nfrom sklearn.metrics import classification_report\ny_pred = cross_val_predict(pipe, X, y, cv=5)\nprint(classification_report(y, y_pred))" },
+  { title: "Ajuster le seuil pour privilégier le rappel", description: "Abaisse le seuil de décision pour capturer davantage d'attaques réelles au prix de plus de fausses alertes, et compare précision et rappel obtenus — le choix justifié dans les questions de révision.", code: "from sklearn.metrics import recall_score, precision_score\nproba = cross_val_predict(pipe, X, y, cv=5, method='predict_proba')\ny_proba = proba[:, 1]\ny_pred_seuil_bas = (y_proba > 0.2).astype(int)\nprint('rappel (seuil=0.2):', recall_score(y, y_pred_seuil_bas))\nprint('precision (seuil=0.2):', precision_score(y, y_pred_seuil_bas))" },
 ]} />
 
 ## En résumé

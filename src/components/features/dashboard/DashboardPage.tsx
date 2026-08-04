@@ -1,4 +1,5 @@
 import { PageHeader } from '@/components/common/PageHeader'
+import { OnboardingBanner } from './OnboardingBanner'
 import { DashboardStats } from './DashboardStats'
 import { WeeklyChart } from './WeeklyChart'
 import { LevelCard } from './LevelCard'
@@ -32,6 +33,8 @@ export function DashboardPage({
   return (
     <div className="space-y-8">
       <PageHeader title="Dashboard" description="Bienvenue sur Nyx — reprends là où tu t'es arrêté." />
+
+      {globalProgress.completed === 0 && <OnboardingBanner firstCourse={courses[0] ?? null} />}
 
       <LevelCard skill={skill} />
 

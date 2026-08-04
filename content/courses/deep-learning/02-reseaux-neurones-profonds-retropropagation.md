@@ -82,11 +82,12 @@ La rétropropagation est l'innovation qui a rendu possible l'entraînement prati
 
 ## Lab — Mise en Pratique
 
-**Environnement** : Réflexion guidée (sans terminal)
+**Environnement** : Python 3 (terminal Nyx Shell ou environnement local avec `numpy` installé — pas besoin de framework deep learning complet pour ces exercices)
 
 <Steps steps={[
-  { title: "Expliquer le rôle des couches cachées", description: "Pourquoi ajouter une couche cachée à un réseau de neurones lui permet-il de résoudre des problèmes qu'un perceptron isolé ne peut pas résoudre ?" },
-  { title: "Résumer la rétropropagation en une phrase", description: "En une phrase, explique ce que fait la rétropropagation et pourquoi elle est nécessaire pour entraîner un réseau à plusieurs couches." },
+  { title: "Construire un mini réseau à une couche cachée", description: "Définis un réseau à 2 entrées, 2 neurones cachés et 1 sortie, puis calcule sa propagation avant, comme décrit dans la section correspondante de ce chapitre.", code: "import numpy as np\n\ndef sigmoid(z):\n    return 1 / (1 + np.exp(-z))\n\nx = np.array([0.5, 0.8])\n\n# Couche cachee : 2 neurones, chacun avec 2 poids + biais\nW1 = np.array([[0.2, -0.4], [0.7, 0.1]])\nb1 = np.array([0.0, 0.0])\n\n# Couche de sortie : 1 neurone, 2 poids + biais\nW2 = np.array([0.5, -0.3])\nb2 = 0.0\n\nz1 = W1.dot(x) + b1\nh = sigmoid(z1)\ny_pred = sigmoid(W2.dot(h) + b2)\n\nprint('Activations couche cachee :', h)\nprint('Sortie du reseau :', y_pred)" },
+  { title: "Rétropropager l'erreur avec la règle de dérivation en chaîne", description: "Calcule le gradient de chaque poids, de la sortie vers la couche cachée, en appliquant exactement les étapes décrites dans la section sur la rétropropagation.", code: "def sigmoid_deriv(a):\n    return a * (1 - a)\n\ny_true = 1.0\nlr = 0.5\n\ndelta_output = (y_pred - y_true) * sigmoid_deriv(y_pred)\ndelta_hidden = delta_output * W2 * sigmoid_deriv(h)\n\ngrad_W2 = delta_output * h\ngrad_b2 = delta_output\ngrad_W1 = np.outer(delta_hidden, x)\ngrad_b1 = delta_hidden\n\nprint('Gradient couche de sortie (W2) :', grad_W2)\nprint('Gradient couche cachee (W1) :', grad_W1)" },
+  { title: "Mettre à jour les poids et vérifier l'erreur", description: "Applique la descente de gradient sur les deux couches, puis recalcule la propagation avant pour vérifier que l'erreur a diminué.", code: "W2 = W2 - lr * grad_W2\nb2 = b2 - lr * grad_b2\nW1 = W1 - lr * grad_W1\nb1 = b1 - lr * grad_b1\n\nh_new = sigmoid(W1.dot(x) + b1)\ny_pred_new = sigmoid(W2.dot(h_new) + b2)\n\nprint('Erreur avant mise a jour :', abs(y_pred - y_true))\nprint('Erreur apres mise a jour :', abs(y_pred_new - y_true))" },
 ]} />
 
 ## En résumé

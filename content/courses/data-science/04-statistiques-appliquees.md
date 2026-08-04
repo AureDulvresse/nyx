@@ -67,11 +67,13 @@ Avant de conclure qu'un nouvel outil de sécurité "fonctionne mieux", un test d
 
 ## Lab — Mise en Pratique
 
-**Environnement** : Réflexion guidée (sans terminal)
+**Environnement** : Python 3 (terminal Nyx Shell ou environnement local avec `pandas`/`numpy`/`matplotlib` installés)
 
 <Steps steps={[
-  { title: "Interpréter une p-value", description: "Un test donne une p-value de 0,001 pour l'effet d'un nouveau pare-feu sur le taux d'intrusions, mesuré sur 10 millions de connexions. Peut-on affirmer que l'effet est nécessairement important en pratique ? Justifie." },
-  { title: "Repérer la limite de Pearson", description: "Pourquoi est-il important de toujours tracer un nuage de points en complément d'un coefficient de corrélation de Pearson proche de 0 ?" },
+  { title: "Calculer les statistiques descriptives avant/après", description: "Reprends l'exemple du pare-feu : calcule moyenne, médiane et écart-type des temps de réponse aux incidents avant et après déploiement.", code: 'import numpy as np\n\navant = np.array([42, 39, 51, 47, 60, 45, 38, 55])\napres = np.array([30, 28, 35, 25, 40, 33, 29, 31])\n\nprint("Avant - moyenne:", np.mean(avant), "mediane:", np.median(avant), "ecart-type:", np.std(avant))\nprint("Apres - moyenne:", np.mean(apres), "mediane:", np.median(apres), "ecart-type:", np.std(apres))' },
+  { title: "Réaliser un test d'hypothèse", description: "Teste si la différence entre les deux groupes est statistiquement significative avec un test t, et récupère la p-value.", code: 'from scipy import stats\n\nt_stat, p_value = stats.ttest_ind(avant, apres)\nprint("Statistique t :", t_stat)\nprint("p-value :", p_value)' },
+  { title: "Calculer un coefficient de corrélation de Pearson", description: "Calcule la corrélation entre le volume de trafic et le nombre d'alertes générées, comme dans le tableau du chapitre.", code: 'volume_trafic = np.array([100, 150, 200, 250, 300, 350])\nnombre_alertes = np.array([5, 8, 12, 15, 20, 22])\n\ncorrelation = np.corrcoef(volume_trafic, nombre_alertes)[0, 1]\nprint("Coefficient de Pearson :", round(correlation, 3))' },
+  { title: "Interpréter les résultats avec prudence", description: "Le test ci-dessus porte sur seulement 8 mesures avant/après. Si le même test était refait sur 10 millions de connexions et donnait une p-value de 0,001, pourrait-on affirmer que l'effet du pare-feu est nécessairement important en pratique ? Et pourquoi faudrait-il aussi tracer un nuage de points même quand, comme ici, le coefficient de Pearson calculé est élevé ou proche de 0 ?" },
 ]} />
 
 ## En résumé

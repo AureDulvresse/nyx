@@ -72,11 +72,12 @@ Ces limites ne disqualifient pas le deep learning en cybersécurité — elles i
 
 ## Lab — Mise en Pratique
 
-**Environnement** : Réflexion guidée (sans terminal)
+**Environnement** : Python 3 (terminal Nyx Shell ou environnement local avec `numpy` installé — pas besoin de framework deep learning complet pour ces exercices)
 
 <Steps steps={[
-  { title: "Expliquer le principe d'une attaque adversariale", description: "Pourquoi une perturbation imperceptible pour un humain peut-elle suffire à tromper un modèle de deep learning avec une confiance élevée ?" },
-  { title: "Synthétiser les limites du deep learning en sécurité", description: "Pour un SOC envisageant de déployer un modèle de deep learning pour la détection d'intrusion, quelles précautions (rappel de ce chapitre et du cours Analyse SOC) devraient encadrer son utilisation ?" },
+  { title: "Construire un classifieur jouet malveillant/bénin", description: "Reprends un perceptron déjà entraîné (chapitre 1) qui classifie un fichier à partir de 2 caractéristiques, et observe sa prédiction initiale.", code: "import numpy as np\n\ndef sigmoid(z):\n    return 1 / (1 + np.exp(-z))\n\n# Modele jouet deja entraine : classifie un fichier (2 caracteristiques) malveillant/benin\nw = np.array([1.2, -0.8])\nb = 0.1\n\ndef predict(x):\n    return sigmoid(np.dot(w, x) + b)\n\nx = np.array([0.9, 0.1])\nprint('Prediction initiale (proba malveillant) :', predict(x))" },
+  { title: "Fabriquer une perturbation adversariale minime", description: "Calcule le gradient de la sortie du modèle par rapport à l'entrée et applique une perturbation minuscule dans cette direction, sur le principe d'une attaque adversariale décrit dans ce chapitre.", code: "# Attaque adversariale simplifiee (facon FGSM) :\n# perturber x dans la direction qui reduit le plus vite la sortie du modele\ny_out = predict(x)\ngradient_input = y_out * (1 - y_out) * w\n\nepsilon = 0.05\nx_adv = x - epsilon * np.sign(gradient_input)\n\nprint('Perturbation appliquee :', x_adv - x)\nprint('Nouvelle prediction (proba malveillant) :', predict(x_adv))" },
+  { title: "Comparer l'ampleur de la perturbation à celle de la décision", description: "Mesure la différence entre l'entrée d'origine et l'entrée perturbée, et compare-la au changement de prédiction du modèle pour interpréter le résultat.", code: "diff_input = np.linalg.norm(x_adv - x)\ndiff_output = abs(predict(x_adv) - predict(x))\n\nprint('Changement des caracteristiques d entree :', round(diff_input, 4))\nprint('Changement de la prediction du modele    :', round(diff_output, 4))\n# Une perturbation minime en entree peut suffire a faire basculer la decision\n# du modele : exactement le principe d'une attaque adversariale." },
 ]} />
 
 ## En résumé

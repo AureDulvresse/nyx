@@ -73,11 +73,13 @@ Un arbre de décision trop profond (trop de questions successives) peut mémoris
 
 ## Lab — Mise en Pratique
 
-**Environnement** : Réflexion guidée (sans terminal)
+**Environnement** : Python 3 (terminal Nyx Shell ou environnement local avec `pandas`/`numpy`/`matplotlib` installés)
 
 <Steps steps={[
-  { title: "Classer un problème", description: "'Prédire si une connexion réseau est une intrusion ou non' est-il un problème de classification ou de régression ? Et 'estimer la bande passante consommée dans l'heure suivante' ?" },
-  { title: "Choisir un k raisonnable", description: "Pourquoi un k-NN avec k=1 est-il particulièrement vulnérable à un exemple d'entraînement mal étiqueté (par erreur humaine) ?" },
+  { title: "Représenter des connexions comme des vecteurs", description: "Crée un petit jeu d'entraînement étiqueté (trafic normal vs intrusion suspectée) sous forme de vecteurs [volume_Mo, duree_s], ainsi qu'une nouvelle connexion à classer.", code: 'import numpy as np\n\n# Chaque connexion est un vecteur [volume_Mo, duree_s], avec son etiquette connue\nX_entrainement = np.array([\n    [10, 30], [12, 28], [8, 25],       # trafic normal\n    [600, 5], [550, 4], [700, 6]       # intrusion suspectee\n])\ny_entrainement = np.array(["normal", "normal", "normal", "intrusion", "intrusion", "intrusion"])\n\nnouvelle_connexion = np.array([580, 5])' },
+  { title: "Calculer la distance aux exemples connus", description: "Calcule la distance euclidienne entre la nouvelle connexion et chaque exemple d'entraînement.", code: 'distances = np.linalg.norm(X_entrainement - nouvelle_connexion, axis=1)\nprint("Distances aux exemples connus :", distances)' },
+  { title: "Voter la classe majoritaire (k-NN)", description: "Retiens les k=3 voisins les plus proches et détermine la classe majoritaire parmi eux.", code: 'k = 3\nindices_plus_proches = np.argsort(distances)[:k]\nvoisins = y_entrainement[indices_plus_proches]\n\nfrom collections import Counter\nprediction = Counter(voisins).most_common(1)[0][0]\nprint("Classe predite pour la nouvelle connexion :", prediction)' },
+  { title: "Relier au choix de k", description: "'Prédire si une connexion réseau est une intrusion ou non' est-il un problème de classification ou de régression ? Et 'estimer la bande passante consommée dans l'heure suivante' ? Avec le code ci-dessus, pourquoi un k=1 rendrait-il la prédiction beaucoup plus sensible à un seul exemple d'entraînement mal étiqueté qu'un k=3 ?" },
 ]} />
 
 ## En résumé

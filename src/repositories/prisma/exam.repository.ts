@@ -38,4 +38,11 @@ export class PrismaExamRepository implements IExamRepository {
     const passedAttempt = await prisma.examAttempt.findFirst({ where: { examId, passed: true } })
     return passedAttempt !== null
   }
+
+  async findLatestAttempt(examId: string): Promise<ExamAttempt | null> {
+    return prisma.examAttempt.findFirst({
+      where: { examId },
+      orderBy: { createdAt: 'desc' },
+    }) as unknown as Promise<ExamAttempt | null>
+  }
 }

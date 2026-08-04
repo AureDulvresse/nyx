@@ -73,11 +73,12 @@ Rappel du cours Analyse SOC (chapitre 5, méfiance envers l'automatisation aveug
 
 ## Lab — Mise en Pratique
 
-**Environnement** : Réflexion guidée (sans terminal)
+**Environnement** : Python 3 (terminal Nyx Shell ou environnement local avec `numpy` installé — pas besoin de framework deep learning complet pour ces exercices)
 
 <Steps steps={[
-  { title: "Expliquer le partage de poids", description: "Pourquoi réutiliser le même filtre sur toute l'image (au lieu d'un poids différent par pixel) réduit-il drastiquement le nombre de paramètres d'un CNN ?" },
-  { title: "Relier la hiérarchie de couches à un cas concret", description: "Pour un CNN entraîné à reconnaître des visages, que détectent probablement ses premières couches, par opposition à ses couches les plus profondes ?" },
+  { title: "Implémenter la convolution à la main", description: "Fais glisser un filtre détecteur de contour vertical sur une petite image 5x5 et calcule la carte d'activation, exactement comme décrit dans la section sur la convolution.", code: "import numpy as np\n\n# Petite image 5x5 avec un contour vertical au centre\nimage = np.array([\n    [0, 0, 1, 0, 0],\n    [0, 0, 1, 0, 0],\n    [0, 0, 1, 0, 0],\n    [0, 0, 1, 0, 0],\n    [0, 0, 1, 0, 0],\n])\n\n# Filtre 3x3 detecteur de contour vertical\nkernel = np.array([\n    [1, 0, -1],\n    [1, 0, -1],\n    [1, 0, -1],\n])\n\ndef convolve2d(img, k):\n    kh, kw = k.shape\n    oh, ow = img.shape[0] - kh + 1, img.shape[1] - kw + 1\n    out = np.zeros((oh, ow))\n    for i in range(oh):\n        for j in range(ow):\n            region = img[i:i+kh, j:j+kw]\n            out[i, j] = np.sum(region * k)\n    return out\n\nfeature_map = convolve2d(image, kernel)\nprint('Sortie de la convolution (feature map) :', feature_map)" },
+  { title: "Implémenter le max-pooling à la main", description: "Réduis la carte d'activation obtenue en ne conservant que la valeur maximale sur des régions 2x2, comme décrit dans la section sur le pooling.", code: "def max_pool2d(fmap, size=2, stride=2):\n    h, w = fmap.shape\n    oh, ow = (h - size) // stride + 1, (w - size) // stride + 1\n    pooled = np.zeros((oh, ow))\n    for i in range(oh):\n        for j in range(ow):\n            region = fmap[i*stride:i*stride+size, j*stride:j*stride+size]\n            pooled[i, j] = np.max(region)\n    return pooled\n\npooled_map = max_pool2d(feature_map)\nprint('Apres max-pooling :', pooled_map)" },
+  { title: "Vérifier la spécificité du filtre", description: "Applique le même filtre à une image uniforme, sans contour, et observe que la réponse est quasi nulle — le filtre ne détecte que le motif pour lequel il a été conçu.", code: "# Meme filtre applique a une image uniforme, sans contour\nimage_no_edge = np.ones((5, 5))\nflat_response = convolve2d(image_no_edge, kernel)\nprint('Reponse du filtre sur une image sans contour :', flat_response)" },
 ]} />
 
 ## En résumé

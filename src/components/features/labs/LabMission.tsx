@@ -19,6 +19,7 @@ import { useLabSession } from '@/hooks/useLabSession'
 import { useLabTimer, formatElapsed } from '@/hooks/useLabTimer'
 import { unlockHint } from '@/actions'
 import { useAskNyxStore } from '@/lib/store/ask-nyx.store'
+import { useToast } from '@/hooks/useToast'
 import { cn } from '@/lib/utils/cn'
 import type { FlagSubmitResult, Lab, LabFlagPublic } from '@/domain'
 
@@ -36,6 +37,7 @@ export function LabMission({ lab, flags }: { lab: Lab; flags: LabFlagPublic[] })
   const [hintError, setHintError] = useState<string | null>(null)
   const setLabHints = useAskNyxStore((s) => s.setLabHints)
   const totalFlags = flags.length
+  const toast = useToast()
 
   const handleFlagSubmit = useCallback(
     async (flag: string): Promise<FlagSubmitResult> => {
@@ -67,6 +69,10 @@ export function LabMission({ lab, flags }: { lab: Lab; flags: LabFlagPublic[] })
         setLabHints(Array.from(next.values()), totalFlags)
         return next
       })
+
+      if (!result.data.alreadyUnlocked) {
+        toast.info(`Indice débloqué (-${result.data.penalty} pts).`)
+      }
     },
     [session, totalFlags, setLabHints]
   )

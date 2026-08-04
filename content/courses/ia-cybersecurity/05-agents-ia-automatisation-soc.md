@@ -68,11 +68,13 @@ Ce principe de garde-fous rejoint directement le RGPD (cours Droit et Réglement
 
 ## Lab — Mise en Pratique
 
-**Environnement** : Réflexion guidée (sans terminal)
+**Environnement** : Python 3 (terminal Nyx Shell ou environnement local avec `pandas`/`scikit-learn` installés)
 
 <Steps steps={[
-  { title: "Concevoir un critère d'escalade", description: "Propose un critère concret permettant à un agent de décider qu'une alerte de connexion doit être escaladée à un humain plutôt que clôturée automatiquement." },
-  { title: "Identifier un risque de garde-fou manquant", description: "Un agent IA clôture automatiquement 95% des alertes sans qu'aucun humain ne consulte jamais un échantillon de ces clôtures. Quel risque concret cela fait-il courir ?" },
+  { title: "Construire un tableau d'alertes avec contexte", description: "Rassemble quelques alertes avec leur réputation IP, leur historique et leur volume de données, comme le ferait l'étape de collecte de contexte de l'agent.", code: 'import pandas as pd\n\nalertes = pd.DataFrame({\n    "alerte_id": ["A1", "A2", "A3", "A4", "A5"],\n    "reputation_ip": [0.9, 0.1, 0.95, 0.05, 0.4],\n    "historique_normal": [False, True, False, True, True],\n    "volume_donnees_mo": [500, 2, 800, 1, 50]\n})\nprint(alertes)' },
+  { title: "Calculer un score de priorité pondéré", description: "Combine les signaux disponibles en un score unique, comme le ferait l'étape de résumé et score de priorité de l'agent.", code: 'alertes["score_priorite"] = (\n    alertes["reputation_ip"] * 0.5\n    + (~alertes["historique_normal"]).astype(int) * 0.3\n    + (alertes["volume_donnees_mo"] > 100).astype(int) * 0.2\n)\nprint(alertes[["alerte_id", "score_priorite"]])' },
+  { title: "Appliquer la règle d'escalade et journaliser la décision", description: "Applique un seuil de confiance conservateur et trace chaque décision, pour garantir la traçabilité exigée par ce chapitre.", code: 'SEUIL_ESCALADE = 0.5\njournal = []\nfor _, alerte in alertes.iterrows():\n    if alerte["score_priorite"] >= SEUIL_ESCALADE:\n        decision = "escalade vers analyste humain"\n    else:\n        decision = "cloture automatique"\n    journal.append({"alerte_id": alerte["alerte_id"], "decision": decision, "score": alerte["score_priorite"]})\n\njournal_df = pd.DataFrame(journal)\nprint(journal_df)' },
+  { title: "Auditer un échantillon des clôtures automatiques", description: "Applique le garde-fou de revue périodique : tire un échantillon des clôtures automatiques pour vérification humaine.", code: 'clotures_auto = journal_df[journal_df["decision"] == "cloture automatique"]\nechantillon_audit = clotures_auto.sample(n=min(2, len(clotures_auto)), random_state=1)\nprint("Echantillon a revoir manuellement:")\nprint(echantillon_audit)' },
 ]} />
 
 ## En résumé

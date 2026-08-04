@@ -102,11 +102,12 @@ print(classification_report(y_test, predictions))
 
 ## Lab — Mise en Pratique
 
-**Environnement** : Kali Linux (terminal Nyx Shell)
+**Environnement** : Python 3 (terminal Nyx Shell ou environnement local avec `pandas`/`numpy`/`matplotlib` installés)
 
 <Steps steps={[
-  { title: "Entraîner un premier modèle k-NN", description: "Sur un jeu de données fictif de connexions étiquetées (normal/suspect), entraîne un k-NN et affiche son rapport de classification." },
-  { title: "Comparer deux modèles", description: "Compare les scores d'un k-NN et d'un arbre de décision sur le même jeu de données de test." },
+  { title: "Préparer les données d'entraînement et de test", description: "Sépare un jeu de données fictif de connexions étiquetées (normal/suspect) en jeu d'entraînement et de test.", code: 'import pandas as pd\nfrom sklearn.model_selection import train_test_split\n\ndf = pd.read_csv("connexions_labellisees.csv")\nX = df[["duree_s", "octets", "port"]]\ny = df["est_suspect"]\n\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)' },
+  { title: "Entraîner un premier modèle k-NN", description: "Entraîne un classifieur k-NN et affiche son rapport de classification.", code: 'from sklearn.neighbors import KNeighborsClassifier\nfrom sklearn.metrics import classification_report\n\nmodele = KNeighborsClassifier(n_neighbors=5)\nmodele.fit(X_train, y_train)\n\npredictions = modele.predict(X_test)\nprint(classification_report(y_test, predictions))' },
+  { title: "Comparer avec un arbre de décision", description: "Compare le score du k-NN à celui d'un arbre de décision sur le même jeu de test.", code: 'from sklearn.tree import DecisionTreeClassifier\n\nmodeles = {\n    "k-NN": KNeighborsClassifier(n_neighbors=5),\n    "Arbre de decision": DecisionTreeClassifier(max_depth=5),\n}\n\nfor nom, m in modeles.items():\n    m.fit(X_train, y_train)\n    print(f"{nom} : {m.score(X_test, y_test):.3f}")' },
 ]} />
 
 ## En résumé

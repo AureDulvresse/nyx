@@ -1,0 +1,16 @@
+id,sender,subject,body_snippet,label
+1,rh@entreprise-corp.fr,Rappel : reunion equipe jeudi,"Bonjour a tous, petit rappel pour la reunion d'equipe de jeudi 10h en salle B. Merci de confirmer votre presence.",legitime
+2,it-support@entreprise-corp.fr,Maintenance serveur ce soir,"La maintenance planifiee du serveur de fichiers aura lieu ce soir de 22h a 23h. Aucune action requise de votre part.",legitime
+3,security-alert@entreprise-cor9.com,URGENT: Votre compte sera suspendu dans 24h,"Cliquez immediatement sur ce lien pour verifier votre identite sinon votre compte sera definitivement supprime: http://entreprise-cor9-verify.com/login",phishing
+4,compta@entreprise-corp.fr,Note de frais validee,"Votre note de frais du mois dernier a ete validee et sera remboursee sur votre prochaine fiche de paie.",legitime
+5,dgfinance@banque-secur1te.com,Votre virement est en attente de confirmation,"Un virement de 4500 EUR est en attente. Confirmez vos identifiants bancaires immediatement via ce lien pour eviter l'annulation: http://banque-secur1te-confirm.com",phishing
+6,marie.dupont@entreprise-corp.fr,Documents pour le projet Atlas,"Bonjour, voici les documents demandes pour le projet Atlas. N'hesite pas si tu as des questions.",legitime
+7,no-reply@livraison-colis-suivi.net,Votre colis n'a pas pu etre livre,"Votre colis est bloque en douane. Payez 2.99 EUR de frais de dedouanement immediatement pour le recevoir: http://livraison-colis-suivi.net/payer",phishing
+8,direction@entreprise-corp.fr,Objectifs du trimestre,"Vous trouverez ci-joint les objectifs valides pour ce trimestre. Merci de les integrer a votre planning.",legitime
+9,support@office365-secure-portal.com,Votre boite mail est pleine,"Votre boite mail va etre suspendue. Cliquez ici pour augmenter votre quota gratuitement: http://office365-secure-portal.com/upgrade",phishing
+10,contact@fournisseur-partenaire.fr,Facture de janvier,"Veuillez trouver ci-joint la facture du mois de janvier concernant notre partenariat.",legitime
+11,admin@paypal-verification-center.com,Activite suspecte detectee sur votre compte,"Nous avons detecte une connexion inhabituelle. Confirmez votre mot de passe immediatement pour securiser votre compte: http://paypal-verification-center.com",phishing
+12,julien.martin@entreprise-corp.fr,Compte rendu reunion client,"Bonjour, voici le compte rendu de la reunion avec le client de ce matin. A relire avant vendredi.",legitime
+13,drh@entreprise-corp.fr,Mise a jour de la politique de conges,"La politique de conges a ete mise a jour suite a la nouvelle convention collective. Details en piece jointe.",legitime
+14,ceo-urgent@entreprise-cor9.com,Demande urgente et confidentielle,"J'ai besoin que tu effectues un virement urgent et confidentiel maintenant, je suis en reunion et ne peux pas t'appeler. Reponds vite.",phishing
+15,notifications@reseau-social-pro.com,Vous avez une nouvelle invitation,"Quelqu'un souhaite se connecter avec vous. Connectez-vous pour voir qui: http://reseau-social-pro-login.com",phishing

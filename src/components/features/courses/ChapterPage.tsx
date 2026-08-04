@@ -15,6 +15,7 @@ import { DateUtils } from '@/lib/utils/date.utils'
 import { stripMarkdownForSpeech } from '@/lib/utils/speech.utils'
 import { AskNyxContextSetter } from '@/components/features/assistant/AskNyxContextSetter'
 import { ReadAloudButton } from '@/components/features/assistant/ReadAloudButton'
+import { useToast } from '@/hooks/useToast'
 import type { Chapter, Comment, Course, CourseProgress, Quiz, Resource, TP } from '@/domain'
 import type { ChapterFrontmatter } from '@/infrastructure/content'
 
@@ -56,13 +57,18 @@ export function ChapterPage({
   const [isPending, startTransition] = useTransition()
   const [isMarkingReviewed, startReviewTransition] = useTransition()
   const speechText = useMemo(() => stripMarkdownForSpeech(rawSource), [rawSource])
+  const toast = useToast()
 
   const toggleComplete = () => {
+    const markingComplete = currentChapter.status !== 'completed'
     startTransition(async () => {
-      await updateChapterStatus({
+      const res = await updateChapterStatus({
         chapterId: currentChapter.id,
-        status: currentChapter.status === 'completed' ? 'in_progress' : 'completed',
+        status: markingComplete ? 'completed' : 'in_progress',
       })
+      if (res.success && markingComplete) {
+        toast.success(`Chapitre "${frontmatter.title}" marqué terminé.`)
+      }
     })
   }
 

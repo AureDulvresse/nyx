@@ -71,11 +71,12 @@ Donner à un agent IA un accès direct à des outils capables d'agir sur des sys
 
 ## Lab — Mise en Pratique
 
-**Environnement** : Réflexion guidée (sans terminal)
+**Environnement** : Python 3 (terminal Nyx Shell ou environnement local avec `pandas`/`scikit-learn` installés)
 
 <Steps steps={[
-  { title: "Distinguer modèle et agent", description: "Un outil qui classe un email comme phishing en une seule prédiction est-il un agent au sens de ce chapitre ? Justifie." },
-  { title: "Concevoir un cycle d'agent", description: "Pour un agent chargé de trier une alerte de connexion suspecte, décris les 3-4 actions successives qu'il pourrait entreprendre avant de formuler une recommandation." },
+  { title: "Définir les outils disponibles pour l'agent", description: "Implémente deux outils simples qu'un agent pourrait appeler : consultation de threat intelligence et d'historique utilisateur.", code: 'def consulter_threat_intel(ip):\n    base = {"41.207.12.3": "connue malveillante", "192.168.1.10": "inconnue"}\n    return base.get(ip, "inconnue")\n\ndef consulter_historique(utilisateur):\n    base = {"jdupont": "connexions habituelles depuis la France"}\n    return base.get(utilisateur, "aucun historique")' },
+  { title: "Implémenter le cycle observation-décision-action", description: "Écris une fonction qui observe une alerte, appelle les outils disponibles, puis décide d'escalader ou de clôturer.", code: 'def trier_alerte(alerte):\n    trace = []\n    trace.append(("observer", alerte))\n\n    reputation = consulter_threat_intel(alerte["ip"])\n    trace.append(("agir: consulter_threat_intel", reputation))\n\n    historique = consulter_historique(alerte["utilisateur"])\n    trace.append(("agir: consulter_historique", historique))\n\n    if reputation == "connue malveillante":\n        decision = "escalade: IP malveillante connue"\n    elif "habituelles" not in historique:\n        decision = "escalade: comportement inhabituel"\n    else:\n        decision = "cloture automatique: contexte normal"\n\n    trace.append(("decider", decision))\n    return trace' },
+  { title: "Exécuter l'agent sur une alerte simulée", description: "Fais tourner le cycle complet sur une alerte de test et observe la trace de chaque étape.", code: 'alerte = {"ip": "41.207.12.3", "utilisateur": "jdupont"}\nfor etape, detail in trier_alerte(alerte):\n    print(f"{etape}: {detail}")' },
 ]} />
 
 ## En résumé

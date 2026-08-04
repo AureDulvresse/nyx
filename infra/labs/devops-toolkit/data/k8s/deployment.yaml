@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: legacy-billing-app
+  namespace: production
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: legacy-billing
+  template:
+    metadata:
+      labels:
+        app: legacy-billing
+    spec:
+      hostNetwork: true
+      containers:
+        - name: billing-api
+          image: registry.internal.nyxcorp.io/legacy-billing:FLAG{conteneur_privilegie_detecte}
+          securityContext:
+            privileged: true
+            runAsUser: 0
+          ports:
+            - containerPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-worker
+  namespace: production
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: notification-worker
+  template:
+    metadata:
+      labels:
+        app: notification-worker
+    spec:
+      containers:
+        - name: worker
+          image: registry.internal.nyxcorp.io/notification-worker:2.4.1
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+          ports:
+            - containerPort: 9090

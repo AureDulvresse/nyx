@@ -2,8 +2,9 @@
 
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
-import { Search01Icon } from 'hugeicons-react'
+import { Search01Icon, StickyNote01Icon, Comment01Icon } from 'hugeicons-react'
 import { PageHeader } from '@/components/common/PageHeader'
+import { EmptyState } from '@/components/common/EmptyState'
 import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
 import { DateUtils } from '@/lib/utils/date.utils'
@@ -49,7 +50,15 @@ export function NotesPage({
       <div>
         <h2 className="mb-3 text-lg font-semibold text-text-primary">Notes de chapitre ({filteredNotes.length})</h2>
         {filteredNotes.length === 0 ? (
-          <p className="text-sm text-text-secondary">Aucune note trouvée.</p>
+          <EmptyState
+            icon={StickyNote01Icon}
+            title="Aucune note trouvée"
+            description={
+              query
+                ? 'Aucune note ne correspond à ta recherche.'
+                : 'Ajoute des notes depuis n\'importe quel chapitre pour les retrouver ici.'
+            }
+          />
         ) : (
           <div className="space-y-2">
             {filteredNotes.map((note) => (
@@ -71,7 +80,15 @@ export function NotesPage({
       <div>
         <h2 className="mb-3 text-lg font-semibold text-text-primary">Commentaires ({filteredComments.length})</h2>
         {filteredComments.length === 0 ? (
-          <p className="text-sm text-text-secondary">Aucun commentaire trouvé.</p>
+          <EmptyState
+            icon={Comment01Icon}
+            title="Aucun commentaire trouvé"
+            description={
+              query
+                ? 'Aucun commentaire ne correspond à ta recherche.'
+                : 'Les commentaires que tu laisses sur les chapitres apparaîtront ici.'
+            }
+          />
         ) : (
           <div className="space-y-2">
             {filteredComments.map((comment) => (

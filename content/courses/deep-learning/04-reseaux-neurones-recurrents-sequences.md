@@ -73,11 +73,12 @@ Les LSTM (Long Short-Term Memory) résolvent ce problème par un mécanisme de p
 
 ## Lab — Mise en Pratique
 
-**Environnement** : Réflexion guidée (sans terminal)
+**Environnement** : Python 3 (terminal Nyx Shell ou environnement local avec `numpy` installé — pas besoin de framework deep learning complet pour ces exercices)
 
 <Steps steps={[
-  { title: "Identifier un cas d'usage de séquence en cybersécurité", description: "Donne un exemple de séquence de commandes ou d'événements réseau où le contexte des événements passés change l'interprétation d'un événement actuel." },
-  { title: "Expliquer l'intérêt des portes du LSTM", description: "Pourquoi les portes d'un LSTM permettent-elles de mieux gérer les dépendances à long terme qu'un RNN classique ?" },
+  { title: "Implémenter la cellule d'un RNN à la main", description: "Fais dérouler un RNN simplifié sur une petite séquence de 3 valeurs, en maintenant l'état caché d'une étape à l'autre, comme décrit dans la section sur le RNN.", code: "import numpy as np\n\ndef tanh(z):\n    return np.tanh(z)\n\n# Sequence de 3 evenements (par exemple des mesures de trafic reseau)\nsequence = [0.8, -0.5, 0.3]\n\nWx = 0.6\nWh = 0.9\nb = 0.0\n\nh = 0.0\nhidden_states = []\n\nfor x_t in sequence:\n    h = float(tanh(Wx * x_t + Wh * h + b))\n    hidden_states.append(round(h, 4))\n\nprint('Etats caches successifs :', hidden_states)" },
+  { title: "Observer le gradient qui s'évanouit", description: "Rétropropage manuellement le gradient à travers les étapes de la séquence et observe comment il rétrécit à chaque étape, comme décrit dans la section sur ce problème.", code: "# A chaque etape retropropagee, le gradient est multiplie par Wh * (1 - h**2)\n# (derivee de tanh) : sur une longue sequence, ce produit repete de facteurs\n# inferieurs a 1 fait tendre le gradient vers zero.\ngradient = 1.0\nfor h in reversed(hidden_states):\n    derivative = 1 - h ** 2\n    gradient *= Wh * derivative\n    print('Gradient retropropage :', gradient)" },
+  { title: "Implémenter les trois portes d'un LSTM", description: "Calcule pour une seule étape les portes d'oubli, d'entrée et de sortie ainsi que la mise à jour de la mémoire, en suivant les définitions de la section sur le LSTM.", code: "def sigmoid(z):\n    return 1 / (1 + np.exp(-z))\n\nx_t = 0.5\nh_prev = 0.2\nc_prev = 0.4\n\nWf, Wi, Wo, Wc = 0.5, 0.6, 0.4, 0.3\n\nforget_gate = sigmoid(Wf * (x_t + h_prev))\ninput_gate = sigmoid(Wi * (x_t + h_prev))\noutput_gate = sigmoid(Wo * (x_t + h_prev))\ncandidate = tanh(Wc * (x_t + h_prev))\n\nc_t = forget_gate * c_prev + input_gate * candidate\nh_t = output_gate * tanh(c_t)\n\nprint('Porte oubli  :', round(forget_gate, 3))\nprint('Porte entree :', round(input_gate, 3))\nprint('Porte sortie :', round(output_gate, 3))\nprint('Nouvelle memoire (cell state) :', round(c_t, 3))\nprint('Nouvel etat cache             :', round(h_t, 3))" },
 ]} />
 
 ## En résumé

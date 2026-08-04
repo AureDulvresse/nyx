@@ -60,10 +60,12 @@ Une corrélation visuelle entre deux variables sur un graphique ne prouve jamais
 
 ## Lab — Mise en Pratique
 
-**Environnement** : Réflexion guidée (sans terminal)
+**Environnement** : Python 3 (terminal Nyx Shell ou environnement local avec `pandas`/`numpy`/`matplotlib` installés)
 
 <Steps steps={[
-  { title: "Choisir une visualisation adaptée", description: "Pour repérer si un jeu de connexions réseau contient des valeurs de durée anormalement élevées, quel type de graphique choisirais-tu, et pourquoi ?" },
+  { title: "Tracer un histogramme des durées de connexion", description: "Génère un petit jeu de connexions majoritairement normales avec quelques durées très élevées, puis visualise leur distribution.", code: 'import pandas as pd\nimport numpy as np\nimport matplotlib.pyplot as plt\n\nnp.random.seed(0)\nconnexions = pd.DataFrame({\n    "duree_s": np.concatenate([np.random.normal(30, 5, 95), [400, 420, 450, 500, 600]]),\n    "taille_octets": np.random.normal(5000, 1000, 100)\n})\n\nplt.hist(connexions["duree_s"], bins=20)\nplt.xlabel("Duree (s)")\nplt.ylabel("Nombre de connexions")\nplt.title("Distribution des durees de connexion")\nplt.savefig("hist_durees.png")' },
+  { title: "Repérer les valeurs aberrantes avec un boxplot", description: "Affiche un boxplot de la même variable — les durées de 400 à 600 secondes doivent apparaître comme des points isolés au-delà des moustaches.", code: 'plt.figure()\nplt.boxplot(connexions["duree_s"])\nplt.title("Boxplot des durees de connexion")\nplt.savefig("boxplot_durees.png")' },
+  { title: "Calculer et visualiser une matrice de corrélation", description: "Calcule la corrélation entre les variables du jeu de données et affiche-la sous forme de heatmap avec matplotlib.", code: 'correlation = connexions.corr()\nprint(correlation)\n\nplt.figure()\nplt.imshow(correlation, cmap="coolwarm", vmin=-1, vmax=1)\nplt.xticks(range(len(correlation)), correlation.columns, rotation=45)\nplt.yticks(range(len(correlation)), correlation.columns)\nplt.colorbar()\nplt.title("Matrice de correlation")\nplt.savefig("correlation.png")' },
   { title: "Interpréter une corrélation avec prudence", description: "Un graphique montre que le nombre de tickets de support et le nombre de tentatives de connexion échouées augmentent ensemble chaque lundi. Peut-on conclure que l'un cause l'autre ? Propose une explication alternative." },
 ]} />
 

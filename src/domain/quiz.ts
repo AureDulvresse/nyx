@@ -2,7 +2,10 @@ export interface QuizQuestion {
   id: string
   question: string
   options: [string, string, string, string]
-  correct: 0 | 1 | 2 | 3
+  // A plain number for single-answer questions (the vast majority — chapter quizzes only ever
+  // author these). An array of 2+ indices marks a multi-select question — exam-only for now,
+  // since the chapter quiz UI (QuestionCard) is a single-select radio picker by design.
+  correct: 0 | 1 | 2 | 3 | number[]
   explanation: string
   difficulty: 'easy' | 'medium' | 'hard'
   tags: string[]
