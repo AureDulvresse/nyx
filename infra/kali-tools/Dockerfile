@@ -9,6 +9,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     sqlmap \
     gobuster \
     john \
+    hashcat \
+    exploitdb \
+    whatweb \
     netcat-traditional \
     dnsutils \
     whois \
@@ -32,6 +35,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     smbclient \
     ldap-utils \
     jq \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Metasploit pulls in a large dependency tree (Ruby, PostgreSQL client libs, ~1-2GB) — kept as a
+# separate layer so it caches independently and a rebuild of the lighter tools above doesn't
+# force a full Metasploit reinstall. Runs without `msfdb init` (no Postgres backend wired up here):
+# module search falls back to a slower in-memory cache, which is an acceptable tradeoff for
+# `msfvenom` payload generation and one-off `msfconsole` exploit usage in a lab session.
+RUN apt-get update && apt-get install -y --no-install-recommends metasploit-framework \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 

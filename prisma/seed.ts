@@ -24471,7 +24471,2061 @@ async function main() {
           }
         ]
       }
-    }
+    },
+    devops: {
+      "1": {
+        "title": "Quiz — Culture DevOps et boucle CALMS",
+        "questions": [
+          {
+            "id": "q1",
+            "question": "Qu'est-ce que le mouvement DevOps cherche fondamentalement à supprimer ?",
+            "options": [
+              "Le mur organisationnel entre les équipes de développement et d'exploitation",
+              "Le besoin de tester le code avant la mise en production",
+              "La nécessité d'utiliser un système de contrôle de version",
+              "Le recours à des serveurs cloud plutôt que physiques"
+            ],
+            "correct": 0,
+            "explanation": "DevOps est né pour remplacer le mur organisationnel Dev/Ops, source de mises en production rares et risquées, par une responsabilité partagée de bout en bout.",
+            "difficulty": "easy",
+            "tags": [
+              "devops",
+              "culture"
+            ]
+          },
+          {
+            "id": "q2",
+            "question": "Qui a popularisé le mouvement DevOps via les conférences 'devopsdays' à la fin des années 2000 ?",
+            "options": [
+              "Patrick Debois",
+              "Linus Torvalds",
+              "Kent Beck",
+              "Martin Fowler"
+            ],
+            "correct": 0,
+            "explanation": "Le chapitre situe la naissance du mouvement DevOps au tournant 2008-2009, popularisé par les conférences devopsdays initiées par Patrick Debois.",
+            "difficulty": "easy",
+            "tags": [
+              "devops",
+              "histoire"
+            ]
+          },
+          {
+            "id": "q3",
+            "question": "Que signifie le 'S' dans l'acronyme CALMS ?",
+            "options": [
+              "Sharing (partage des connaissances et des responsabilités)",
+              "Security (sécurité intégrée au pipeline)",
+              "Scaling (mise à l'échelle automatique)",
+              "Sprint (cycle de développement agile)"
+            ],
+            "correct": 0,
+            "explanation": "CALMS regroupe Culture, Automation, Lean, Measurement et Sharing — ce dernier désignant le partage des connaissances, outils et responsabilités entre équipes.",
+            "difficulty": "medium",
+            "tags": [
+              "calms"
+            ]
+          },
+          {
+            "id": "q4",
+            "question": "Dans la boucle infinie DevOps, quelle étape suit directement 'Release' ?",
+            "options": [
+              "Deploy",
+              "Test",
+              "Monitor",
+              "Plan"
+            ],
+            "correct": 0,
+            "explanation": "La boucle infinie s'enchaîne ainsi : Plan, Code, Build, Test, Release, Deploy, Operate, Monitor, puis retour à Plan.",
+            "difficulty": "medium",
+            "tags": [
+              "boucle-infinie"
+            ]
+          },
+          {
+            "id": "q5",
+            "question": "Selon le chapitre, quelle dimension CALMS correspond au 'blameless postmortem' (droit à l'erreur plutôt que recherche de coupable) ?",
+            "options": [
+              "Culture",
+              "Automation",
+              "Measurement",
+              "Sharing"
+            ],
+            "correct": 0,
+            "explanation": "La dimension Culture couvre la confiance mutuelle entre Dev et Ops et le droit à l'erreur via les blameless postmortems.",
+            "difficulty": "medium",
+            "tags": [
+              "culture",
+              "calms"
+            ]
+          },
+          {
+            "id": "q6",
+            "question": "Laquelle des quatre métriques DORA mesure spécifiquement le temps nécessaire pour restaurer un service après un incident ?",
+            "options": [
+              "MTTR (Mean Time To Recovery)",
+              "Lead Time for Changes",
+              "Deployment Frequency",
+              "Change Failure Rate"
+            ],
+            "correct": 0,
+            "explanation": "Le MTTR mesure le temps moyen nécessaire pour restaurer le service après un incident en production.",
+            "difficulty": "hard",
+            "tags": [
+              "dora"
+            ]
+          },
+          {
+            "id": "q7",
+            "question": "D'après le rapport State of DevOps cité dans le chapitre, quel est le taux d'échec de changement (change failure rate) typique d'une équipe 'elite' ?",
+            "options": [
+              "Entre 0 et 15%",
+              "Entre 16 et 30%",
+              "Entre 31 et 45%",
+              "Entre 46 et 60%"
+            ],
+            "correct": 0,
+            "explanation": "Le chapitre indique qu'une équipe elite a un taux d'échec de changement entre 0 et 15%, contre 46 à 60% pour un low performer.",
+            "difficulty": "hard",
+            "tags": [
+              "dora",
+              "metriques"
+            ]
+          },
+          {
+            "id": "q8",
+            "question": "Quel constat contre-intuitif le rapport DORA met-il en évidence sur la fréquence de déploiement ?",
+            "options": [
+              "Les équipes qui déploient le plus souvent ont aussi le taux d'échec de changement le plus bas",
+              "Les équipes qui déploient le plus souvent ont un MTTR plus élevé",
+              "La fréquence de déploiement n'a aucun lien avec la stabilité",
+              "Déployer plus souvent augmente systématiquement le taux d'échec"
+            ],
+            "correct": 0,
+            "explanation": "Le chapitre souligne que déployer plus souvent ne rend pas moins stable : les changements plus petits sont plus faciles à tester et corriger, ce qui réduit le taux d'échec.",
+            "difficulty": "medium",
+            "tags": [
+              "dora"
+            ]
+          }
+        ]
+      },
+      "2": {
+        "title": "Quiz — Git avancé et workflows collaboratifs",
+        "questions": [
+          {
+            "id": "q1",
+            "question": "Que crée `git merge` lorsqu'il fusionne deux branches ayant divergé ?",
+            "options": [
+              "Un commit de fusion avec deux parents",
+              "Un historique linéaire sans commit supplémentaire",
+              "Une suppression automatique de la branche source",
+              "Un nouveau tag de version"
+            ],
+            "correct": 0,
+            "explanation": "git merge combine deux branches en créant un nouveau commit de fusion ayant deux parents, préservant tout l'historique.",
+            "difficulty": "easy",
+            "tags": [
+              "git",
+              "merge"
+            ]
+          },
+          {
+            "id": "q2",
+            "question": "Quel est l'effet principal de `git rebase` sur l'historique ?",
+            "options": [
+              "Il produit un historique linéaire en réécrivant les hashes des commits rejoués",
+              "Il crée systématiquement un commit de fusion",
+              "Il supprime les commits les plus anciens",
+              "Il fusionne automatiquement toutes les branches distantes"
+            ],
+            "correct": 0,
+            "explanation": "git rebase rejoue les commits sur une nouvelle base, produisant un historique linéaire sans commit de fusion, mais avec de nouveaux hashes.",
+            "difficulty": "easy",
+            "tags": [
+              "git",
+              "rebase"
+            ]
+          },
+          {
+            "id": "q3",
+            "question": "Quelle est la règle d'or énoncée dans le chapitre concernant le rebase ?",
+            "options": [
+              "Rebase en local, merge en public",
+              "Rebase en public, merge en local",
+              "Ne jamais utiliser rebase, seulement merge",
+              "Toujours rebase avant de pousser sur une branche partagée"
+            ],
+            "correct": 0,
+            "explanation": "Le chapitre insiste : ne jamais rebaser une branche déjà partagée et poussée — la règle d'or est de rebaser en local, de fusionner en public.",
+            "difficulty": "medium",
+            "tags": [
+              "git",
+              "rebase",
+              "bonnes-pratiques"
+            ]
+          },
+          {
+            "id": "q4",
+            "question": "Dans GitFlow, quelle branche sert de branche d'intégration avant la production ?",
+            "options": [
+              "develop",
+              "main",
+              "hotfix",
+              "release"
+            ],
+            "correct": 0,
+            "explanation": "GitFlow repose sur main (production), develop (intégration), feature/*, release/* et hotfix/* — develop est la branche d'intégration.",
+            "difficulty": "medium",
+            "tags": [
+              "gitflow"
+            ]
+          },
+          {
+            "id": "q5",
+            "question": "Quelle pratique devient indispensable en trunk-based development pour masquer du code incomplet en production ?",
+            "options": [
+              "Les feature flags",
+              "Les branches release de longue durée",
+              "Le squash systématique des commits",
+              "L'interdiction des pull requests"
+            ],
+            "correct": 0,
+            "explanation": "Le trunk-based development privilégie des branches courtes fusionnées fréquemment sur main, avec des feature flags pour masquer le code incomplet.",
+            "difficulty": "medium",
+            "tags": [
+              "trunk-based"
+            ]
+          },
+          {
+            "id": "q6",
+            "question": "Selon les bonnes pratiques de revue de code du chapitre, au-delà de combien de lignes modifiées la qualité d'une revue de pull request chute-t-elle fortement ?",
+            "options": [
+              "400 lignes",
+              "100 lignes",
+              "1000 lignes",
+              "50 lignes"
+            ],
+            "correct": 0,
+            "explanation": "Le chapitre précise qu'une PR de moins de 400 lignes modifiées se relit correctement ; au-delà, la qualité de la revue chute fortement.",
+            "difficulty": "hard",
+            "tags": [
+              "pull-request"
+            ]
+          },
+          {
+            "id": "q7",
+            "question": "Pourquoi un hook `pre-commit` anti-secret ne suffit-il pas si un secret a déjà été commité par le passé ?",
+            "options": [
+              "Parce que le secret reste consultable dans l'historique Git via `git log -p`, ce qui exige une réécriture d'historique et une rotation du secret",
+              "Parce que git hooks ne fonctionnent que sur la branche main",
+              "Parce que le hook s'exécute uniquement une fois par semaine",
+              "Parce que le hook ne peut analyser que les fichiers `.env`"
+            ],
+            "correct": 0,
+            "explanation": "Un secret déjà commité reste retrouvable dans l'historique ; seule une réécriture d'historique (git filter-repo) suivie d'une rotation du secret résout réellement le problème.",
+            "difficulty": "hard",
+            "tags": [
+              "git-hooks",
+              "secrets"
+            ]
+          },
+          {
+            "id": "q8",
+            "question": "Qu'est-ce que `git bisect` permet de faire ?",
+            "options": [
+              "Localiser par recherche dichotomique le commit exact ayant introduit une régression",
+              "Fusionner automatiquement deux branches divergentes",
+              "Chiffrer l'historique d'un dépôt",
+              "Annuler le dernier commit sans perdre les modifications"
+            ],
+            "correct": 0,
+            "explanation": "git bisect effectue une recherche dichotomique entre un commit 'good' et un commit 'bad' pour localiser précisément la régression.",
+            "difficulty": "medium",
+            "tags": [
+              "git-bisect"
+            ]
+          }
+        ]
+      },
+      "3": {
+        "title": "Quiz — Intégration continue (CI) et pipelines automatisés",
+        "questions": [
+          {
+            "id": "q1",
+            "question": "Dans quel ordre un pipeline CI bien conçu enchaîne-t-il ses stages, selon le chapitre ?",
+            "options": [
+              "Lint → Build → Test → Package",
+              "Test → Lint → Build → Package",
+              "Build → Test → Lint → Package",
+              "Package → Build → Lint → Test"
+            ],
+            "correct": 0,
+            "explanation": "Le chapitre ordonne les stages du moins coûteux au plus coûteux : Lint, Build, Test, Package.",
+            "difficulty": "easy",
+            "tags": [
+              "ci",
+              "pipeline"
+            ]
+          },
+          {
+            "id": "q2",
+            "question": "Que signifie le principe 'fail-fast' appliqué à un pipeline CI ?",
+            "options": [
+              "Le pipeline s'arrête immédiatement dès qu'une étape échoue",
+              "Le pipeline continue toutes les étapes même en cas d'échec pour tout tester",
+              "Le pipeline s'exécute plus vite si on désactive les tests",
+              "Le pipeline redémarre automatiquement après chaque échec"
+            ],
+            "correct": 0,
+            "explanation": "Le fail-fast interrompt immédiatement le pipeline dès qu'un stage échoue, pour détecter un problème en quelques minutes plutôt qu'en production.",
+            "difficulty": "easy",
+            "tags": [
+              "ci",
+              "fail-fast"
+            ]
+          },
+          {
+            "id": "q3",
+            "question": "À quoi sert l'instruction `needs:` dans un fichier GitHub Actions ?",
+            "options": [
+              "À créer une dépendance explicite garantissant qu'un job attend le succès d'un autre avant de s'exécuter",
+              "À définir la version du runner à utiliser",
+              "À indiquer le nombre de tentatives en cas d'échec",
+              "À chiffrer les secrets utilisés dans le job"
+            ],
+            "correct": 0,
+            "explanation": "needs: crée une dépendance explicite entre jobs (ex: build attend lint) ; sans elle, GitHub Actions exécuterait tous les jobs en parallèle.",
+            "difficulty": "medium",
+            "tags": [
+              "github-actions"
+            ]
+          },
+          {
+            "id": "q4",
+            "question": "Quelle est la différence fonctionnelle entre un cache et un artifact dans un pipeline CI ?",
+            "options": [
+              "Le cache est une optimisation best-effort, l'artifact est un livrable requis par un job en aval",
+              "Le cache et l'artifact sont deux noms pour le même mécanisme",
+              "L'artifact accélère l'installation des dépendances, le cache transporte le code compilé",
+              "Le cache est stocké sur le poste du développeur, l'artifact sur le serveur CI uniquement"
+            ],
+            "correct": 0,
+            "explanation": "Le cache optimise sans être indispensable (sa perte ne fait que ralentir) ; l'artifact transporte un livrable attendu par un job suivant, comme dist/ entre build et package.",
+            "difficulty": "medium",
+            "tags": [
+              "cache",
+              "artifact"
+            ]
+          },
+          {
+            "id": "q5",
+            "question": "Pourquoi exécute-t-on les tests unitaires avant les tests d'intégration dans le stage test ?",
+            "options": [
+              "Parce qu'ils sont plus rapides et plus nombreux, donnant un feedback immédiat avant d'investir du temps dans des tests plus coûteux",
+              "Parce que les tests d'intégration ne peuvent s'exécuter qu'après un déploiement",
+              "Parce que les tests unitaires nécessitent une base de données réelle",
+              "Parce que GitHub Actions impose cet ordre par défaut"
+            ],
+            "correct": 0,
+            "explanation": "Les tests unitaires, plus rapides et nombreux, doivent échouer en premier pour donner un feedback immédiat avant d'investir du temps dans les tests d'intégration plus lents.",
+            "difficulty": "medium",
+            "tags": [
+              "tests"
+            ]
+          },
+          {
+            "id": "q6",
+            "question": "Dans l'exemple du chapitre, une matrix build sur 3 versions de Node.js (18, 20, 22) combinée à 2 systèmes d'exploitation génère combien de jobs exécutés en parallèle ?",
+            "options": [
+              "6",
+              "3",
+              "2",
+              "5"
+            ],
+            "correct": 0,
+            "explanation": "Le chapitre indique que 3 versions de Node.js croisées avec 2 OS génèrent 3 × 2 = 6 jobs exécutés en parallèle.",
+            "difficulty": "hard",
+            "tags": [
+              "matrix-build"
+            ]
+          },
+          {
+            "id": "q7",
+            "question": "Que se passe-t-il concrètement si la protection de branche (branch protection) n'est pas activée sur `main`, même avec un pipeline CI en place ?",
+            "options": [
+              "Un job CI rouge n'affiche qu'un avertissement visuel et ne bloque techniquement aucun merge",
+              "Le pipeline refuse automatiquement tout push sur main",
+              "GitHub désactive automatiquement les pull requests",
+              "Les tests unitaires ne peuvent plus s'exécuter"
+            ],
+            "correct": 0,
+            "explanation": "Sans l'option 'Require status checks to pass before merging' explicitement activée, un job CI rouge n'est qu'un avertissement visuel qui ne bloque techniquement rien.",
+            "difficulty": "hard",
+            "tags": [
+              "branch-protection"
+            ]
+          },
+          {
+            "id": "q8",
+            "question": "Pourquoi le déclencheur `on.pull_request` est-il important dans un pipeline CI ?",
+            "options": [
+              "Il garantit que la CI s'exécute avant le merge, permettant de bloquer un code cassé en amont",
+              "Il permet de supprimer automatiquement les branches fusionnées",
+              "Il chiffre les artifacts produits",
+              "Il remplace le besoin d'une revue de code humaine"
+            ],
+            "correct": 0,
+            "explanation": "on.pull_request garantit que la CI tourne avant le merge, pas seulement après — la seule manière de bloquer du code cassé en amont.",
+            "difficulty": "medium",
+            "tags": [
+              "github-actions",
+              "pull-request"
+            ]
+          }
+        ]
+      },
+      "4": {
+        "title": "Quiz — Conteneurisation avec Docker",
+        "questions": [
+          {
+            "id": "q1",
+            "question": "Quelle analogie le chapitre utilise-t-il pour expliquer la différence entre une image et un conteneur Docker ?",
+            "options": [
+              "Une classe et une instance en programmation orientée objet",
+              "Un fichier et un dossier",
+              "Un serveur et un client",
+              "Une variable et une constante"
+            ],
+            "correct": 0,
+            "explanation": "Le chapitre compare l'image (modèle immuable) à une classe, et le conteneur (instance en cours d'exécution) à un objet de cette classe.",
+            "difficulty": "easy",
+            "tags": [
+              "docker",
+              "image",
+              "conteneur"
+            ]
+          },
+          {
+            "id": "q2",
+            "question": "Quelle est la différence de comportement entre `CMD` et `ENTRYPOINT` quand on passe une commande à `docker run` ?",
+            "options": [
+              "`CMD` est entièrement remplaçable au lancement, `ENTRYPOINT` reste fixe et reçoit les arguments en plus",
+              "`ENTRYPOINT` est remplaçable, `CMD` reste toujours fixe",
+              "Les deux sont strictement identiques dans leur comportement",
+              "`CMD` s'exécute au build, `ENTRYPOINT` ne s'exécute jamais"
+            ],
+            "correct": 0,
+            "explanation": "CMD fournit une commande par défaut entièrement remplaçable au lancement ; ENTRYPOINT fixe le programme principal, les arguments de docker run lui étant ajoutés.",
+            "difficulty": "medium",
+            "tags": [
+              "dockerfile",
+              "cmd",
+              "entrypoint"
+            ]
+          },
+          {
+            "id": "q3",
+            "question": "Pourquoi copier `package*.json` avant `COPY . .` dans un Dockerfile améliore-t-il le cache de build ?",
+            "options": [
+              "Parce que le layer d'installation des dépendances n'est réinvalidé que si package.json change, pas à chaque modification du code source",
+              "Parce que Docker exige que les fichiers JSON soient copiés en premier",
+              "Parce que cela réduit automatiquement la taille de l'image finale",
+              "Parce que npm ci ne fonctionne pas si le code source est déjà présent"
+            ],
+            "correct": 0,
+            "explanation": "Isoler package*.json permet à Docker de réutiliser le layer node_modules tant que les dépendances ne changent pas, même si le code source est modifié.",
+            "difficulty": "medium",
+            "tags": [
+              "dockerfile",
+              "cache",
+              "layers"
+            ]
+          },
+          {
+            "id": "q4",
+            "question": "Que permet un multi-stage build que ne permet pas un Dockerfile mono-stage ?",
+            "options": [
+              "Séparer l'environnement de build de l'environnement d'exécution pour ne garder que les artefacts nécessaires dans l'image finale",
+              "Exécuter plusieurs conteneurs simultanément depuis une seule image",
+              "Chiffrer automatiquement les secrets copiés dans l'image",
+              "Éviter d'avoir à utiliser un registry pour distribuer l'image"
+            ],
+            "correct": 0,
+            "explanation": "Le multi-stage build sépare build et exécution, ne copiant dans l'image finale que ce qui est nécessaire au runtime, réduisant poids et surface d'attaque.",
+            "difficulty": "medium",
+            "tags": [
+              "multi-stage"
+            ]
+          },
+          {
+            "id": "q5",
+            "question": "Selon le chapitre, sur un projet Node.js typique, un multi-stage build peut faire passer la taille d'une image de plus de 1 Go à environ combien ?",
+            "options": [
+              "Moins de 150 Mo",
+              "Moins de 900 Mo",
+              "Environ 500 Mo",
+              "Environ 2 Go"
+            ],
+            "correct": 0,
+            "explanation": "Le chapitre cite une réduction fréquente de plus de 1 Go à moins de 150 Mo grâce au multi-stage build.",
+            "difficulty": "hard",
+            "tags": [
+              "multi-stage",
+              "taille-image"
+            ]
+          },
+          {
+            "id": "q6",
+            "question": "Lequel de ces éléments n'est PAS cité par le chapitre comme un registry d'images Docker ?",
+            "options": [
+              "Jenkins Hub",
+              "Docker Hub",
+              "Amazon ECR",
+              "GitHub Container Registry (GHCR)"
+            ],
+            "correct": 0,
+            "explanation": "Le chapitre cite Docker Hub, Amazon ECR et GHCR comme registries courants ; 'Jenkins Hub' n'existe pas dans ce contexte.",
+            "difficulty": "easy",
+            "tags": [
+              "registry"
+            ]
+          },
+          {
+            "id": "q7",
+            "question": "Pourquoi dépendre uniquement du tag `latest` en production complique-t-il un rollback ?",
+            "options": [
+              "Parce que `latest` change de contenu à chaque nouveau build, contrairement à une version sémantique explicite et reproductible",
+              "Parce que `latest` ne peut pas être poussé sur un registry privé",
+              "Parce que Docker interdit d'utiliser `latest` en production",
+              "Parce que `latest` supprime automatiquement les anciennes images"
+            ],
+            "correct": 0,
+            "explanation": "Un tag sémantique explicite (1.4.0) pointe toujours vers une version connue et reproductible, rendant un rollback trivial, contrairement à latest qui change de contenu.",
+            "difficulty": "medium",
+            "tags": [
+              "tagging",
+              "rollback"
+            ]
+          },
+          {
+            "id": "q8",
+            "question": "Que garantit `depends_on` avec `condition: service_healthy` dans un fichier docker-compose ?",
+            "options": [
+              "Que le service dépendant n'accepte du trafic qu'une fois le service requis réellement prêt à répondre, pas seulement démarré",
+              "Que les deux services partagent automatiquement leurs variables d'environnement",
+              "Que le service requis redémarre automatiquement en cas de panne",
+              "Que le réseau Docker est recréé à chaque démarrage"
+            ],
+            "correct": 0,
+            "explanation": "condition: service_healthy garantit que l'API n'accepte du trafic qu'une fois la base réellement prête, pas seulement démarrée.",
+            "difficulty": "hard",
+            "tags": [
+              "docker-compose",
+              "healthcheck"
+            ]
+          }
+        ]
+      },
+      "5": {
+        "title": "Quiz — Orchestration avec Kubernetes",
+        "questions": [
+          {
+            "id": "q1",
+            "question": "Quel composant du control plane Kubernetes stocke l'état complet et unique de vérité du cluster ?",
+            "options": [
+              "etcd",
+              "kubelet",
+              "Scheduler",
+              "Le Pod"
+            ],
+            "correct": 0,
+            "explanation": "etcd est la base de données clé-valeur distribuée qui stocke l'état complet et unique de vérité du cluster.",
+            "difficulty": "medium",
+            "tags": [
+              "kubernetes",
+              "control-plane"
+            ]
+          },
+          {
+            "id": "q2",
+            "question": "Quelle est la différence de rôle entre un Pod et un Deployment ?",
+            "options": [
+              "Le Pod est la plus petite unité déployable, le Deployment gère un ensemble de Pods identiques et leur mise à jour",
+              "Le Pod gère plusieurs Deployments, jamais l'inverse",
+              "Un Deployment ne peut contenir qu'un seul Pod à la fois",
+              "Le Pod et le Deployment désignent exactement le même objet Kubernetes"
+            ],
+            "correct": 0,
+            "explanation": "Le Pod est la plus petite unité déployable ; le Deployment gère un ensemble de Pods identiques, leur mise à jour progressive et leur remplacement automatique.",
+            "difficulty": "easy",
+            "tags": [
+              "pod",
+              "deployment"
+            ]
+          },
+          {
+            "id": "q3",
+            "question": "À quoi sert un objet Service dans Kubernetes ?",
+            "options": [
+              "Fournir une adresse réseau stable et répartir la charge vers un groupe de Pods, même quand ils sont recréés",
+              "Stocker les logs des conteneurs",
+              "Isoler logiquement les ressources entre environnements",
+              "Chiffrer les Secrets au repos"
+            ],
+            "correct": 0,
+            "explanation": "Le Service fournit une adresse réseau stable et répartit la charge vers un groupe de Pods, même quand ceux-ci changent d'IP après recréation.",
+            "difficulty": "easy",
+            "tags": [
+              "service"
+            ]
+          },
+          {
+            "id": "q4",
+            "question": "Pourquoi un Secret Kubernetes ne doit-il jamais être considéré comme une donnée chiffrée par défaut ?",
+            "options": [
+              "Parce qu'il n'est qu'encodé en base64, ce qui est trivialement réversible",
+              "Parce qu'il est stocké en clair sur le poste du développeur uniquement",
+              "Parce que seuls les ConfigMaps sont chiffrés, jamais les Secrets",
+              "Parce que Kubernetes ne permet pas du tout de stocker des données sensibles"
+            ],
+            "correct": 0,
+            "explanation": "Un Secret n'est encodé en base64 que par défaut, ce qui est trivialement réversible (base64 -d) — ce n'est pas un mécanisme de chiffrement.",
+            "difficulty": "medium",
+            "tags": [
+              "secret",
+              "securite"
+            ]
+          },
+          {
+            "id": "q5",
+            "question": "Que se passe-t-il concrètement quand une `readinessProbe` échoue, par opposition à une `livenessProbe` ?",
+            "options": [
+              "Le Pod reste en vie mais est retiré temporairement du Service et ne reçoit plus de trafic",
+              "Le Pod est immédiatement supprimé du cluster",
+              "Kubernetes redémarre automatiquement le conteneur, exactement comme pour une livenessProbe",
+              "Le Namespace entier est mis en pause"
+            ],
+            "correct": 0,
+            "explanation": "Si la readinessProbe échoue, le Pod reste en vie mais est retiré temporairement du Service ; la livenessProbe, elle, déclenche un redémarrage du conteneur.",
+            "difficulty": "hard",
+            "tags": [
+              "probes"
+            ]
+          },
+          {
+            "id": "q6",
+            "question": "Quelle commande `kubectl` est le premier réflexe pour comprendre pourquoi un Pod reste bloqué en `Pending` ou `CrashLoopBackOff` ?",
+            "options": [
+              "kubectl describe pod",
+              "kubectl delete pod",
+              "kubectl top pod",
+              "kubectl edit pod"
+            ],
+            "correct": 0,
+            "explanation": "La section Events de kubectl describe pod explique presque toujours pourquoi un Pod reste bloqué.",
+            "difficulty": "medium",
+            "tags": [
+              "kubectl",
+              "debug"
+            ]
+          },
+          {
+            "id": "q7",
+            "question": "Pourquoi docker-compose devient-il insuffisant dès qu'une application doit tourner sur plusieurs machines ?",
+            "options": [
+              "Parce qu'il n'a aucune notion de cluster, de nœuds multiples ni de réconciliation automatique de l'état désiré",
+              "Parce qu'il ne peut gérer qu'un seul conteneur à la fois",
+              "Parce qu'il ne supporte pas les variables d'environnement",
+              "Parce qu'il nécessite une licence payante au-delà d'une machine"
+            ],
+            "correct": 0,
+            "explanation": "docker-compose décrit et démarre des conteneurs sur une seule machine ; il n'a aucune notion de cluster multi-nœuds ni de réconciliation automatique.",
+            "difficulty": "easy",
+            "tags": [
+              "docker-compose",
+              "kubernetes"
+            ]
+          },
+          {
+            "id": "q8",
+            "question": "Quelle commande permet d'augmenter manuellement le nombre de répliques d'un Deployment à 5 ?",
+            "options": [
+              "kubectl scale deployment nyx-api --replicas=5",
+              "kubectl apply --replicas=5",
+              "kubectl get deployment --scale=5",
+              "kubectl edit replicas 5"
+            ],
+            "correct": 0,
+            "explanation": "kubectl scale deployment <nom> --replicas=N augmente ou réduit manuellement le nombre de répliques d'un Deployment.",
+            "difficulty": "medium",
+            "tags": [
+              "scaling",
+              "kubectl"
+            ]
+          }
+        ]
+      },
+      "6": {
+        "title": "Quiz — Infrastructure as Code — Terraform et Ansible",
+        "questions": [
+          {
+            "id": "q1",
+            "question": "Parmi les bénéfices suivants, lequel n'est PAS cité par le chapitre comme un bénéfice de l'Infrastructure as Code ?",
+            "options": [
+              "La réduction automatique des coûts cloud de 50%",
+              "La reproductibilité de l'infrastructure",
+              "La revue de code des changements d'infrastructure",
+              "Le disaster recovery en relançant le code IaC"
+            ],
+            "correct": 0,
+            "explanation": "Le chapitre cite reproductibilité, revue de code et disaster recovery comme bénéfices — aucun chiffre de réduction de coûts n'est mentionné.",
+            "difficulty": "easy",
+            "tags": [
+              "iac"
+            ]
+          },
+          {
+            "id": "q2",
+            "question": "Quelle est la différence fondamentale entre Terraform et Ansible selon le chapitre ?",
+            "options": [
+              "Terraform est déclaratif (décrit l'état final voulu), Ansible est principalement impératif (décrit une séquence d'étapes)",
+              "Terraform est impératif, Ansible est déclaratif",
+              "Les deux outils sont strictement déclaratifs",
+              "Terraform ne fonctionne que sur AWS, Ansible que sur Azure"
+            ],
+            "correct": 0,
+            "explanation": "Terraform décrit l'état final désiré et calcule le chemin pour l'atteindre ; Ansible décrit une séquence d'étapes exécutées dans l'ordre.",
+            "difficulty": "easy",
+            "tags": [
+              "terraform",
+              "ansible"
+            ]
+          },
+          {
+            "id": "q3",
+            "question": "Que fait concrètement `terraform plan` ?",
+            "options": [
+              "Il affiche un diff des changements qui seraient appliqués, sans rien modifier réellement",
+              "Il applique immédiatement les changements sur l'infrastructure",
+              "Il supprime toutes les ressources gérées par le projet",
+              "Il télécharge les providers nécessaires"
+            ],
+            "correct": 0,
+            "explanation": "terraform plan calcule et affiche un diff exact des changements avant toute action réelle, l'équivalent d'un git diff pour l'infrastructure.",
+            "difficulty": "medium",
+            "tags": [
+              "terraform"
+            ]
+          },
+          {
+            "id": "q4",
+            "question": "Pourquoi le fichier `terraform.tfstate` ne doit-il jamais être commité dans un dépôt Git ?",
+            "options": [
+              "Parce qu'il contient souvent des données sensibles en clair, comme des mots de passe générés ou des chaînes de connexion",
+              "Parce que Git ne supporte pas les fichiers au format .tfstate",
+              "Parce que Terraform le régénère automatiquement à chaque apply de toute façon",
+              "Parce que cela ralentirait uniquement la vitesse de clonage du dépôt"
+            ],
+            "correct": 0,
+            "explanation": "Le fichier state contient souvent des secrets en clair ; il doit résider dans un backend distant chiffré avec accès contrôlé, jamais dans Git.",
+            "difficulty": "hard",
+            "tags": [
+              "terraform",
+              "state",
+              "securite"
+            ]
+          },
+          {
+            "id": "q5",
+            "question": "Qu'est-ce que l'idempotence dans un playbook Ansible ?",
+            "options": [
+              "Exécuter le playbook une fois ou cent fois produit exactement le même résultat final",
+              "Le playbook s'exécute uniquement une seule fois par serveur",
+              "Chaque tâche du playbook doit être écrite en HCL",
+              "Le playbook ne peut cibler qu'un seul hôte à la fois"
+            ],
+            "correct": 0,
+            "explanation": "L'idempotence garantit qu'exécuter un playbook une ou cent fois produit exactement le même résultat final, sans effet de bord répété.",
+            "difficulty": "medium",
+            "tags": [
+              "ansible",
+              "idempotence"
+            ]
+          },
+          {
+            "id": "q6",
+            "question": "Quel module Ansible risque de casser l'idempotence s'il est utilisé à la place du module dédié `apt` ?",
+            "options": [
+              "Le module shell/command exécuté brut",
+              "Le module template",
+              "Le module service",
+              "Le module handlers"
+            ],
+            "correct": 0,
+            "explanation": "Une tâche shell/command brute réexécute la commande à chaque run sans vérifier l'état préalable, contrairement aux modules dédiés comme apt.",
+            "difficulty": "medium",
+            "tags": [
+              "ansible"
+            ]
+          },
+          {
+            "id": "q7",
+            "question": "Dans un pipeline combinant Terraform et Ansible pour créer puis configurer une VM, quel rôle joue typiquement Terraform ?",
+            "options": [
+              "Il provisionne l'instance et expose son IP en sortie, avant qu'Ansible ne s'y connecte pour la configurer",
+              "Il installe les paquets logiciels sur la VM après sa création",
+              "Il exécute les tests unitaires de l'application déployée",
+              "Il gère exclusivement le monitoring de la VM une fois créée"
+            ],
+            "correct": 0,
+            "explanation": "Terraform provisionne l'instance et expose son IP en sortie ; Ansible s'y connecte ensuite pour la configurer.",
+            "difficulty": "hard",
+            "tags": [
+              "terraform",
+              "ansible",
+              "workflow"
+            ]
+          },
+          {
+            "id": "q8",
+            "question": "Dans quel ordre les quatre commandes du workflow Terraform s'exécutent-elles habituellement ?",
+            "options": [
+              "init → plan → apply → destroy",
+              "plan → init → destroy → apply",
+              "apply → plan → init → destroy",
+              "destroy → init → plan → apply"
+            ],
+            "correct": 0,
+            "explanation": "Un projet Terraform suit systématiquement le workflow init, plan, apply, destroy.",
+            "difficulty": "easy",
+            "tags": [
+              "terraform",
+              "workflow"
+            ]
+          }
+        ]
+      },
+      "7": {
+        "title": "Quiz — Observabilité — logs, métriques et alerting",
+        "questions": [
+          {
+            "id": "q1",
+            "question": "Quels sont les trois piliers classiques de l'observabilité cités dans le chapitre ?",
+            "options": [
+              "Logs, métriques et traces",
+              "Logs, alertes et dashboards",
+              "Métriques, seuils et notifications",
+              "CPU, mémoire et disque"
+            ],
+            "correct": 0,
+            "explanation": "Le chapitre présente les logs, les métriques et les traces comme les trois piliers classiques de l'observabilité.",
+            "difficulty": "easy",
+            "tags": [
+              "observabilite"
+            ]
+          },
+          {
+            "id": "q2",
+            "question": "En quoi l'observabilité diffère-t-elle du monitoring traditionnel selon le chapitre ?",
+            "options": [
+              "Elle permet de répondre à des questions imprévues, non anticipées lors de l'instrumentation, contrairement aux seuils fixes du monitoring",
+              "Elle ne concerne que les métriques CPU et mémoire",
+              "Elle remplace entièrement le besoin de logs applicatifs",
+              "Elle ne peut fonctionner que sur des architectures monolithiques"
+            ],
+            "correct": 0,
+            "explanation": "Le monitoring répond à des questions pensées à l'avance via des seuils fixes ; l'observabilité permet d'explorer des questions imprévues grâce à des données riches et corrélables.",
+            "difficulty": "medium",
+            "tags": [
+              "observabilite",
+              "monitoring"
+            ]
+          },
+          {
+            "id": "q3",
+            "question": "Comment Prometheus collecte-t-il ses métriques, selon le chapitre ?",
+            "options": [
+              "En mode pull, en interrogeant lui-même un endpoint /metrics à intervalle régulier (scrape interval)",
+              "En mode push, en recevant passivement les métriques envoyées par les applications",
+              "Uniquement via des fichiers de logs centralisés",
+              "En interrogeant directement la base de données de l'application"
+            ],
+            "correct": 0,
+            "explanation": "Prometheus fonctionne en mode pull : il interroge lui-même un endpoint /metrics à intervalle régulier, appelé scrape interval.",
+            "difficulty": "medium",
+            "tags": [
+              "prometheus"
+            ]
+          },
+          {
+            "id": "q4",
+            "question": "Que permet spécifiquement la fonction `rate()` en PromQL, selon le chapitre ?",
+            "options": [
+              "Gérer correctement les compteurs qui redémarrent (ex: après un redéploiement), contrairement à un simple calcul de différence",
+              "Chiffrer les métriques transmises à Grafana",
+              "Réduire automatiquement le scrape interval",
+              "Convertir des logs en métriques"
+            ],
+            "correct": 0,
+            "explanation": "La fonction rate() gère automatiquement les compteurs qui redémarrent, ce qu'un simple calcul de différence ne ferait pas correctement.",
+            "difficulty": "hard",
+            "tags": [
+              "promql"
+            ]
+          },
+          {
+            "id": "q5",
+            "question": "Pour un SLO de disponibilité de 99.9% sur 30 jours (43 200 minutes), combien de minutes d'indisponibilité l'error budget tolère-t-il ?",
+            "options": [
+              "43,2 minutes",
+              "4,32 minutes",
+              "432 minutes",
+              "0,432 minute"
+            ],
+            "correct": 0,
+            "explanation": "0.1% de 43 200 minutes équivaut à 43,2 minutes d'indisponibilité tolérée sur le mois, comme calculé dans le chapitre.",
+            "difficulty": "hard",
+            "tags": [
+              "slo",
+              "error-budget"
+            ]
+          },
+          {
+            "id": "q6",
+            "question": "Que désigne le phénomène d''alert fatigue' décrit dans le chapitre ?",
+            "options": [
+              "Les opérateurs finissent par ignorer ou couper les notifications à cause d'un trop grand nombre d'alertes peu pertinentes",
+              "Une panne qui dure plus de 24 heures sans être résolue",
+              "Un dashboard Grafana qui met du temps à charger",
+              "Une métrique Prometheus qui ne se met plus à jour"
+            ],
+            "correct": 0,
+            "explanation": "Un service qui envoie de nombreuses notifications sans conséquence réelle produit de l'alert fatigue : les opérateurs finissent par ignorer même l'alerte critique.",
+            "difficulty": "easy",
+            "tags": [
+              "alerting"
+            ]
+          },
+          {
+            "id": "q7",
+            "question": "Que signifient les lettres de l'acronyme ELK dans la stack de centralisation de logs citée dans le chapitre ?",
+            "options": [
+              "Elasticsearch, Logstash, Kibana",
+              "Elastic, Log, Kubernetes",
+              "Event, Log, Kafka",
+              "Elasticsearch, Loki, Kibana"
+            ],
+            "correct": 0,
+            "explanation": "La stack ELK regroupe Elasticsearch, Logstash et Kibana ; sa variante EFK remplace Logstash par Fluentd/Fluent Bit.",
+            "difficulty": "medium",
+            "tags": [
+              "elk"
+            ]
+          },
+          {
+            "id": "q8",
+            "question": "Pourquoi logger des mots de passe ou tokens en clair dans une stack ELK/EFK est-il particulièrement risqué selon le chapitre ?",
+            "options": [
+              "Parce que cela concentre en un seul endroit ce qu'un attaquant chercherait autrement dans plusieurs bases",
+              "Parce qu'Elasticsearch chiffre automatiquement tous les champs sensibles, rendant l'opération inutile",
+              "Parce que Kibana ne peut pas afficher de champs texte",
+              "Parce que Fluent Bit refuse de transporter des données sensibles"
+            ],
+            "correct": 0,
+            "explanation": "Une stack centralisée de logs devient une cible de choix si elle contient des secrets en clair, concentrant ce qu'un attaquant chercherait ailleurs.",
+            "difficulty": "medium",
+            "tags": [
+              "logs",
+              "securite"
+            ]
+          }
+        ]
+      },
+      "8": {
+        "title": "Quiz — Déploiement continu (CD) et stratégies cloud",
+        "questions": [
+          {
+            "id": "q1",
+            "question": "Quelle est la différence exacte entre continuous delivery et continuous deployment selon le chapitre ?",
+            "options": [
+              "Le déploiement continu supprime toute intervention humaine entre le merge et la production, contrairement à la livraison continue qui garde une approbation manuelle",
+              "La livraison continue déploie automatiquement, le déploiement continu nécessite toujours une validation humaine",
+              "Les deux termes désignent exactement la même pratique",
+              "La livraison continue ne concerne que les environnements de test"
+            ],
+            "correct": 0,
+            "explanation": "En continuous delivery, le déploiement reste une action humaine ; en continuous deployment, aucune intervention humaine n'a lieu entre le merge et la production.",
+            "difficulty": "easy",
+            "tags": [
+              "cd"
+            ]
+          },
+          {
+            "id": "q2",
+            "question": "Quel est le principal risque d'un rolling update selon le chapitre ?",
+            "options": [
+              "Les deux versions de l'application cohabitent pendant la transition, ce qui nécessite une compatibilité ascendante du schéma de données et de l'API",
+              "Il double systématiquement le coût de l'infrastructure",
+              "Il expose immédiatement 100% du trafic à un éventuel bug",
+              "Il ne peut pas être utilisé avec Kubernetes"
+            ],
+            "correct": 0,
+            "explanation": "Pendant un rolling update, ancienne et nouvelle version cohabitent, ce qui exige une compatibilité ascendante du schéma de données et de l'API.",
+            "difficulty": "medium",
+            "tags": [
+              "rolling-update"
+            ]
+          },
+          {
+            "id": "q3",
+            "question": "Quel est l'avantage principal d'une stratégie blue-green selon le chapitre ?",
+            "options": [
+              "Un rollback instantané, en rebasculant simplement le trafic vers l'environnement précédent",
+              "Un coût d'infrastructure réduit de moitié",
+              "Une exposition automatiquement limitée à 5% du trafic",
+              "L'absence de besoin de health checks"
+            ],
+            "correct": 0,
+            "explanation": "Le blue-green permet un rollback instantané en rebasculant le trafic vers l'environnement bleu, au prix d'un coût d'infrastructure double pendant la transition.",
+            "difficulty": "medium",
+            "tags": [
+              "blue-green"
+            ]
+          },
+          {
+            "id": "q4",
+            "question": "En quoi consiste une stratégie de déploiement canary ?",
+            "options": [
+              "La nouvelle version ne reçoit d'abord qu'un faible pourcentage du trafic réel, augmenté progressivement si aucun signal d'alerte n'apparaît",
+              "Deux environnements complets tournent en parallèle avec bascule immédiate de 100% du trafic",
+              "Toutes les instances sont remplacées simultanément d'un seul coup",
+              "Le déploiement est annulé automatiquement après 24 heures"
+            ],
+            "correct": 0,
+            "explanation": "Le canary expose d'abord un faible pourcentage du trafic réel à la nouvelle version, puis augmente progressivement cette proportion si aucun signal d'alerte n'apparaît.",
+            "difficulty": "easy",
+            "tags": [
+              "canary"
+            ]
+          },
+          {
+            "id": "q5",
+            "question": "Dans le modèle PaaS (Platform as a Service), que gère le fournisseur en plus de ce qu'il gère en IaaS ?",
+            "options": [
+              "L'OS et le runtime applicatif",
+              "Uniquement le matériel physique",
+              "L'application entière, y compris le code métier",
+              "Rien de plus qu'en IaaS"
+            ],
+            "correct": 0,
+            "explanation": "En PaaS, le fournisseur gère en plus l'OS et le runtime applicatif ; l'équipe se concentre sur le code et sa configuration.",
+            "difficulty": "medium",
+            "tags": [
+              "paas",
+              "iaas"
+            ]
+          },
+          {
+            "id": "q6",
+            "question": "Que fait la commande `kubectl rollout undo deployment/api-app` ?",
+            "options": [
+              "Elle ramène le Deployment à sa révision précédente",
+              "Elle supprime définitivement le Deployment",
+              "Elle met à l'échelle le Deployment à zéro réplique",
+              "Elle force un rolling update vers la dernière image disponible"
+            ],
+            "correct": 0,
+            "explanation": "kubectl rollout undo ramène un Deployment à la révision précédente ; on peut aussi cibler une révision précise avec --to-revision.",
+            "difficulty": "medium",
+            "tags": [
+              "rollback",
+              "kubectl"
+            ]
+          },
+          {
+            "id": "q7",
+            "question": "Pourquoi une procédure de rollback jamais testée ne peut-elle pas être considérée comme un plan fiable selon le chapitre ?",
+            "options": [
+              "Parce qu'elle reste une hypothèse tant qu'elle n'a pas été exécutée au moins une fois en conditions réalistes",
+              "Parce que Kubernetes interdit les rollbacks non planifiés à l'avance",
+              "Parce qu'un rollback non testé prend toujours plus de 24 heures",
+              "Parce que la procédure doit obligatoirement être automatisée pour exister"
+            ],
+            "correct": 0,
+            "explanation": "Le chapitre affirme qu'un rollback n'est fiable que s'il a déjà été testé en conditions réalistes ; sinon ce n'est qu'une hypothèse.",
+            "difficulty": "hard",
+            "tags": [
+              "rollback"
+            ]
+          },
+          {
+            "id": "q8",
+            "question": "À quoi servent les feature flags selon les bonnes pratiques du chapitre ?",
+            "options": [
+              "À découpler le déploiement du code de l'activation d'une fonctionnalité, pour déployer sans exposer immédiatement un changement risqué",
+              "À remplacer entièrement le besoin de tests automatisés",
+              "À chiffrer les artefacts déployés en production",
+              "À déterminer automatiquement le fournisseur cloud à utiliser"
+            ],
+            "correct": 0,
+            "explanation": "Les feature flags découplent le déploiement du code de l'activation d'une fonctionnalité, permettant de déployer sans exposer immédiatement un changement risqué.",
+            "difficulty": "medium",
+            "tags": [
+              "feature-flags"
+            ]
+          }
+        ]
+      }
+    },
+    devsecops: {
+      "1": {
+        "title": "Quiz — Fondamentaux du DevSecOps et shift-left",
+        "questions": [
+          {
+            "id": "q1",
+            "question": "Selon le chapitre, qu'est-ce qui définit fondamentalement le DevSecOps au-delà du slogan « la sécurité est l'affaire de tous » ?",
+            "options": [
+              "Un modèle opérationnel intégrant des contrôles de sécurité automatisés à chaque étape, avec une responsabilité explicitement répartie",
+              "Un outil de scan installé sur le pipeline CI",
+              "Une équipe sécurité dédiée qui valide chaque déploiement en fin de cycle",
+              "Un poste dédié combinant développement et sécurité"
+            ],
+            "correct": 0,
+            "explanation": "Le chapitre définit le DevSecOps comme un modèle opérationnel avec responsabilité explicitement répartie entre développeurs, plateforme et sécurité, plutôt qu'un contrôle final unique.",
+            "difficulty": "easy",
+            "tags": [
+              "devsecops",
+              "definition"
+            ]
+          },
+          {
+            "id": "q2",
+            "question": "D'après l'étude citée (IBM Systems Sciences Institute), quel est l'ordre de grandeur du coût de correction d'un défaut découvert en production par rapport à la conception ?",
+            "options": [
+              "Environ 6 fois",
+              "Environ 15 fois",
+              "Environ 30 fois ou plus",
+              "Environ 2 fois"
+            ],
+            "correct": 2,
+            "explanation": "Le chapitre cite un facteur x30 (voire plus de x100 avec incident de sécurité) pour une découverte en production, contre x1 en conception.",
+            "difficulty": "easy",
+            "tags": [
+              "shift-left",
+              "cout"
+            ]
+          },
+          {
+            "id": "q3",
+            "question": "Quel indicateur le chapitre présente-t-il comme mesure de maturité DevSecOps plutôt que le nombre d'outils de scan installés ?",
+            "options": [
+              "Le MTTR (Mean Time To Remediate)",
+              "Le nombre de CVE détectées par semaine",
+              "Le taux de couverture de tests unitaires",
+              "Le nombre de pull requests fusionnées par jour"
+            ],
+            "correct": 0,
+            "explanation": "Le chapitre indique que le DevSecOps mature se mesure à la clarté de la chaîne de responsabilité et à la vitesse de remédiation, souvent mesurée en MTTR.",
+            "difficulty": "medium",
+            "tags": [
+              "mttr",
+              "maturite"
+            ]
+          },
+          {
+            "id": "q4",
+            "question": "Dans le framework STRIDE appliqué au pipeline CI/CD, à quelle catégorie appartient « un secret CI exposé dans les logs de build » ?",
+            "options": [
+              "Tampering",
+              "Information disclosure",
+              "Spoofing",
+              "Denial of Service"
+            ],
+            "correct": 1,
+            "explanation": "Le chapitre classe l'exposition d'un secret CI dans les logs de build sous la catégorie Information disclosure (divulgation).",
+            "difficulty": "medium",
+            "tags": [
+              "stride"
+            ]
+          },
+          {
+            "id": "q5",
+            "question": "Quels sont les trois éléments principaux de la surface d'attaque d'un pipeline CI/CD identifiés dans ce chapitre ?",
+            "options": [
+              "Les runners, les secrets, le registry d'images",
+              "Le code source, les tests, la documentation",
+              "Les développeurs, les managers, les auditeurs",
+              "Le cloud, le réseau, la base de données"
+            ],
+            "correct": 0,
+            "explanation": "Le chapitre identifie les runners CI/CD, les secrets et le registry d'images comme les trois éléments de la surface d'attaque d'un pipeline.",
+            "difficulty": "medium",
+            "tags": [
+              "attack-surface"
+            ]
+          },
+          {
+            "id": "q6",
+            "question": "Dans le tableau STRIDE du chapitre, quelle défense est proposée contre la menace « Tampering » visant le fichier de définition du pipeline (.gitlab-ci.yml, workflow GitHub Actions) ?",
+            "options": [
+              "Masquage systématique des secrets dans les logs",
+              "Quotas de ressources et de durée par job",
+              "Protection de branche sur les fichiers de pipeline et revue obligatoire par CODEOWNERS",
+              "Authentification mutuelle entre runners et orchestrateur"
+            ],
+            "correct": 2,
+            "explanation": "Le chapitre associe à la menace Tampering sur le fichier de pipeline la défense : protection de branche et revue obligatoire par CODEOWNERS, ainsi que la signature des commits.",
+            "difficulty": "hard",
+            "tags": [
+              "stride",
+              "tampering"
+            ]
+          },
+          {
+            "id": "q7",
+            "question": "Que risque un contrôle shift-left purement bloquant qui ne fournit aucun retour rapide et actionnable aux développeurs ?",
+            "options": [
+              "Il ralentit légèrement le pipeline sans autre conséquence",
+              "Il finit par être contourné (--force, exceptions manuelles)",
+              "Il augmente automatiquement et durablement le MTTR de l'organisation",
+              "Il déclenche systématiquement une alerte STRIDE de type spoofing"
+            ],
+            "correct": 1,
+            "explanation": "Le TipCallout du chapitre prévient qu'un contrôle bloquant sans moyen de comprendre ou corriger rapidement finit par être contourné.",
+            "difficulty": "hard",
+            "tags": [
+              "shift-left"
+            ]
+          },
+          {
+            "id": "q8",
+            "question": "Comment ce cours (DevSecOps Avancé) se positionne-t-il par rapport au cours Sécurité des Applications et des API selon le chapitre ?",
+            "options": [
+              "Il couvre exactement la même chose avec plus de détails techniques",
+              "Il remplace entièrement ce cours pour tous les publics",
+              "Il descend d'un niveau pour couvrir l'infrastructure et la machinerie du pipeline plutôt que la couche applicative",
+              "Il se concentre uniquement sur l'OWASP API Top 10"
+            ],
+            "correct": 2,
+            "explanation": "L'AuditCallout de fin de chapitre précise que ce cours couvre la sécurité de l'infrastructure et de la machinerie du pipeline, alors que Sécurité des Applications et des API couvre la couche applicative.",
+            "difficulty": "hard",
+            "tags": [
+              "positionnement"
+            ]
+          }
+        ]
+      },
+      "2": {
+        "title": "Quiz — Sécurisation de la chaîne CI/CD",
+        "questions": [
+          {
+            "id": "q1",
+            "question": "Quel type de runner CI élimine la persistance d'une compromission et la contamination croisée entre projets ?",
+            "options": [
+              "Le runner persistant self-hosted",
+              "Le runner éphémère",
+              "Le runner partagé multi-tenant sans isolation",
+              "Le runner avec accès root permanent"
+            ],
+            "correct": 1,
+            "explanation": "Le chapitre indique que le runner éphémère, détruit après chaque job, élimine la persistance d'une compromission et la contamination croisée entre projets.",
+            "difficulty": "easy",
+            "tags": [
+              "runners"
+            ]
+          },
+          {
+            "id": "q2",
+            "question": "Quelle règle ne souffre aucune exception selon le chapitre concernant les secrets en pipeline ?",
+            "options": [
+              "Un secret ne doit jamais apparaître en clair dans un fichier versionné",
+              "Un secret doit toujours être stocké dans une variable d'environnement locale non chiffrée",
+              "Un secret doit être changé chaque semaine, quel que soit le contexte",
+              "Un secret peut être committé s'il est supprimé au commit suivant"
+            ],
+            "correct": 0,
+            "explanation": "Le chapitre pose comme règle sans exception qu'un secret ne doit jamais apparaître en clair dans un fichier versionné.",
+            "difficulty": "easy",
+            "tags": [
+              "secrets"
+            ]
+          },
+          {
+            "id": "q3",
+            "question": "Que permet concrètement l'authentification OIDC entre un pipeline CI et un fournisseur cloud ?",
+            "options": [
+              "De stocker une clé API permanente de façon chiffrée",
+              "D'éliminer le besoin de clés d'accès statiques en émettant un jeton temporaire valable le temps du job",
+              "De contourner les règles IAM configurées côté cloud",
+              "De partager un compte root entre tous les pipelines de l'organisation"
+            ],
+            "correct": 1,
+            "explanation": "L'OIDC élimine le besoin de clés statiques : le fournisseur cloud fait confiance à l'identité du pipeline et émet un jeton temporaire valable le temps du job.",
+            "difficulty": "medium",
+            "tags": [
+              "oidc"
+            ]
+          },
+          {
+            "id": "q4",
+            "question": "Parmi les trois approches de gestion des secrets présentées, laquelle apporte nativement rotation automatique et audit trail complet, répondant au contrôle ISO 27001 A.8.24 ?",
+            "options": [
+              "Les variables chiffrées natives GitHub/GitLab",
+              "HashiCorp Vault",
+              "Les sealed-secrets Kubernetes",
+              "Un fichier .env committé et chiffré manuellement"
+            ],
+            "correct": 1,
+            "explanation": "L'AuditCallout précise que Vault répond nativement à l'exigence ISO 27001 A.8.24 grâce à son audit log, contrairement aux variables chiffrées natives.",
+            "difficulty": "medium",
+            "tags": [
+              "vault",
+              "iso27001"
+            ]
+          },
+          {
+            "id": "q5",
+            "question": "Quel ensemble de règles de protection de branche le chapitre recommande-t-il d'activer sur main/production ?",
+            "options": [
+              "Pull request obligatoire, revue humaine approuvée, statut CI vert requis, interdiction du force-push",
+              "Autoriser le push direct pour les seuls administrateurs",
+              "Exiger uniquement une signature GPG, sans revue humaine",
+              "Bloquer uniquement les commits dont le message ne suit pas une convention"
+            ],
+            "correct": 0,
+            "explanation": "Le chapitre liste ces quatre règles de protection de branche comme standard sur main/production.",
+            "difficulty": "medium",
+            "tags": [
+              "branch-protection"
+            ]
+          },
+          {
+            "id": "q6",
+            "question": "Pourquoi supprimer un fichier contenant un secret dans un commit ultérieur ne protège-t-il pas ce secret ?",
+            "options": [
+              "Parce que Git chiffre automatiquement l'historique après suppression",
+              "Parce que Git conserve l'intégralité de l'historique, la clé restant récupérable via git log -p ou un simple clone",
+              "Parce que le secret est automatiquement révoqué par la plateforme Git",
+              "Parce que la suppression déclenche une alerte de sécurité qui expose davantage la clé"
+            ],
+            "correct": 1,
+            "explanation": "Le chapitre insiste : Git conserve l'historique complet, la clé restant récupérable des mois après sa suppression apparente du code actuel.",
+            "difficulty": "hard",
+            "tags": [
+              "git-history"
+            ]
+          },
+          {
+            "id": "q7",
+            "question": "Quelle est la seule remédiation valable une fois qu'un secret cloud (ex: AWS_SECRET_ACCESS_KEY) a été committé en clair ?",
+            "options": [
+              "Réécrire l'historique Git avec un rebase interactif uniquement",
+              "Révoquer immédiatement la clé côté fournisseur cloud (IAM) et en émettre une nouvelle à scope minimal",
+              "Rendre le dépôt privé sans autre action",
+              "Ajouter simplement le fichier concerné à .gitignore"
+            ],
+            "correct": 1,
+            "explanation": "Le chapitre est explicite : la seule remédiation valable est de considérer la clé comme compromise et de la révoquer immédiatement, jamais de la 'nettoyer' du code.",
+            "difficulty": "hard",
+            "tags": [
+              "remediation"
+            ]
+          },
+          {
+            "id": "q8",
+            "question": "Quel outil mentionné dans le chapitre scanne l'intégralité de l'historique Git à la recherche de secrets à haute entropie ?",
+            "options": [
+              "git-secrets",
+              "trufflehog",
+              "grype",
+              "conftest"
+            ],
+            "correct": 1,
+            "explanation": "Le chapitre présente trufflehog comme l'outil qui scanne tout l'historique Git à la recherche de secrets à haute entropie, tandis que git-secrets bloque des motifs connus en pre-commit.",
+            "difficulty": "hard",
+            "tags": [
+              "trufflehog"
+            ]
+          }
+        ]
+      },
+      "3": {
+        "title": "Quiz — SAST, DAST et SCA en intégration continue",
+        "questions": [
+          {
+            "id": "q1",
+            "question": "Que se passe-t-il si un scan SAST se contente d'afficher un rapport dans les logs CI sans faire échouer le job ?",
+            "options": [
+              "Il bloque quand même automatiquement le merge",
+              "Il devient un pipeline décoratif que personne ne traite réellement",
+              "Il déclenche automatiquement une baseline",
+              "Il remplace le besoin d'un DAST nocturne"
+            ],
+            "correct": 1,
+            "explanation": "Le chapitre qualifie de « décoratif » un pipeline dont le scan de sécurité ne fait qu'afficher un rapport sans jamais bloquer le build.",
+            "difficulty": "easy",
+            "tags": [
+              "quality-gate"
+            ]
+          },
+          {
+            "id": "q2",
+            "question": "Quel mécanisme technique transforme un scan Semgrep de simple rapport en véritable gate bloquant ?",
+            "options": [
+              "L'utilisation de l'option --json --output",
+              "Le code de sortie non nul propagé via --error et un seuil de --severity",
+              "L'ajout d'un commentaire nosemgrep",
+              "La programmation d'un cron nocturne"
+            ],
+            "correct": 1,
+            "explanation": "Le chapitre explique que c'est le code de sortie non nul, propagé par le flag --error, que GitHub Actions traduit en échec de job, qui transforme le scan en gate.",
+            "difficulty": "easy",
+            "tags": [
+              "semgrep",
+              "exit-code"
+            ]
+          },
+          {
+            "id": "q3",
+            "question": "Dans la politique de sévérité graduée du chapitre, quelle action est associée à une découverte de sévérité Medium ?",
+            "options": [
+              "Bloque le build immédiatement sans possibilité d'override",
+              "Bloque le build avec une exception documentée possible",
+              "N'échoue pas le build ; loguée et remontée dans un backlog de sécurité priorisé",
+              "N'apparaît dans aucun rapport, même complet"
+            ],
+            "correct": 2,
+            "explanation": "Selon le tableau du chapitre, Medium n'échoue pas le build mais est logué et remonté dans un backlog de sécurité pour traitement priorisé.",
+            "difficulty": "medium",
+            "tags": [
+              "severity-policy"
+            ]
+          },
+          {
+            "id": "q4",
+            "question": "Qu'est-ce qu'une baseline dans le contexte d'un quality gate de sécurité ?",
+            "options": [
+              "Un instantané des findings existants au moment de l'activation du gate, contre lequel les scans suivants sont comparés",
+              "La liste officielle des règles OWASP utilisées par Semgrep",
+              "Le rapport JSON final destiné à la direction",
+              "Le seuil minimal de sévérité configuré une seule fois pour toutes les équipes"
+            ],
+            "correct": 0,
+            "explanation": "Le chapitre définit la baseline comme un instantané des findings existants, permettant au gate de ne bloquer que les nouveaux findings.",
+            "difficulty": "medium",
+            "tags": [
+              "baseline"
+            ]
+          },
+          {
+            "id": "q5",
+            "question": "Comment doit être traitée la suppression d'un faux positif individuel selon le chapitre ?",
+            "options": [
+              "En relevant globalement le seuil de sévérité de l'outil pour tout le projet",
+              "Par une suppression explicite et commentée, avec justification écrite (ex: nosemgrep justifié)",
+              "En désactivant complètement la règle SAST concernée pour l'ensemble du projet",
+              "En ignorant silencieusement le finding, sans laisser de trace"
+            ],
+            "correct": 1,
+            "explanation": "Le chapitre exige une suppression individuelle, explicite et commentée, jamais un ajustement global du seuil.",
+            "difficulty": "medium",
+            "tags": [
+              "faux-positifs"
+            ]
+          },
+          {
+            "id": "q6",
+            "question": "Pourquoi un DAST « full scan » avec OWASP ZAP n'est-il généralement pas exécuté à chaque commit ?",
+            "options": [
+              "Parce qu'il ne détecte aucune vulnérabilité critique",
+              "Parce qu'il peut durer plusieurs heures et bloquerait toute l'équipe pour chaque pull request",
+              "Parce qu'il nécessite une clé GPG valide pour s'exécuter",
+              "Parce qu'il n'est compatible qu'avec les scans SCA"
+            ],
+            "correct": 1,
+            "explanation": "Le chapitre explique qu'un DAST complet peut durer plusieurs heures, ce qui le réserve à un scan nocturne planifié plutôt qu'à chaque commit.",
+            "difficulty": "hard",
+            "tags": [
+              "dast",
+              "cadence"
+            ]
+          },
+          {
+            "id": "q7",
+            "question": "Dans l'exemple de rapport SCA du chapitre, pourquoi le finding CRITICAL sur minimist bloque-t-il le build alors que le HIGH sur lodash pourrait faire l'objet d'une exception ?",
+            "options": [
+              "Parce que minimist est un package plus ancien que lodash",
+              "Parce que la politique de sévérité ne laisse aucun override pour un Critical, contrairement à un High qui permet une exception documentée et limitée dans le temps",
+              "Parce que lodash n'a aucune CVE associée dans le rapport",
+              "Parce que minimist n'a pas de version corrigée disponible"
+            ],
+            "correct": 1,
+            "explanation": "La décision découle directement de la politique de sévérité : Critical bloque sans override, High peut faire l'objet d'une exception documentée et limitée dans le temps.",
+            "difficulty": "hard",
+            "tags": [
+              "quality-gate",
+              "sca"
+            ]
+          },
+          {
+            "id": "q8",
+            "question": "Pourquoi une exception de quality gate sans date d'expiration explicite est-elle considérée comme un signal d'alerte lors d'un audit de sécurité ?",
+            "options": [
+              "Parce qu'elle indique que le processus de gate a probablement été vidé de sa substance",
+              "Parce qu'elle viole automatiquement une exigence RGPD",
+              "Parce qu'elle empêche la génération du SBOM",
+              "Parce qu'elle bloque tous les futurs déploiements de l'équipe"
+            ],
+            "correct": 0,
+            "explanation": "L'AuditCallout du chapitre indique que des dizaines d'exceptions permanentes sans date de fin signalent un gate vidé de sa substance.",
+            "difficulty": "hard",
+            "tags": [
+              "audit",
+              "exceptions"
+            ]
+          }
+        ]
+      },
+      "4": {
+        "title": "Quiz — Sécurité des conteneurs et des images",
+        "questions": [
+          {
+            "id": "q1",
+            "question": "Dans un rapport Trivy, quelle colonne est la plus actionnable pour la remédiation d'une vulnérabilité ?",
+            "options": [
+              "Severity",
+              "Fixed Version",
+              "Installed Version",
+              "CVE"
+            ],
+            "correct": 1,
+            "explanation": "Le chapitre indique que la colonne Fixed Version est la plus actionnable : si elle est renseignée, il suffit de mettre à jour le paquet ou la base d'image.",
+            "difficulty": "easy",
+            "tags": [
+              "trivy"
+            ]
+          },
+          {
+            "id": "q2",
+            "question": "Qu'est-ce qu'une image distroless supprime par rapport à une image complète comme ubuntu:22.04 ?",
+            "options": [
+              "Le runtime applicatif lui-même",
+              "Le shell et le gestionnaire de paquets",
+              "Les capacités réseau du conteneur",
+              "Le système de fichiers en lecture seule"
+            ],
+            "correct": 1,
+            "explanation": "Une image distroless ne contient que le runtime strictement nécessaire, sans shell ni gestionnaire de paquets.",
+            "difficulty": "easy",
+            "tags": [
+              "distroless"
+            ]
+          },
+          {
+            "id": "q3",
+            "question": "Où doit être placée la directive USER dans un Dockerfile ?",
+            "options": [
+              "Immédiatement après FROM, avant toute autre instruction",
+              "Après toutes les instructions nécessitant des privilèges élevés, et avant le CMD/ENTRYPOINT final",
+              "Uniquement dans le stage de build d'un build multi-stage",
+              "Son emplacement n'a aucune importance tant qu'elle est présente"
+            ],
+            "correct": 1,
+            "explanation": "Le chapitre précise que USER doit apparaître après les instructions nécessitant des privilèges élevés et avant le CMD/ENTRYPOINT, car c'est l'utilisateur actif à ce moment qui s'applique ensuite.",
+            "difficulty": "medium",
+            "tags": [
+              "dockerfile",
+              "user"
+            ]
+          },
+          {
+            "id": "q4",
+            "question": "Quel est le risque principal d'utiliser ADD avec une URL distante plutôt que COPY avec un fichier local vérifié ?",
+            "options": [
+              "ADD est simplement plus lent à exécuter que COPY",
+              "Aucune intégrité vérifiée du contenu récupéré, et non-reproductibilité du build",
+              "ADD ne fonctionne pas avec les images distroless",
+              "COPY nécessite une connexion internet alors qu'ADD non"
+            ],
+            "correct": 1,
+            "explanation": "Le chapitre liste l'absence d'intégrité vérifiée et la non-reproductibilité comme risques concrets d'un ADD distant.",
+            "difficulty": "medium",
+            "tags": [
+              "add-vs-copy"
+            ]
+          },
+          {
+            "id": "q5",
+            "question": "Que permet la combinaison --cap-drop=ALL --cap-add=NET_BIND_SERVICE par rapport à --privileged ?",
+            "options": [
+              "Un contrôle beaucoup plus fin des privilèges Linux réellement nécessaires, plutôt qu'un accès total à l'hôte",
+              "Un accès total et illimité aux périphériques de l'hôte",
+              "La désactivation complète du réseau du conteneur",
+              "Un accès root implicite limité au seul conteneur"
+            ],
+            "correct": 0,
+            "explanation": "Les capabilities Linux découpent les privilèges root en unités indépendantes, offrant un contrôle fin plutôt que le tout-ou-rien de --privileged.",
+            "difficulty": "medium",
+            "tags": [
+              "capabilities"
+            ]
+          },
+          {
+            "id": "q6",
+            "question": "Pourquoi monter /var/run/docker.sock dans un conteneur est-il presque équivalent à lancer ce conteneur en --privileged ?",
+            "options": [
+              "Parce que ce socket ralentit fortement le conteneur",
+              "Parce que ce socket donne un accès complet à l'API Docker de l'hôte, permettant de créer un conteneur monté sur / et d'en sortir trivialement",
+              "Parce que ce socket chiffre automatiquement les images du registre",
+              "Parce que ce socket désactive automatiquement le scan Trivy"
+            ],
+            "correct": 1,
+            "explanation": "Le chapitre avertit que ce socket permet de créer un nouveau conteneur monté sur / de l'hôte, un accès équivalent à --privileged.",
+            "difficulty": "hard",
+            "tags": [
+              "docker-sock"
+            ]
+          },
+          {
+            "id": "q7",
+            "question": "Quelles deux propriétés la signature cosign d'une image apporte-t-elle qu'un simple scan de vulnérabilités ne garantit pas ?",
+            "options": [
+              "La taille réduite de l'image et l'absence de shell",
+              "L'intégrité (non-modification après signature) et la provenance (origine du pipeline de build attendu)",
+              "L'absence de CVE critiques et la conformité PCI-DSS",
+              "La compatibilité multi-architecture et le chiffrement au repos"
+            ],
+            "correct": 1,
+            "explanation": "Le chapitre indique que cosign garantit intégrité et provenance, deux propriétés qu'un scan de vulnérabilités ne peut pas fournir.",
+            "difficulty": "hard",
+            "tags": [
+              "cosign"
+            ]
+          },
+          {
+            "id": "q8",
+            "question": "Quel contrôle CIS Docker Benchmark est cité comme l'un des plus fréquemment échoués en audit, concernant l'utilisateur d'exécution d'un conteneur ?",
+            "options": [
+              "CIS Docker Benchmark 1.1",
+              "CIS Docker Benchmark 4.1 (garantir qu'un utilisateur non-root est défini pour le conteneur)",
+              "CIS Docker Benchmark 2.5",
+              "CIS Docker Benchmark 5.9"
+            ],
+            "correct": 1,
+            "explanation": "Le chapitre cite le contrôle CIS Docker Benchmark 4.1 comme fréquemment échoué, de nombreuses images publiques tournant encore root par défaut.",
+            "difficulty": "hard",
+            "tags": [
+              "cis-benchmark"
+            ]
+          }
+        ]
+      },
+      "5": {
+        "title": "Quiz — Sécurité de Kubernetes",
+        "questions": [
+          {
+            "id": "q1",
+            "question": "Quelle est la différence fondamentale entre un Role et un ClusterRole en RBAC Kubernetes ?",
+            "options": [
+              "Un Role s'applique uniquement aux ServiceAccounts, un ClusterRole aux utilisateurs humains",
+              "Un Role est limité à un namespace, un ClusterRole s'applique à l'échelle du cluster entier",
+              "Un Role ne peut définir que des permissions en lecture, un ClusterRole des permissions en écriture",
+              "Un Role expire automatiquement après 24h, un ClusterRole est permanent"
+            ],
+            "correct": 1,
+            "explanation": "Le chapitre définit le Role comme limité à un namespace et le ClusterRole comme s'appliquant à l'échelle du cluster (ou aux ressources non namespacées).",
+            "difficulty": "easy",
+            "tags": [
+              "rbac"
+            ]
+          },
+          {
+            "id": "q2",
+            "question": "Que se passe-t-il par défaut sur le trafic pod-à-pod tant qu'aucune NetworkPolicy n'a été appliquée à un namespace ?",
+            "options": [
+              "Tout le trafic est bloqué par défaut",
+              "Tous les pods peuvent communiquer librement entre eux, quel que soit leur namespace",
+              "Seul le trafic HTTPS est autorisé par défaut",
+              "Le trafic est limité au namespace courant uniquement"
+            ],
+            "correct": 1,
+            "explanation": "Le chapitre précise que sans NetworkPolicy, le réseau est plat par défaut : tous les pods peuvent communiquer librement.",
+            "difficulty": "easy",
+            "tags": [
+              "networkpolicy"
+            ]
+          },
+          {
+            "id": "q3",
+            "question": "Quelle commande permet de vérifier concrètement le rayon d'action réel d'un token de compte de service récupéré après compromission d'un pod ?",
+            "options": [
+              "kubectl get secrets --all-namespaces",
+              "kubectl auth can-i --list --as=system:serviceaccount:<ns>:<sa>",
+              "kubectl describe serviceaccount",
+              "kubectl auth whoami"
+            ],
+            "correct": 1,
+            "explanation": "Le CehCallout du chapitre présente cette commande comme la première à lancer une fois un token de ServiceAccount récupéré.",
+            "difficulty": "medium",
+            "tags": [
+              "rbac",
+              "pentest"
+            ]
+          },
+          {
+            "id": "q4",
+            "question": "Parmi les trois niveaux de Pod Security Standards, lequel est recommandé pour toute charge applicative standard ?",
+            "options": [
+              "privileged",
+              "baseline",
+              "restricted",
+              "permissive"
+            ],
+            "correct": 2,
+            "explanation": "Le chapitre indique que le niveau restricted applique les meilleures pratiques de durcissement et est recommandé pour toute charge applicative.",
+            "difficulty": "medium",
+            "tags": [
+              "pod-security-standards"
+            ]
+          },
+          {
+            "id": "q5",
+            "question": "Quelle combinaison de réglages du securityContext est présentée comme l'une des configurations les plus dangereuses qu'un cluster puisse héberger ?",
+            "options": [
+              "readOnlyRootFilesystem: true + runAsNonRoot: true",
+              "privileged: true + runAsUser: 0 + hostNetwork: true",
+              "allowPrivilegeEscalation: false + capabilities.drop: ALL",
+              "runAsUser: 10001 + privileged: false"
+            ],
+            "correct": 1,
+            "explanation": "Le chapitre présente cette combinaison précise comme donnant un accès quasi total à l'hôte et contournant les NetworkPolicies.",
+            "difficulty": "medium",
+            "tags": [
+              "securitycontext"
+            ]
+          },
+          {
+            "id": "q6",
+            "question": "Quelle est la différence fondamentale entre une NetworkPolicy et un admission controller comme OPA Gatekeeper, en termes de moment où la politique s'applique ?",
+            "options": [
+              "La NetworkPolicy s'applique au runtime réseau ; l'admission controller agit au moment du déploiement, avant même que l'objet soit créé",
+              "Les deux s'appliquent exactement au même moment du cycle de vie",
+              "L'admission controller s'applique uniquement après le déploiement, via un scan périodique",
+              "La NetworkPolicy s'applique uniquement aux ClusterRoles"
+            ],
+            "correct": 0,
+            "explanation": "Le chapitre distingue explicitement le moment d'application : NetworkPolicy au runtime réseau, admission controller au moment de la création de l'objet.",
+            "difficulty": "hard",
+            "tags": [
+              "admission-controller"
+            ]
+          },
+          {
+            "id": "q7",
+            "question": "Pourquoi un objet Secret Kubernetes ne doit-il jamais être considéré comme suffisamment sécurisé par lui-même ?",
+            "options": [
+              "Parce qu'il est automatiquement répliqué dans tous les namespaces",
+              "Parce qu'il n'est encodé qu'en base64 par défaut, pas chiffré, et décodable instantanément avec un accès RBAC suffisant",
+              "Parce qu'il expire automatiquement après 30 jours",
+              "Parce qu'il ne peut être lu que via un ClusterRoleBinding"
+            ],
+            "correct": 1,
+            "explanation": "Le chapitre insiste : un Secret Kubernetes est simplement encodé en base64, pas chiffré, la vraie protection venant du RBAC et du chiffrement au repos.",
+            "difficulty": "hard",
+            "tags": [
+              "secrets"
+            ]
+          },
+          {
+            "id": "q8",
+            "question": "En OPA Gatekeeper, quel objet définit la règle elle-même en Rego, avant qu'une Constraint ne l'applique à un périmètre précis ?",
+            "options": [
+              "Un RoleBinding",
+              "Une ConstraintTemplate",
+              "Un PodSecurityPolicy",
+              "Un NetworkPolicySelector"
+            ],
+            "correct": 1,
+            "explanation": "Le chapitre décrit la ConstraintTemplate comme définissant la règle en Rego, appliquée ensuite via une Constraint à un périmètre précis.",
+            "difficulty": "hard",
+            "tags": [
+              "opa-gatekeeper"
+            ]
+          }
+        ]
+      },
+      "6": {
+        "title": "Quiz — Supply Chain Security — SBOM et Signature",
+        "questions": [
+          {
+            "id": "q1",
+            "question": "Qu'est-ce qu'un SBOM (Software Bill of Materials) ?",
+            "options": [
+              "Un scanner de vulnérabilités en temps réel",
+              "Une liste structurée, lisible par une machine, de tous les composants entrant dans la fabrication d'un artefact",
+              "Un registre de conteneurs sécurisé",
+              "Une politique Rego appliquée en admission"
+            ],
+            "correct": 1,
+            "explanation": "Le chapitre définit le SBOM comme une liste structurée et lisible par une machine des composants d'un artefact logiciel.",
+            "difficulty": "easy",
+            "tags": [
+              "sbom"
+            ]
+          },
+          {
+            "id": "q2",
+            "question": "Quelle faille critique de décembre 2021 illustre l'intérêt d'un SBOM à jour pour réagir en minutes plutôt qu'en jours ?",
+            "options": [
+              "Heartbleed",
+              "Log4Shell (CVE-2021-44228)",
+              "Shellshock",
+              "EternalBlue"
+            ],
+            "correct": 1,
+            "explanation": "Le chapitre cite Log4Shell (9 décembre 2021, CVE-2021-44228) comme cas d'école de l'intérêt du SBOM.",
+            "difficulty": "easy",
+            "tags": [
+              "log4shell"
+            ]
+          },
+          {
+            "id": "q3",
+            "question": "Quelle organisation porte le format CycloneDX, orienté sécurité applicative ?",
+            "options": [
+              "La Linux Foundation",
+              "L'OWASP",
+              "Le CNCF",
+              "L'ISO"
+            ],
+            "correct": 1,
+            "explanation": "Le chapitre indique que CycloneDX est porté par l'OWASP, tandis que SPDX est porté par la Linux Foundation.",
+            "difficulty": "medium",
+            "tags": [
+              "cyclonedx"
+            ]
+          },
+          {
+            "id": "q4",
+            "question": "Que fait précisément un attaquant dans une attaque de dependency confusion ?",
+            "options": [
+              "Il publie un paquet dont le nom est une faute de frappe d'un paquet populaire",
+              "Il publie sur un registre public un paquet portant le même nom qu'un paquet interne, avec un numéro de version supérieur",
+              "Il compromet directement le compte du mainteneur légitime du paquet",
+              "Il modifie le lockfile du projet cible à distance"
+            ],
+            "correct": 1,
+            "explanation": "Le chapitre définit la dependency confusion comme la publication d'un paquet public homonyme d'un paquet interne, avec une version supérieure.",
+            "difficulty": "medium",
+            "tags": [
+              "dependency-confusion"
+            ]
+          },
+          {
+            "id": "q5",
+            "question": "Quel outil de génération de SBOM est utilisé dans les exemples du chapitre ?",
+            "options": [
+              "Trivy",
+              "Syft",
+              "Grype",
+              "cosign"
+            ],
+            "correct": 1,
+            "explanation": "Le chapitre utilise Syft pour générer un SBOM à partir du code source ou d'une image Docker.",
+            "difficulty": "medium",
+            "tags": [
+              "syft"
+            ]
+          },
+          {
+            "id": "q6",
+            "question": "Qu'apporte le keyless signing de Sigstore par rapport à une signature classique basée sur une clé privée à vie longue ?",
+            "options": [
+              "Une clé privée statique stockée de façon plus sécurisée dans un HSM",
+              "Une clé éphémère certifiée via OIDC, journalisée dans un log de transparence public (Rekor), jamais stockée donc invulnérable au vol",
+              "Une rotation automatique de la clé privée toutes les 24 heures",
+              "Un chiffrement supplémentaire par mot de passe utilisateur"
+            ],
+            "correct": 1,
+            "explanation": "Le chapitre explique que le keyless signing utilise une clé éphémère certifiée via OIDC et journalisée dans Rekor, sans jamais être stockée.",
+            "difficulty": "hard",
+            "tags": [
+              "sigstore",
+              "keyless"
+            ]
+          },
+          {
+            "id": "q7",
+            "question": "Que garantit une attestation produite par cosign attest (--predicate sbom.json --type cyclonedx) que le SBOM seul n'apporte pas ?",
+            "options": [
+              "Une compression automatique du fichier SBOM",
+              "Un lien cryptographique signé entre le SBOM et le hash exact de l'image, vérifiable au déploiement",
+              "Une traduction automatique du SBOM vers le format SPDX",
+              "Une analyse de vulnérabilités intégrée au SBOM"
+            ],
+            "correct": 1,
+            "explanation": "Le chapitre précise que cosign attest produit une attestation signée liant le SBOM à un hash d'image précis.",
+            "difficulty": "hard",
+            "tags": [
+              "cosign-attest"
+            ]
+          },
+          {
+            "id": "q8",
+            "question": "Pour atteindre le niveau SLSA 3, que faut-il en plus d'une simple signature cosign en fin de pipeline ?",
+            "options": [
+              "Rien de plus, la signature suffit à elle seule",
+              "Une plateforme de build qui génère elle-même une provenance isolée du code utilisateur, non-falsifiable même par un administrateur",
+              "Un SBOM exclusivement au format SPDX",
+              "Une revue manuelle de code par au moins deux personnes"
+            ],
+            "correct": 1,
+            "explanation": "L'AuditCallout précise qu'un simple cosign sign en fin de pipeline ne suffit pas à lui seul à atteindre SLSA 3.",
+            "difficulty": "hard",
+            "tags": [
+              "slsa"
+            ]
+          }
+        ]
+      },
+      "7": {
+        "title": "Quiz — Conformité, policy as code et synthèse DevSecOps",
+        "questions": [
+          {
+            "id": "q1",
+            "question": "En Rego, quel mot-clé est utilisé pour définir une règle qui rejette une ressource non conforme ?",
+            "options": [
+              "reject",
+              "deny",
+              "block",
+              "forbid"
+            ],
+            "correct": 1,
+            "explanation": "Les exemples Rego du chapitre utilisent le mot-clé deny[msg] pour exprimer les conditions de non-conformité.",
+            "difficulty": "easy",
+            "tags": [
+              "rego"
+            ]
+          },
+          {
+            "id": "q2",
+            "question": "Quel outil applique des règles Rego à des fichiers de configuration (Kubernetes, Terraform, Dockerfile) directement en pipeline, avant tout déploiement ?",
+            "options": [
+              "conftest",
+              "trivy",
+              "cosign",
+              "syft"
+            ],
+            "correct": 0,
+            "explanation": "Le chapitre présente conftest comme l'outil qui applique des règles Rego à des fichiers de configuration en pipeline.",
+            "difficulty": "easy",
+            "tags": [
+              "conftest"
+            ]
+          },
+          {
+            "id": "q3",
+            "question": "Dans la règle Rego du chapitre visant les pods, quelle condition manquante déclenche le refus du déploiement ?",
+            "options": [
+              "L'absence d'une image versionnée (tag figé plutôt que latest)",
+              "L'absence de resources.limits (mémoire et CPU) définies sur un conteneur",
+              "L'absence d'un ServiceAccount dédié",
+              "L'absence d'une NetworkPolicy associée au namespace"
+            ],
+            "correct": 1,
+            "explanation": "La règle Rego présentée refuse tout déploiement dont un conteneur n'a pas de resources.limits défini.",
+            "difficulty": "medium",
+            "tags": [
+              "rego",
+              "resources-limits"
+            ]
+          },
+          {
+            "id": "q4",
+            "question": "Selon le chapitre, comment l'exigence ISO 27001 A.8.24 (chiffrement des données au repos) peut-elle être traduite en contrôle automatisé ?",
+            "options": [
+              "Par une revue manuelle trimestrielle des buckets de stockage",
+              "Par une règle Rego rejetant tout bucket ou volume créé sans chiffrement activé",
+              "Par un rapport PDF signé par le RSSI une fois par an",
+              "Par une formation obligatoire des développeurs"
+            ],
+            "correct": 1,
+            "explanation": "Le tableau du chapitre associe cette exigence ISO 27001 à une règle Rego rejetant tout bucket sans chiffrement au repos activé.",
+            "difficulty": "medium",
+            "tags": [
+              "compliance-as-code"
+            ]
+          },
+          {
+            "id": "q5",
+            "question": "Pourquoi un contrôle de conformité exécuté uniquement via conftest en pipeline CI/CD ne suffit-il pas seul ?",
+            "options": [
+              "Parce que conftest ne supporte pas le langage Rego",
+              "Parce qu'il ne protège pas contre une modification directe des ressources en cluster (ex: kubectl edit)",
+              "Parce qu'il est plus lent qu'un admission controller",
+              "Parce qu'il ne génère aucun rapport archivable"
+            ],
+            "correct": 1,
+            "explanation": "Le WarningCallout du chapitre précise que conftest en pipeline ne protège pas contre une modification directe en cluster, contrairement à l'admission controller.",
+            "difficulty": "medium",
+            "tags": [
+              "conftest",
+              "admission-controller"
+            ]
+          },
+          {
+            "id": "q6",
+            "question": "Quelle est la différence essentielle entre le niveau 2 (contrôles automatisés mais cloisonnés) et le niveau 3 (sécurité intégrée) de maturité DevSecOps ?",
+            "options": [
+              "Le niveau 3 n'utilise aucun scanner automatisé, contrairement au niveau 2",
+              "Au niveau 3, les résultats des scanners sont priorisés et contextualisés, remontant directement dans le flux de travail des développeurs",
+              "Le niveau 2 est réservé aux organisations sans pipeline CI",
+              "Le niveau 3 supprime toute automatisation au profit d'audits manuels"
+            ],
+            "correct": 1,
+            "explanation": "Le chapitre distingue le niveau 2 (alertes isolées et ignorées) du niveau 3 (résultats priorisés et intégrés au flux de travail).",
+            "difficulty": "hard",
+            "tags": [
+              "maturite-devsecops"
+            ]
+          },
+          {
+            "id": "q7",
+            "question": "Qu'est-ce qui caractérise le niveau 4 de maturité DevSecOps (sécurité continue et automatisée) ?",
+            "options": [
+              "Un audit externe annuel renforcé et plus fréquent",
+              "La conformité elle-même est codifiée et vérifiée à chaque déploiement, sans attendre un audit annuel pour détecter un écart",
+              "L'externalisation complète de la sécurité à un prestataire tiers",
+              "L'absence totale de policy as code, remplacée par des check-lists manuelles"
+            ],
+            "correct": 1,
+            "explanation": "Le chapitre définit le niveau 4 comme celui où la conformité est codifiée et vérifiée en continu à chaque déploiement.",
+            "difficulty": "hard",
+            "tags": [
+              "maturite-devsecops"
+            ]
+          },
+          {
+            "id": "q8",
+            "question": "Pourquoi dit-on que la conformité as code applique le principe du shift-left à la conformité elle-même ?",
+            "options": [
+              "Parce qu'elle déplace la vérification de conformité vers l'amont (au déploiement, voire en pipeline), plutôt qu'un audit annuel a posteriori",
+              "Parce qu'elle remplace complètement le besoin de RBAC dans le cluster",
+              "Parce qu'elle ne concerne que le code source applicatif",
+              "Parce qu'elle élimine le besoin de générer un SBOM"
+            ],
+            "correct": 0,
+            "explanation": "Le chapitre conclut que la conformité as code déplace la vérification vers l'amont du cycle, exactement comme le shift-left appliqué à la sécurité applicative.",
+            "difficulty": "hard",
+            "tags": [
+              "shift-left",
+              "compliance-as-code"
+            ]
+          }
+        ]
+      }
+    },
   }
 
   const EXAMS: Record<string, { title: string; passingPercentage: number; questions: unknown[] }> = {
@@ -43689,7 +45743,981 @@ async function main() {
           ]
         }
       ]
-    }
+    },
+    devops: {
+      "title": "Examen final — DevOps Fondamentaux",
+      "passingPercentage": 70,
+      "questions": [
+        {
+          "id": "e1",
+          "question": "Quel événement organisationnel a marqué la naissance du mouvement DevOps au tournant de 2008-2009 ?",
+          "options": [
+            "Les conférences 'devopsdays', en réponse au mur organisationnel entre Dev et Ops",
+            "La création du langage Python",
+            "La publication de la norme ISO 27001",
+            "Le lancement du premier conteneur Docker"
+          ],
+          "correct": 0,
+          "explanation": "Le mouvement DevOps est né au tournant 2008-2009, popularisé par les conférences devopsdays initiées par Patrick Debois.",
+          "difficulty": "easy",
+          "tags": [
+            "devops",
+            "histoire"
+          ]
+        },
+        {
+          "id": "e2",
+          "question": "Quelles sont les cinq dimensions du framework CALMS, dans l'ordre de l'acronyme ?",
+          "options": [
+            "Culture, Automation, Lean, Measurement, Sharing",
+            "Culture, Agile, Lean, Metrics, Security",
+            "Collaboration, Automation, Logging, Measurement, Scaling",
+            "Culture, Automation, Legacy, Monitoring, Sharing"
+          ],
+          "correct": 0,
+          "explanation": "CALMS structure une transformation DevOps autour de Culture, Automation, Lean, Measurement et Sharing.",
+          "difficulty": "medium",
+          "tags": [
+            "calms"
+          ]
+        },
+        {
+          "id": "e3",
+          "question": "Selon le rapport State of DevOps cité dans le chapitre 1, quel est le lead time for changes typique d'une équipe elite ?",
+          "options": [
+            "Inférieur à une heure",
+            "Plusieurs jours",
+            "Plusieurs semaines",
+            "Plusieurs mois"
+          ],
+          "correct": 0,
+          "explanation": "Une équipe elite a un lead time inférieur à une heure, contre plusieurs mois pour un low performer.",
+          "difficulty": "hard",
+          "tags": [
+            "dora"
+          ]
+        },
+        {
+          "id": "e4",
+          "question": "Quelle commande Git applique un commit précis d'une autre branche sans fusionner tout son historique ?",
+          "options": [
+            "git cherry-pick",
+            "git rebase -i",
+            "git merge --squash",
+            "git bisect"
+          ],
+          "correct": 0,
+          "explanation": "git cherry-pick <hash> applique un commit précis d'une autre branche, utile pour porter un correctif urgent sans embarquer des changements non liés.",
+          "difficulty": "easy",
+          "tags": [
+            "git"
+          ]
+        },
+        {
+          "id": "e5",
+          "question": "Quel contrôle ISO 27001 le chapitre cite-t-il comme recommandant une revue de code obligatoire avant mise en production ?",
+          "options": [
+            "A.8.28",
+            "A.5.1",
+            "A.9.4",
+            "A.12.6"
+          ],
+          "correct": 0,
+          "explanation": "Le chapitre cite le contrôle A.8.28 (sécurité dans le développement) d'ISO 27001 concernant la revue de code obligatoire.",
+          "difficulty": "medium",
+          "tags": [
+            "iso27001",
+            "pull-request"
+          ]
+        },
+        {
+          "id": "e6",
+          "question": "Parmi les propositions suivantes sur `git rebase`, lesquelles sont exactes ? (2 réponses)",
+          "options": [
+            "Il crée un commit de fusion avec deux parents",
+            "Il réécrit les hashes des commits rejoués",
+            "Il produit un historique linéaire, sans commit de fusion",
+            "Il est parfaitement sûr sur une branche déjà partagée et poussée"
+          ],
+          "correct": [
+            1,
+            2
+          ],
+          "explanation": "git rebase réécrit les hashes des commits rejoués et produit un historique linéaire sans commit de fusion ; c'est git merge qui crée un commit de fusion, et rebase est dangereux — pas sûr — sur une branche déjà partagée.",
+          "difficulty": "hard",
+          "tags": [
+            "git",
+            "rebase"
+          ]
+        },
+        {
+          "id": "e7",
+          "question": "Quel outil mentionné dans le chapitre 2 automatise la détection de secrets avec des dizaines de motifs déjà prêts (clés AWS, tokens GitHub) ?",
+          "options": [
+            "gitleaks",
+            "git bisect",
+            "git rerere",
+            "git blame"
+          ],
+          "correct": 0,
+          "explanation": "Des outils comme gitleaks ou git-secrets industrialisent la détection de secrets avec des motifs déjà prêts, plus fiables qu'une regex maison.",
+          "difficulty": "medium",
+          "tags": [
+            "secrets",
+            "outils"
+          ]
+        },
+        {
+          "id": "e8",
+          "question": "Quel fichier YAML définit un pipeline GitHub Actions dans l'exemple du chapitre 3 ?",
+          "options": [
+            ".github/workflows/ci.yml",
+            "docker-compose.yml",
+            "Jenkinsfile",
+            ".gitlab-ci.yml"
+          ],
+          "correct": 0,
+          "explanation": "Le chapitre construit un pipeline complet dans .github/workflows/ci.yml.",
+          "difficulty": "easy",
+          "tags": [
+            "github-actions"
+          ]
+        },
+        {
+          "id": "e9",
+          "question": "Dans l'exemple de pipeline du chapitre 3, quel job doit obligatoirement réussir avant que le job `test` ne s'exécute ?",
+          "options": [
+            "build",
+            "package",
+            "deploy",
+            "aucun, tous les jobs s'exécutent en parallèle par défaut"
+          ],
+          "correct": 0,
+          "explanation": "Le job test déclare needs: build, qui lui-même dépend de lint ; sans needs, tous les jobs s'exécuteraient en parallèle.",
+          "difficulty": "medium",
+          "tags": [
+            "needs",
+            "github-actions"
+          ]
+        },
+        {
+          "id": "e10",
+          "question": "Parmi les affirmations suivantes sur le cache et les artifacts dans un pipeline CI, lesquelles sont vraies ? (2 réponses)",
+          "options": [
+            "Un cache est une optimisation best-effort dont la perte ne doit jamais casser le pipeline",
+            "Un artifact transporte un livrable requis par un job en aval, comme le dossier dist/ entre build et package",
+            "Le cache et l'artifact désignent exactement le même mécanisme sous deux noms différents",
+            "Un artifact est optionnel et sa perte ne ralentit jamais un pipeline"
+          ],
+          "correct": [
+            0,
+            1
+          ],
+          "explanation": "Le cache est une optimisation best-effort qui ne doit jamais casser le pipeline, tandis que l'artifact transporte un livrable attendu par un job en aval — ce sont deux mécanismes distincts, l'artifact n'étant pas optionnel.",
+          "difficulty": "hard",
+          "tags": [
+            "cache",
+            "artifact"
+          ]
+        },
+        {
+          "id": "e11",
+          "question": "Quel réglage GitHub permet d'imposer que tous les checks CI passent avant de pouvoir merger une pull request ?",
+          "options": [
+            "Require status checks to pass before merging (Branch protection rules)",
+            "Require two-factor authentication",
+            "Enable Dependabot alerts",
+            "Require signed commits"
+          ],
+          "correct": 0,
+          "explanation": "L'option 'Require status checks to pass before merging' des règles de protection de branche impose techniquement le succès des checks CI avant tout merge.",
+          "difficulty": "medium",
+          "tags": [
+            "branch-protection"
+          ]
+        },
+        {
+          "id": "e12",
+          "question": "Quelle instruction Dockerfile s'exécute au moment du build et fige son résultat dans l'image ?",
+          "options": [
+            "RUN",
+            "CMD",
+            "ENTRYPOINT",
+            "EXPOSE"
+          ],
+          "correct": 0,
+          "explanation": "RUN exécute une commande au moment du build et fige son résultat dans l'image, contrairement à CMD/ENTRYPOINT qui s'exécutent au démarrage du conteneur.",
+          "difficulty": "easy",
+          "tags": [
+            "dockerfile"
+          ]
+        },
+        {
+          "id": "e13",
+          "question": "Que produit chaque instruction d'un Dockerfile lors du build ?",
+          "options": [
+            "Un layer mis en cache par Docker",
+            "Un nouveau conteneur indépendant",
+            "Un tag de version automatique",
+            "Une entrée dans le registry"
+          ],
+          "correct": 0,
+          "explanation": "Chaque instruction d'un Dockerfile produit un layer empilé sur les précédents, mis en cache par Docker si le contexte n'a pas changé.",
+          "difficulty": "medium",
+          "tags": [
+            "layers"
+          ]
+        },
+        {
+          "id": "e14",
+          "question": "Quel format de tag d'image recommande le chapitre pour garantir un rollback fiable ?",
+          "options": [
+            "Une version sémantique explicite (ex: 1.4.0) plutôt que uniquement latest",
+            "Le hash du commit uniquement, sans jamais de version sémantique",
+            "Le nom de l'auteur du build",
+            "La date du jour uniquement, sans numéro de version"
+          ],
+          "correct": 0,
+          "explanation": "Une version sémantique explicite garantit qu'un déploiement pointe toujours vers une version connue et reproductible, rendant le rollback trivial.",
+          "difficulty": "medium",
+          "tags": [
+            "tagging"
+          ]
+        },
+        {
+          "id": "e15",
+          "question": "Pourquoi Docker Compose crée-t-il un réseau privé partagé entre les services d'un même fichier docker-compose.yml ?",
+          "options": [
+            "Pour permettre à un conteneur de joindre un autre service simplement par son nom, comme un nom d'hôte DNS, sans configuration réseau manuelle",
+            "Pour empêcher tout accès entre conteneurs par défaut",
+            "Pour remplacer entièrement le besoin d'un registry d'images",
+            "Pour chiffrer automatiquement le trafic entre les conteneurs"
+          ],
+          "correct": 0,
+          "explanation": "Le réseau privé partagé permet au conteneur api de joindre db simplement par son nom de service, comme un nom d'hôte DNS, sans configuration manuelle.",
+          "difficulty": "hard",
+          "tags": [
+            "docker-compose",
+            "reseau"
+          ]
+        },
+        {
+          "id": "e16",
+          "question": "Quel agent, présent sur chaque node Kubernetes, reçoit les instructions du control plane et démarre réellement les conteneurs ?",
+          "options": [
+            "kubelet",
+            "etcd",
+            "API Server",
+            "Scheduler"
+          ],
+          "correct": 0,
+          "explanation": "kubelet est l'agent présent sur chaque node qui reçoit les instructions du control plane et démarre/arrête réellement les conteneurs.",
+          "difficulty": "easy",
+          "tags": [
+            "kubernetes",
+            "architecture"
+          ]
+        },
+        {
+          "id": "e17",
+          "question": "Quel objet Kubernetes isole logiquement des ressources, par exemple entre les environnements dev, staging et prod dans le même cluster ?",
+          "options": [
+            "Namespace",
+            "Pod",
+            "Service",
+            "ConfigMap"
+          ],
+          "correct": 0,
+          "explanation": "Le Namespace est l'espace de noms virtuel qui isole logiquement des ressources au sein d'un même cluster.",
+          "difficulty": "medium",
+          "tags": [
+            "namespace"
+          ]
+        },
+        {
+          "id": "e18",
+          "question": "Parmi les composants suivants, lesquels appartiennent au control plane d'un cluster Kubernetes ? (2 réponses)",
+          "options": [
+            "kubelet",
+            "etcd",
+            "API Server",
+            "Pod applicatif"
+          ],
+          "correct": [
+            1,
+            2
+          ],
+          "explanation": "etcd et l'API Server font partie du control plane ; kubelet tourne sur chaque node et les Pods applicatifs sont exécutés sur les nodes, pas sur le control plane.",
+          "difficulty": "hard",
+          "tags": [
+            "control-plane"
+          ]
+        },
+        {
+          "id": "e19",
+          "question": "Quel objet Kubernetes est mis à l'échelle par un HorizontalPodAutoscaler pour ajuster automatiquement le nombre de répliques selon la charge CPU ?",
+          "options": [
+            "Deployment",
+            "Namespace",
+            "Secret",
+            "ConfigMap"
+          ],
+          "correct": 0,
+          "explanation": "Un Deployment peut être mis à l'échelle manuellement ou automatiquement via un HorizontalPodAutoscaler basé sur des métriques comme l'usage CPU.",
+          "difficulty": "medium",
+          "tags": [
+            "scaling"
+          ]
+        },
+        {
+          "id": "e20",
+          "question": "Quel outil du chapitre 6 est décrit comme fonctionnant sans agent à installer, en se connectant simplement en SSH ?",
+          "options": [
+            "Ansible",
+            "Terraform",
+            "Kubernetes",
+            "Docker"
+          ],
+          "correct": 0,
+          "explanation": "Un playbook Ansible s'exécute sur des hôtes distants sans agent à installer, tout passant par SSH.",
+          "difficulty": "easy",
+          "tags": [
+            "ansible"
+          ]
+        },
+        {
+          "id": "e21",
+          "question": "Quel type de backend est recommandé pour stocker le fichier terraform.tfstate en équipe, selon le chapitre ?",
+          "options": [
+            "Un backend distant chiffré avec verrouillage (ex: S3 + DynamoDB, Terraform Cloud)",
+            "Un simple fichier local partagé par email",
+            "Un commit direct dans le dépôt Git de l'équipe",
+            "Une clé USB partagée entre les membres de l'équipe"
+          ],
+          "correct": 0,
+          "explanation": "Le fichier state doit résider dans un backend distant chiffré avec verrouillage, jamais dans Git ni stocké localement en équipe.",
+          "difficulty": "medium",
+          "tags": [
+            "terraform",
+            "state"
+          ]
+        },
+        {
+          "id": "e22",
+          "question": "Selon l'exemple du chapitre 6, à quoi sert la ressource `aws_s3_bucket_public_access_block` ?",
+          "options": [
+            "Empêcher qu'un bucket S3 devienne accessible publiquement, même si une policy est ajoutée par erreur plus tard",
+            "Chiffrer automatiquement les objets stockés dans le bucket",
+            "Sauvegarder automatiquement le fichier terraform.tfstate",
+            "Créer une réplication multi-région du bucket"
+          ],
+          "correct": 0,
+          "explanation": "Ce bloc bloque l'accès public d'un bucket S3, même si une policy publique était ajoutée par erreur ultérieurement.",
+          "difficulty": "hard",
+          "tags": [
+            "terraform",
+            "s3",
+            "securite"
+          ]
+        },
+        {
+          "id": "e23",
+          "question": "Quel outil du chapitre 7 visualise les métriques collectées par Prometheus sous forme de dashboards ?",
+          "options": [
+            "Grafana",
+            "Kibana",
+            "Terraform",
+            "Ansible"
+          ],
+          "correct": 0,
+          "explanation": "Grafana se branche sur Prometheus pour construire des dashboards et corréler visuellement plusieurs métriques.",
+          "difficulty": "easy",
+          "tags": [
+            "grafana"
+          ]
+        },
+        {
+          "id": "e24",
+          "question": "Quel est le rôle de Fluent Bit (ou Filebeat) dans une stack de centralisation de logs EFK/ELK ?",
+          "options": [
+            "Collecter les logs en tournant en agent sur chaque nœud pour lire les fichiers de logs des conteneurs",
+            "Stocker les logs indexés pour la recherche full-text",
+            "Construire les dashboards de visualisation des logs",
+            "Définir les règles d'alerte sur les métriques"
+          ],
+          "correct": 0,
+          "explanation": "Fluent Bit (ou Filebeat) tourne en agent sur chaque nœud et lit les fichiers de logs des conteneurs pour la phase de collecte.",
+          "difficulty": "medium",
+          "tags": [
+            "elk",
+            "efk"
+          ]
+        },
+        {
+          "id": "e25",
+          "question": "Parmi les propositions suivantes sur Prometheus et PromQL, lesquelles sont exactes selon le chapitre 7 ? (2 réponses)",
+          "options": [
+            "Prometheus fonctionne en mode push, recevant passivement les métriques des applications",
+            "Prometheus interroge lui-même un endpoint /metrics à intervalle régulier (scrape)",
+            "La fonction rate() gère correctement les compteurs qui redémarrent, contrairement à un simple calcul de différence",
+            "Grafana est indispensable pour que Prometheus puisse collecter la moindre métrique"
+          ],
+          "correct": [
+            1,
+            2
+          ],
+          "explanation": "Prometheus fonctionne en mode pull, scrapant un endpoint /metrics à intervalle régulier, et la fonction rate() gère correctement les compteurs qui redémarrent ; Grafana n'est qu'un outil de visualisation, pas un prérequis à la collecte.",
+          "difficulty": "hard",
+          "tags": [
+            "prometheus",
+            "promql"
+          ]
+        },
+        {
+          "id": "e26",
+          "question": "Quelle stratégie de déploiement fait cohabiter deux environnements identiques avec bascule immédiate du trafic de l'un vers l'autre ?",
+          "options": [
+            "Blue-Green",
+            "Rolling update",
+            "Canary",
+            "Continuous delivery"
+          ],
+          "correct": 0,
+          "explanation": "Le blue-green fait tourner deux environnements identiques en parallèle, avec bascule d'un coup du trafic du bleu vers le vert.",
+          "difficulty": "easy",
+          "tags": [
+            "blue-green"
+          ]
+        },
+        {
+          "id": "e27",
+          "question": "Dans le modèle SaaS (Software as a Service), que gère l'équipe cliente selon le chapitre 8 ?",
+          "options": [
+            "Rien du déploiement applicatif : elle consomme un service fini via une interface ou une API",
+            "L'OS et le runtime applicatif uniquement",
+            "Le matériel physique et le réseau",
+            "Le code source de l'application et son infrastructure complète"
+          ],
+          "correct": 0,
+          "explanation": "En SaaS, le fournisseur gère l'application entière ; l'équipe consomme un service fini via une interface ou une API, sans déploiement applicatif de son côté.",
+          "difficulty": "medium",
+          "tags": [
+            "saas"
+          ]
+        },
+        {
+          "id": "e28",
+          "question": "Selon le tableau attaque/défense du chapitre 8 sur le rollback, que recommande-t-on face au risque d'une migration de schéma incompatible qui bloquerait un retour à l'ancienne version ?",
+          "options": [
+            "Des migrations de base de données rétrocompatibles (expand/contract pattern) tolérant les deux versions simultanément",
+            "La suppression immédiate de l'ancienne base de données",
+            "Le renoncement total à toute migration de schéma en production",
+            "L'utilisation exclusive du blue-green pour tout changement de schéma"
+          ],
+          "correct": 0,
+          "explanation": "Le chapitre recommande des migrations rétrocompatibles (expand/contract pattern) qui tolèrent l'ancienne et la nouvelle version simultanément.",
+          "difficulty": "hard",
+          "tags": [
+            "rollback",
+            "migration"
+          ]
+        }
+      ]
+    },
+    devsecops: {
+      "title": "Examen final — DevSecOps Avancé",
+      "passingPercentage": 70,
+      "questions": [
+        {
+          "id": "e1",
+          "question": "Quel type de document le chapitre 1 suggère-t-il pour écrire noir sur blanc qui possède quelle étape du pipeline ?",
+          "options": [
+            "Un rapport d'incident post-mortem",
+            "Un fichier CODEOWNERS ou un document de gouvernance",
+            "Un ticket Jira générique sans propriétaire",
+            "Un changelog de release"
+          ],
+          "correct": 1,
+          "explanation": "Le chapitre 1 propose un document de gouvernance ou un CODEOWNERS pour répondre aux trois questions de responsabilité du pipeline.",
+          "difficulty": "easy",
+          "tags": [
+            "gouvernance",
+            "chapitre1"
+          ]
+        },
+        {
+          "id": "e2",
+          "question": "Sur le schéma du chapitre 1 représentant le coût de correction d'un défaut selon la phase, quelle étape suit immédiatement le Développement ?",
+          "options": [
+            "Conception / Design",
+            "Tests / Recette",
+            "Production",
+            "Incident de sécurité en production"
+          ],
+          "correct": 1,
+          "explanation": "Le schéma du chapitre 1 progresse Design (x1) puis Développement (x6) puis Tests (x15) puis Production (x30+).",
+          "difficulty": "medium",
+          "tags": [
+            "shift-left",
+            "chapitre1"
+          ]
+        },
+        {
+          "id": "e3",
+          "question": "Dans le tableau STRIDE du chapitre 1, quelle défense correspond à la menace Denial of Service par épuisement des runners partagés ?",
+          "options": [
+            "Signature GPG des commits",
+            "Quotas de ressources et de durée par job, isolation des runners par niveau de confiance",
+            "Coffre-fort de secrets centralisé",
+            "Logs d'audit immuables et centralisés"
+          ],
+          "correct": 1,
+          "explanation": "Le chapitre 1 associe à la menace DoS sur les runners partagés les quotas de ressources/durée et l'isolation par niveau de confiance.",
+          "difficulty": "medium",
+          "tags": [
+            "stride",
+            "chapitre1"
+          ]
+        },
+        {
+          "id": "e4",
+          "question": "Parmi les propositions suivantes, lesquelles correspondent à des questions que le chapitre 1 juge indispensables pour donner un sens concret à « la sécurité est l'affaire de tous » ? (2 réponses)",
+          "options": [
+            "Qui possède la définition du pipeline (le fichier .yml) ?",
+            "Quel framework de test unitaire est utilisé par l'équipe ?",
+            "Qui peut approuver un changement sur les runners ou les secrets ?",
+            "Quelle est la charte graphique du produit ?"
+          ],
+          "correct": [
+            0,
+            2
+          ],
+          "explanation": "Le chapitre 1 liste trois questions de gouvernance ; celles sur le propriétaire du pipeline et l'approbation des changements sur runners/secrets en font partie.",
+          "difficulty": "hard",
+          "tags": [
+            "gouvernance",
+            "chapitre1"
+          ]
+        },
+        {
+          "id": "e5",
+          "question": "Quel type d'authentification élimine le besoin de stocker un AWS_SECRET_ACCESS_KEY statique dans un pipeline CI, selon le chapitre 2 ?",
+          "options": [
+            "LDAP",
+            "OIDC (OpenID Connect)",
+            "Kerberos",
+            "SAML"
+          ],
+          "correct": 1,
+          "explanation": "Le chapitre 2 présente l'OIDC comme le mécanisme qui élimine le besoin de clés statiques via un token temporaire par run.",
+          "difficulty": "easy",
+          "tags": [
+            "oidc",
+            "chapitre2"
+          ]
+        },
+        {
+          "id": "e6",
+          "question": "Quel outil le chapitre 2 présente-t-il comme bloquant les commits contenant des motifs de secrets connus via un pre-commit hook ?",
+          "options": [
+            "trufflehog",
+            "git-secrets",
+            "semgrep",
+            "trivy"
+          ],
+          "correct": 1,
+          "explanation": "Le chapitre 2 décrit git-secrets comme l'outil de pre-commit hook bloquant les motifs de secrets connus, à la différence de trufflehog qui scanne l'historique complet.",
+          "difficulty": "medium",
+          "tags": [
+            "git-secrets",
+            "chapitre2"
+          ]
+        },
+        {
+          "id": "e7",
+          "question": "Que garantit la combinaison de la protection de branche et de l'obligation de signer les commits (GPG), selon le chapitre 2 ?",
+          "options": [
+            "Qu'aucun secret ne peut jamais être committé par erreur",
+            "Qu'un compte compromis sans la clé privée correspondante ne peut pas faire atteindre du code non vérifié à la production",
+            "Que le pipeline s'exécute systématiquement plus vite",
+            "Que le registry d'images est automatiquement scanné à chaque push"
+          ],
+          "correct": 1,
+          "explanation": "Le chapitre 2 explique que cette combinaison empêche qu'un compte compromis sans la clé privée fasse atteindre du code non vérifié à la production.",
+          "difficulty": "medium",
+          "tags": [
+            "gpg",
+            "chapitre2"
+          ]
+        },
+        {
+          "id": "e8",
+          "question": "Que révèle une compromission d'un runner CI éphémère par rapport à un runner persistant, en matière de contamination croisée entre projets, selon le chapitre 2 ?",
+          "options": [
+            "Le risque de contamination croisée est identique dans les deux cas",
+            "Un runner éphémère élimine la persistance d'une compromission et la contamination croisée, car il est détruit après chaque job",
+            "Un runner éphémère est toujours plus lent à provisionner qu'un runner persistant",
+            "La contamination croisée ne concerne que les runners persistants utilisant Kubernetes"
+          ],
+          "correct": 1,
+          "explanation": "Le chapitre 2 oppose runner persistant (résidu qui survit d'un build à l'autre) et runner éphémère (environnement propre détruit après le job).",
+          "difficulty": "hard",
+          "tags": [
+            "runners",
+            "chapitre2"
+          ]
+        },
+        {
+          "id": "e9",
+          "question": "Quel code de sortie un job CI doit-il renvoyer pour qu'un scan de sécurité bloque effectivement un merge, selon le chapitre 3 ?",
+          "options": [
+            "0",
+            "Un code non nul (par exemple 1)",
+            "-1",
+            "Peu importe, la plateforme CI détecte automatiquement les vulnérabilités sans code de sortie"
+          ],
+          "correct": 1,
+          "explanation": "Le chapitre 3 explique qu'un code de sortie non nul est le mécanisme qui transforme un scan en gate bloquant.",
+          "difficulty": "easy",
+          "tags": [
+            "quality-gate",
+            "chapitre3"
+          ]
+        },
+        {
+          "id": "e10",
+          "question": "Quelle action le chapitre 3 associe-t-il à une découverte de sévérité Low/Info dans la politique de sévérité graduée ?",
+          "options": [
+            "Bloque le build immédiatement",
+            "Bloque le build avec possibilité d'exception documentée",
+            "N'échoue pas le build ; visible uniquement dans le rapport complet, pour audit ou tendance",
+            "Génère automatiquement une nouvelle baseline"
+          ],
+          "correct": 2,
+          "explanation": "Selon la politique de sévérité du chapitre 3, Low/Info n'échoue pas le build et n'apparaît que dans le rapport complet.",
+          "difficulty": "medium",
+          "tags": [
+            "severity-policy",
+            "chapitre3"
+          ]
+        },
+        {
+          "id": "e11",
+          "question": "Quel mode natif de plusieurs scanners modernes (Semgrep, Snyk, Trivy) est recommandé par le chapitre 3 pour comparer un scan à un commit de référence plutôt qu'à un fichier de baseline statique ?",
+          "options": [
+            "Un mode --diff-only générique",
+            "Un mode --baseline natif comparé à un commit de référence",
+            "Un mode --strict sans comparaison",
+            "Un mode --exit-zero qui ignore tous les findings"
+          ],
+          "correct": 1,
+          "explanation": "Le chapitre 3 recommande le mode --baseline natif, préférable à un fichier de baseline statique qui peut se désynchroniser du code.",
+          "difficulty": "medium",
+          "tags": [
+            "baseline",
+            "chapitre3"
+          ]
+        },
+        {
+          "id": "e12",
+          "question": "Parmi les affirmations suivantes sur la cadence des scans de sécurité en CI, lesquelles sont vraies selon le chapitre 3 ? (2 réponses)",
+          "options": [
+            "Le scan à chaque commit privilégie la vitesse de feedback sur un scope réduit",
+            "Le scan nocturne complet privilégie l'exhaustivité (DAST complet, SAST exhaustif)",
+            "Le scan nocturne bloque systématiquement le merge de la pull request en cours",
+            "Un DAST complet dure généralement moins de 5 minutes"
+          ],
+          "correct": [
+            0,
+            1
+          ],
+          "explanation": "Le chapitre 3 oppose scan par commit (feedback rapide, scope réduit) et scan nocturne (exhaustif, sans bloquer le merge en temps réel).",
+          "difficulty": "hard",
+          "tags": [
+            "cadence",
+            "chapitre3"
+          ]
+        },
+        {
+          "id": "e13",
+          "question": "Quel projet est à l'origine des images distroless mentionnées au chapitre 4 ?",
+          "options": [
+            "Docker Inc.",
+            "Google",
+            "Red Hat",
+            "La CNCF"
+          ],
+          "correct": 1,
+          "explanation": "Le chapitre 4 présente les images distroless comme un projet Google.",
+          "difficulty": "easy",
+          "tags": [
+            "distroless",
+            "chapitre4"
+          ]
+        },
+        {
+          "id": "e14",
+          "question": "Que se passe-t-il par défaut si aucune instruction USER n'est spécifiée dans un Dockerfile, selon le chapitre 4 ?",
+          "options": [
+            "Le conteneur refuse de démarrer",
+            "Le conteneur s'exécute avec l'utilisateur root",
+            "Le conteneur s'exécute avec un utilisateur aléatoire non privilégié",
+            "Docker attribue automatiquement un utilisateur distroless dédié"
+          ],
+          "correct": 1,
+          "explanation": "Le chapitre 4 précise qu'un conteneur Docker s'exécute par défaut en root si aucun USER n'est spécifié.",
+          "difficulty": "medium",
+          "tags": [
+            "dockerfile",
+            "chapitre4"
+          ]
+        },
+        {
+          "id": "e15",
+          "question": "Quelle différence de comportement distingue ADD de COPY vis-à-vis d'une archive locale reconnue (.tar.gz, .zip), selon le chapitre 4 ?",
+          "options": [
+            "COPY l'extrait automatiquement, ADD ne fait que la copier",
+            "ADD l'extrait automatiquement, COPY ne fait que la copier",
+            "Les deux instructions l'extraient automatiquement de façon identique",
+            "Aucune des deux instructions ne peut traiter une archive"
+          ],
+          "correct": 1,
+          "explanation": "Le chapitre 4 explique qu'ADD décompresse automatiquement les archives reconnues, contrairement à COPY.",
+          "difficulty": "medium",
+          "tags": [
+            "add-vs-copy",
+            "chapitre4"
+          ]
+        },
+        {
+          "id": "e16",
+          "question": "Pourquoi lancer systématiquement un conteneur en --privileged pour « éviter les erreurs de permission » est-il déconseillé selon le chapitre 4 ?",
+          "options": [
+            "Parce que cela ralentit sensiblement le temps de build de l'image",
+            "Parce que cela désactive quasiment toute l'isolation du conteneur, donnant accès à tous les périphériques de l'hôte",
+            "Parce que cela empêche la génération du SBOM de l'image",
+            "Parce que cela bloque automatiquement l'exécution du scan Trivy"
+          ],
+          "correct": 1,
+          "explanation": "Le chapitre 4 avertit que --privileged désactive la plupart des restrictions de sécurité et donne accès à tous les périphériques de l'hôte.",
+          "difficulty": "hard",
+          "tags": [
+            "privileged",
+            "chapitre4"
+          ]
+        },
+        {
+          "id": "e17",
+          "question": "Quel objet Kubernetes associe un Role à un ServiceAccount dans un namespace donné, selon le chapitre 5 ?",
+          "options": [
+            "ClusterRole",
+            "RoleBinding",
+            "NetworkPolicy",
+            "ConstraintTemplate"
+          ],
+          "correct": 1,
+          "explanation": "Le chapitre 5 décrit le RoleBinding comme l'objet qui associe un Role à un ServiceAccount, utilisateur ou groupe.",
+          "difficulty": "easy",
+          "tags": [
+            "rbac",
+            "chapitre5"
+          ]
+        },
+        {
+          "id": "e18",
+          "question": "Quelle politique NetworkPolicy le chapitre 5 recommande-t-il comme point de départ sur tout namespace sensible ?",
+          "options": [
+            "Une politique allow-all sans restriction",
+            "Une politique default-deny-all (podSelector vide, Ingress et Egress bloqués)",
+            "Une politique allow-frontend-only générique",
+            "Une politique monitoring-only réservée à l'observabilité"
+          ],
+          "correct": 1,
+          "explanation": "Le chapitre 5 recommande une politique deny-all comme point de départ, complétée ensuite par des exceptions ciblées.",
+          "difficulty": "medium",
+          "tags": [
+            "networkpolicy",
+            "chapitre5"
+          ]
+        },
+        {
+          "id": "e19",
+          "question": "Quel composant du cluster doit implémenter les NetworkPolicies pour qu'elles soient réellement appliquées, selon le chapitre 5 ?",
+          "options": [
+            "Le kube-apiserver seul",
+            "Le CNI (Container Network Interface), par exemple Calico, Cilium ou Weave Net",
+            "Le kubelet uniquement",
+            "etcd"
+          ],
+          "correct": 1,
+          "explanation": "Le chapitre 5 précise qu'une NetworkPolicy ne fonctionne que si le CNI du cluster l'implémente.",
+          "difficulty": "medium",
+          "tags": [
+            "cni",
+            "chapitre5"
+          ]
+        },
+        {
+          "id": "e20",
+          "question": "Parmi les réglages suivants du securityContext, lesquels font partie de la combinaison présentée au chapitre 5 comme l'une des plus dangereuses qu'un cluster puisse héberger ? (2 réponses)",
+          "options": [
+            "runAsUser: 0",
+            "readOnlyRootFilesystem: true",
+            "hostNetwork: true",
+            "capabilities.drop: ['ALL']"
+          ],
+          "correct": [
+            0,
+            2
+          ],
+          "explanation": "Le chapitre 5 identifie privileged: true, runAsUser: 0 et hostNetwork: true comme la combinaison la plus dangereuse ; readOnlyRootFilesystem et capabilities.drop sont au contraire des mesures de durcissement.",
+          "difficulty": "hard",
+          "tags": [
+            "securitycontext",
+            "chapitre5"
+          ]
+        },
+        {
+          "id": "e21",
+          "question": "En quelle année et contre combien d'entreprises le chercheur Alex Birsan a-t-il démontré la technique de dependency confusion, selon le chapitre 6 ?",
+          "options": [
+            "2018, contre 10 entreprises",
+            "2021, contre plus de 35 entreprises (Apple, Microsoft, Tesla, PayPal, Uber...)",
+            "2023, contre 5 entreprises",
+            "2019, contre 100 entreprises"
+          ],
+          "correct": 1,
+          "explanation": "Le chapitre 6 cite la démonstration d'Alex Birsan en 2021 contre plus de 35 entreprises.",
+          "difficulty": "easy",
+          "tags": [
+            "dependency-confusion",
+            "chapitre6"
+          ]
+        },
+        {
+          "id": "e22",
+          "question": "Quel paquet compromis en 2018 illustre, selon le chapitre 6, une attaque où la maintenance a été transférée à un inconnu qui a injecté une dépendance malveillante ciblant des wallets de cryptomonnaie ?",
+          "options": [
+            "left-pad",
+            "event-stream",
+            "colors.js",
+            "node-ipc"
+          ],
+          "correct": 1,
+          "explanation": "Le chapitre 6 cite event-stream (2018) comme exemple de typosquatting/maintenance transférée ciblant des wallets de cryptomonnaie.",
+          "difficulty": "medium",
+          "tags": [
+            "typosquatting",
+            "chapitre6"
+          ]
+        },
+        {
+          "id": "e23",
+          "question": "Dans quel registre transparent et immuable, basé sur un arbre de Merkle, une signature keyless Sigstore est-elle journalisée selon le chapitre 6 ?",
+          "options": [
+            "Fulcio",
+            "Rekor",
+            "Le Cosign Registry",
+            "La NVD"
+          ],
+          "correct": 1,
+          "explanation": "Le chapitre 6 décrit Rekor comme le log de transparence public basé sur un arbre de Merkle qui journalise les signatures keyless.",
+          "difficulty": "medium",
+          "tags": [
+            "rekor",
+            "chapitre6"
+          ]
+        },
+        {
+          "id": "e24",
+          "question": "Quelle affirmation sur les formats SBOM est correcte selon le chapitre 6 ?",
+          "options": [
+            "SPDX est un standard ISO/IEC 5962:2021 orienté conformité licence, tandis que CycloneDX est orienté sécurité applicative et porté par l'OWASP",
+            "CycloneDX est un format exclusivement binaire, non lisible en JSON",
+            "SPDX ne peut être généré qu'après le déploiement en production",
+            "Les deux formats sont strictement interchangeables et identiques"
+          ],
+          "correct": 0,
+          "explanation": "Le chapitre 6 distingue SPDX (Linux Foundation, ISO/IEC 5962:2021, conformité licence) de CycloneDX (OWASP, sécurité applicative, JSON natif).",
+          "difficulty": "hard",
+          "tags": [
+            "sbom-formats",
+            "chapitre6"
+          ]
+        },
+        {
+          "id": "e25",
+          "question": "En Rego, que retourne le résultat observé via opa eval lorsqu'une politique est violée, selon le chapitre 7 ?",
+          "options": [
+            "Un message d'erreur système générique",
+            "Un tableau result contenant les messages définis par sprintf dans la règle deny",
+            "Un code HTTP 403 uniquement",
+            "Rien, le résultat n'est visible que dans les logs de Gatekeeper"
+          ],
+          "correct": 1,
+          "explanation": "Le chapitre 7 montre que opa eval retourne un result JSON contenant les messages construits avec sprintf dans les règles deny.",
+          "difficulty": "easy",
+          "tags": [
+            "rego",
+            "chapitre7"
+          ]
+        },
+        {
+          "id": "e26",
+          "question": "Quel niveau de maturité DevSecOps correspond, selon le chapitre 7, à des contrôles automatisés (SAST/DAST/SCA) qui tournent en CI, mais dont chaque alerte reste isolée et souvent ignorée faute de contexte ?",
+          "options": [
+            "Niveau 1",
+            "Niveau 2",
+            "Niveau 3",
+            "Niveau 4"
+          ],
+          "correct": 1,
+          "explanation": "Le chapitre 7 décrit le niveau 2 comme des contrôles automatisés mais cloisonnés, avec des alertes isolées souvent ignorées.",
+          "difficulty": "medium",
+          "tags": [
+            "maturite-devsecops",
+            "chapitre7"
+          ]
+        },
+        {
+          "id": "e27",
+          "question": "Quelle limite le chapitre 7 attribue-t-il à un contrôle de conformité exécuté uniquement via conftest en pipeline CI/CD ?",
+          "options": [
+            "Il ne supporte pas le langage Rego",
+            "Il ne protège pas contre une modification directe des ressources en cluster (par exemple via kubectl edit)",
+            "Il est incompatible avec les plans Terraform",
+            "Il ne peut évaluer que des manifestes Kubernetes"
+          ],
+          "correct": 1,
+          "explanation": "Le chapitre 7 précise que conftest en pipeline ne protège pas contre une modification directe des ressources en cluster, contrairement à l'admission controller.",
+          "difficulty": "medium",
+          "tags": [
+            "conftest",
+            "chapitre7"
+          ]
+        },
+        {
+          "id": "e28",
+          "question": "Parmi les traductions d'exigences de conformité en contrôle automatisé présentées au chapitre 7, lesquelles sont correctement associées ? (2 réponses)",
+          "options": [
+            "PCI-DSS exigence 2.2 (pas de comptes par défaut) → scan d'image bloquant toute image construite avec un utilisateur root par défaut",
+            "ISO 27001 A.8.24 (chiffrement au repos) → règle Rego rejetant tout bucket/volume créé sans chiffrement activé",
+            "ISO 27001 A.8.24 → une revue manuelle annuelle uniquement, sans automatisation",
+            "PCI-DSS exigence 10 → l'absence totale de journalisation des accès aux données de cartes"
+          ],
+          "correct": [
+            0,
+            1
+          ],
+          "explanation": "Le tableau du chapitre 7 associe PCI-DSS 2.2 au scan d'image anti-root et ISO 27001 A.8.24 à une règle Rego de chiffrement obligatoire.",
+          "difficulty": "hard",
+          "tags": [
+            "compliance-as-code",
+            "chapitre7"
+          ]
+        }
+      ]
+    },
   }
   for (const [courseSlug, chapterQuizzes] of Object.entries(QUIZZES)) {
     const course = await prisma.course.findUniqueOrThrow({ where: { slug: courseSlug } })
