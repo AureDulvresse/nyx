@@ -41,6 +41,23 @@ export function CommandCard({ entry, onToggleFavorite }: { entry: CheatEntry; on
       </button>
 
       <p className="mt-2 text-sm text-text-secondary">{entry.description}</p>
+
+      {entry.example && (
+        <div className="mt-2 rounded-md bg-background/60 border border-border/60 px-3 py-2">
+          <p className="text-[11px] uppercase tracking-wide text-text-secondary">Exemple</p>
+          <code className="block mt-1 whitespace-pre-wrap break-all font-mono text-xs text-text-secondary">{entry.example}</code>
+        </div>
+      )}
+
+      {entry.tags.length > 0 && (
+        <div className="mt-2 flex flex-wrap gap-1">
+          {entry.tags.map((tag) => (
+            <Badge key={tag} variant="outline" className="text-[10px] px-2 py-0">
+              {tag}
+            </Badge>
+          ))}
+        </div>
+      )}
     </Card>
   )
 }

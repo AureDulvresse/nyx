@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState, useTransition } from 'react'
-import { searchCheat } from '@/actions'
+import { searchCheat, toggleCheatFavorite } from '@/actions'
 import type { CheatEntry } from '@/domain'
 
 export function useCheatSearch(initialEntries: CheatEntry[]) {
@@ -22,5 +22,15 @@ export function useCheatSearch(initialEntries: CheatEntry[]) {
     return () => clearTimeout(timeout)
   }, [query, category, run])
 
-  return { query, setQuery, category, setCategory, entries, isPending }
+  // Optimistic: the server action's revalidatePath('/cheatsheet') doesn't touch this client-held
+  // search-result array, so without a local flip the star only reflects the new state after the
+  // next search (typing, changing category) happens to refetch it.
+  const toggleFavorite = useCallback((id: string) => {
+    setEntries((prev) => prev.map((e) => (e.id === id ? { ...e, isFavorite: !e.isFavorite } : e)))
+    toggleCheatFavorite({ cheatId: id }).then((res) => {
+      if (!res.success) setEntries((prev) => prev.map((e) => (e.id === id ? { ...e, isFavorite: !e.isFavorite } : e)))
+    })
+  }, [])
+
+  return { query, setQuery, category, setCategory, entries, isPending, toggleFavorite }
 }

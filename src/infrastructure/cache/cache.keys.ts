@@ -6,7 +6,6 @@ export const CACHE_KEYS = {
   flashcardsDue: (deck: string) => `flashcards:due:${deck}`,
   cheatsheet: (category: string) => `cheat:${category}`,
   labSession: (sessionId: string) => `lab:session:${sessionId}`,
-  labActiveSessions: 'lab:sessions:active:count',
   tpSession: (sessionId: string) => `tp:session:${sessionId}`,
   tpActiveSessions: 'tp:sessions:active:count',
   streak: 'streak:current',

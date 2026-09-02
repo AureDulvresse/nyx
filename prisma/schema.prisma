@@ -144,6 +144,7 @@ model TP {
   environment String
   objectives  Json
   steps       Json
+  targets     Json      @default("[]")
   notes       String?
   completedAt DateTime?
   updatedAt   DateTime  @updatedAt

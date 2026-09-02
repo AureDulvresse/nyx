@@ -1,5 +1,5 @@
 import type Docker from 'dockerode'
-import { Lab } from '@/domain'
+import { Lab, DockerTarget } from '@/domain'
 import { sessions } from './sessions.store'
 import { cacheService, CACHE_KEYS, CACHE_TTL } from '@/infrastructure/cache'
 import { getDockerClient } from './docker.client'
@@ -8,7 +8,11 @@ export interface IDockerService {
   startLabEnvironment(lab: Lab, sessionId: string): Promise<{ kaliId: string; networkId: string }>
   stopLabEnvironment(sessionId: string): Promise<void>
   isSessionRunning(sessionId: string): Promise<boolean>
-  startTPEnvironment(sessionId: string, kaliImage: string): Promise<{ kaliId: string; networkId: string }>
+  startTPEnvironment(
+    sessionId: string,
+    kaliImage: string,
+    targets: DockerTarget[]
+  ): Promise<{ kaliId: string; networkId: string }>
   stopTPEnvironment(sessionId: string): Promise<void>
 }
 
@@ -31,6 +35,46 @@ async function ensureImage(docker: Docker, image: string): Promise<void> {
   })
 }
 
+// Every lab/TP's hints, flags and step commands hardcode a literal target IP like 10.10.0.10 —
+// for that to ever actually be reachable, the session's Docker network has to really use that
+// subnet, and the target container has to be given that exact address. A single shared subnet
+// can't be reused across concurrent sessions though (confirmed against the Docker daemon: creating
+// a second bridge network with a subnet already in use by another network fails with "Pool
+// overlaps"), so this is a small pool of candidate /24s — comfortably more than
+// LAB_MAX_CONCURRENT_SESSIONS on each of the Lab and TP counters combined — tried in order until
+// one isn't already taken by another live session.
+const SUBNET_POOL = Array.from({ length: 10 }, (_, i) => `10.10.${i}.0/24`)
+
+function subnetPrefix(cidr: string): string {
+  return cidr.split('/')[0].split('.').slice(0, 3).join('.')
+}
+
+// Reuses whatever last octet a target/flag/step already hardcodes (e.g. the `.10` in `10.10.0.10`,
+// or the `.20` a second target in a multi-target lab like net-002 uses) against whichever subnet
+// this session actually landed on, so the container ends up at exactly the address the content
+// already tells the user to attack.
+function staticIpFor(prefix: string, declaredIp: string): string {
+  return `${prefix}.${declaredIp.split('.').pop()}`
+}
+
+async function createSessionNetwork(docker: Docker, sessionId: string): Promise<{ network: Docker.Network; prefix: string }> {
+  let lastErr: unknown
+  for (const cidr of SUBNET_POOL) {
+    try {
+      const prefix = subnetPrefix(cidr)
+      const network = await docker.createNetwork({
+        Name: `cl-${sessionId}`,
+        Driver: 'bridge',
+        IPAM: { Config: [{ Subnet: cidr, Gateway: `${prefix}.1` }] },
+      })
+      return { network, prefix }
+    } catch (err) {
+      lastErr = err
+    }
+  }
+  throw lastErr instanceof Error ? lastErr : new Error('No free lab subnet available')
+}
+
 export class DockerLabService implements IDockerService {
   private get docker() {
     return getDockerClient()
@@ -38,15 +82,7 @@ export class DockerLabService implements IDockerService {
 
   async startLabEnvironment(lab: Lab, sessionId: string) {
     const docker = this.docker
-
-    // No explicit IPAM subnet here: every lab session gets its own bridge network, and up to
-    // LAB_MAX_CONCURRENT_SESSIONS can run at once. A fixed subnet would collide across concurrent
-    // sessions (or with a leftover network Redis/DB lost track of) with a 403 "Pool overlaps"
-    // error from the Docker daemon. Letting Docker auto-allocate from its address pool avoids that.
-    const network = await docker.createNetwork({
-      Name: `cl-${sessionId}`,
-      Driver: 'bridge',
-    })
+    const { network, prefix } = await createSessionNetwork(docker, sessionId)
 
     try {
       await ensureImage(docker, lab.kaliImage)
@@ -74,6 +110,11 @@ export class DockerLabService implements IDockerService {
           name: `${target.name}-${sessionId}`,
           Hostname: target.hostname ?? target.name,
           HostConfig: { NetworkMode: `cl-${sessionId}` },
+          NetworkingConfig: {
+            EndpointsConfig: {
+              [`cl-${sessionId}`]: { IPAMConfig: { IPv4Address: staticIpFor(prefix, target.ip) } },
+            },
+          },
         })
         await ctn.start()
       }
@@ -84,7 +125,6 @@ export class DockerLabService implements IDockerService {
         CACHE_TTL.labSession
       )
       sessions.set(sessionId, { kaliId: kali.id })
-      await cacheService.incr(CACHE_KEYS.labActiveSessions)
 
       return { kaliId: kali.id, networkId: network.id }
     } catch (err) {
@@ -115,11 +155,6 @@ export class DockerLabService implements IDockerService {
       await docker.getNetwork(cached.networkId).remove().catch(() => {})
     }
 
-    // Only decrement if this session was actually still counted as active — otherwise a second
-    // stop call (or one racing with reapStaleSessions) would drag the counter below the real
-    // number of active sessions and start rejecting new ones that should be allowed.
-    if (cached) await cacheService.decr(CACHE_KEYS.labActiveSessions)
-
     await cacheService.del(CACHE_KEYS.labSession(sessionId))
     sessions.delete(sessionId)
   }
@@ -128,10 +163,9 @@ export class DockerLabService implements IDockerService {
     return cacheService.exists(CACHE_KEYS.labSession(sessionId))
   }
 
-  async startTPEnvironment(sessionId: string, kaliImage: string) {
+  async startTPEnvironment(sessionId: string, kaliImage: string, targets: DockerTarget[]) {
     const docker = this.docker
-
-    const network = await docker.createNetwork({ Name: `cl-${sessionId}`, Driver: 'bridge' })
+    const { network, prefix } = await createSessionNetwork(docker, sessionId)
 
     try {
       await ensureImage(docker, kaliImage)
@@ -152,13 +186,35 @@ export class DockerLabService implements IDockerService {
       })
       await kali.start()
 
+      for (const target of targets) {
+        await ensureImage(docker, target.image)
+        const ctn = await docker.createContainer({
+          Image: target.image,
+          name: `${target.name}-${sessionId}`,
+          Hostname: target.hostname ?? target.name,
+          HostConfig: { NetworkMode: `cl-${sessionId}` },
+          NetworkingConfig: {
+            EndpointsConfig: {
+              [`cl-${sessionId}`]: { IPAMConfig: { IPv4Address: staticIpFor(prefix, target.ip) } },
+            },
+          },
+        })
+        await ctn.start()
+      }
+
       await cacheService.set(
         CACHE_KEYS.tpSession(sessionId),
         { kaliId: kali.id, networkId: network.id, startedAt: new Date().toISOString() },
         CACHE_TTL.tpSession
       )
       sessions.set(sessionId, { kaliId: kali.id })
+      // stopTPEnvironment only decrements when the matching session key is still around (see its
+      // comment) — a session abandoned past its own TTL (crash, closed tab, never explicitly
+      // stopped) would otherwise leave this counter incremented forever. Refreshing its TTL here
+      // bounds that drift to one session-timeout window instead of letting it accumulate forever:
+      // once nobody starts a new TP session for that long, the whole counter key just expires away.
       await cacheService.incr(CACHE_KEYS.tpActiveSessions)
+      await cacheService.expire(CACHE_KEYS.tpActiveSessions, CACHE_TTL.tpSession)
 
       return { kaliId: kali.id, networkId: network.id }
     } catch (err) {
@@ -186,7 +242,9 @@ export class DockerLabService implements IDockerService {
       await docker.getNetwork(cached.networkId).remove().catch(() => {})
     }
 
-    // Same guard as stopLabEnvironment: only decrement if this session was still counted active.
+    // Guarded on `cached`: startTPEnvironment sets the session key before incrementing the counter,
+    // so if this is a cleanup call for a session that failed before that increment ever ran (see the
+    // catch block above), `cached` is null and there is nothing to give back.
     if (cached) await cacheService.decr(CACHE_KEYS.tpActiveSessions)
 
     await cacheService.del(CACHE_KEYS.tpSession(sessionId))

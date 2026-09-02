@@ -1,6 +1,6 @@
 'use client'
 
-import { Search01Icon } from 'hugeicons-react'
+import { Search01Icon, StarIcon } from 'hugeicons-react'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils/cn'
 
@@ -10,12 +10,16 @@ export function CheatSearchBar({
   categories,
   category,
   onCategoryChange,
+  favoritesOnly,
+  onFavoritesOnlyChange,
 }: {
   query: string
   onQueryChange: (q: string) => void
   categories: string[]
   category?: string
   onCategoryChange: (c?: string) => void
+  favoritesOnly: boolean
+  onFavoritesOnlyChange: (v: boolean) => void
 }) {
   return (
     <div className="space-y-3">
@@ -50,6 +54,16 @@ export function CheatSearchBar({
             {c}
           </button>
         ))}
+        <button
+          onClick={() => onFavoritesOnlyChange(!favoritesOnly)}
+          className={cn(
+            'flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium transition-colors',
+            favoritesOnly ? 'bg-orange text-white' : 'bg-surface text-text-secondary hover:text-text-primary'
+          )}
+        >
+          <StarIcon size={12} fill={favoritesOnly ? 'currentColor' : 'none'} />
+          Favoris
+        </button>
       </div>
     </div>
   )

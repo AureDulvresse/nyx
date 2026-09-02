@@ -21,7 +21,7 @@ export class TPService {
     }
 
     const sessionId = crypto.randomUUID()
-    await this.dockerService.startTPEnvironment(sessionId, DEFAULT_TP_IMAGE)
+    await this.dockerService.startTPEnvironment(sessionId, DEFAULT_TP_IMAGE, tp.targets)
     return { sessionId }
   }
 
