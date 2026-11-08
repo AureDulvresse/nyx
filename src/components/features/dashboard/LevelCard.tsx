@@ -1,7 +1,7 @@
 import { Rocket01Icon, GraduationScrollIcon, MedalFirstPlaceIcon } from 'hugeicons-react'
 import { Card } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
-import type { SkillLevel } from '@/services'
+import type { SkillLevel } from '@/domain'
 
 const LEVEL_ICON = {
   novice: GraduationScrollIcon,
@@ -15,7 +15,7 @@ const LEVEL_COLOR = {
   intermediaire: 'text-green',
 } as const
 
-export function LevelCard({ skill }: { skill: SkillLevel }) {
+export function LevelCard({ skill }: { skill: SkillLevel }): React.JSX.Element {
   const Icon = LEVEL_ICON[skill.level]
   const color = LEVEL_COLOR[skill.level]
 

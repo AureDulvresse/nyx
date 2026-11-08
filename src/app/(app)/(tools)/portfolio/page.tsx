@@ -1,15 +1,13 @@
 import { labRepo, projectRepo, certificationRepo, statsRepo } from '@/repositories'
 import { PortfolioPage } from '@/components/features/portfolio/PortfolioPage'
 
-export default async function Page() {
-  const [completedLabs, projects, certifications, credits] = await Promise.all([
+export default async function Page(): Promise<React.JSX.Element> {
+  const [completedLabs, completedProjects, certifications, credits] = await Promise.all([
     labRepo.findCompletedSessions(),
-    projectRepo.findAll(),
+    projectRepo.findCompleted(),
     certificationRepo.findAll(),
     statsRepo.getEarnedCredits(),
   ])
-
-  const completedProjects = projects.filter((p) => p.status === 'completed')
 
   return (
     <PortfolioPage

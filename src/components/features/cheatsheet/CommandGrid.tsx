@@ -1,11 +1,12 @@
 'use client'
 
 import { CommandCard } from '@/components/common/CommandCard'
+import { NoResults } from '@/components/common/NoResults'
 import type { CheatEntry } from '@/domain'
 
-export function CommandGrid({ entries, onToggleFavorite }: { entries: CheatEntry[]; onToggleFavorite: (id: string) => void }) {
+export function CommandGrid({ entries, onToggleFavorite }: { entries: CheatEntry[]; onToggleFavorite: (id: string) => void }): React.JSX.Element {
   if (entries.length === 0) {
-    return <p className="py-10 text-center text-text-secondary">Aucune commande trouvée.</p>
+    return <NoResults>Aucune commande trouvée.</NoResults>
   }
 
   return (

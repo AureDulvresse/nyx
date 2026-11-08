@@ -4,7 +4,7 @@ import { PageHeader } from '@/components/common/PageHeader'
 import { EmptyState } from '@/components/common/EmptyState'
 import { DeckCard } from '@/components/features/flashcards/DeckCard'
 
-export default async function Page() {
+export default async function Page(): Promise<React.JSX.Element> {
   const decks = await flashcardRepo.findAllDecks()
   const [dueByDeck, totalByDeck] = await Promise.all([
     Promise.all(decks.map((d) => flashcardRepo.findDueByDeck(d))),

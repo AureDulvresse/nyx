@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { LinkSquare01Icon } from 'hugeicons-react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -14,13 +14,13 @@ const STATUS_VARIANT: Record<ProjectStatus, 'outline' | 'orange' | 'green'> = {
   completed: 'green',
 }
 
-export function ProjectCard({ project }: { project: Project }) {
+export function ProjectCard({ project }: { project: Project }): React.JSX.Element {
   const category = PROJECT_CATEGORY_CONFIG[project.category]
   const Icon = category.icon
 
   return (
     <Link href={`/projects/${project.id}`} className="block h-full">
-      <motion.div whileHover={{ y: -3 }} transition={{ type: 'spring', stiffness: 300, damping: 22 }} className="h-full">
+      <m.div whileHover={{ y: -3 }} transition={{ type: 'spring', stiffness: 300, damping: 22 }} className="h-full">
         <Card className="h-full p-5 transition-colors hover:border-violet-nyx/50">
           <div className="flex items-start justify-between gap-2">
             <div className={`rounded-lg p-2.5 ${category.bg}`}>
@@ -59,7 +59,7 @@ export function ProjectCard({ project }: { project: Project }) {
             </div>
           </div>
         </Card>
-      </motion.div>
+      </m.div>
     </Link>
   )
 }

@@ -3,7 +3,7 @@ import { ProgressRing } from '@/components/common/ProgressRing'
 import { Button } from '@/components/ui/button'
 import type { QuizAttemptResult } from '@/domain'
 
-export function QuizResult({ result, onRetry }: { result: QuizAttemptResult; onRetry: () => void }) {
+export function QuizResult({ result, onRetry }: { result: QuizAttemptResult; onRetry: () => void }): React.JSX.Element {
   return (
     <Card className="flex flex-col items-center gap-4 p-8 text-center">
       <ProgressRing

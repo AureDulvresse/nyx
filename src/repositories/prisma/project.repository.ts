@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma'
+import { cacheService, STATS_CACHE_KEYS } from '@/infrastructure/cache'
 import type { IProjectRepository } from '../interfaces'
 import type { Project, ProjectCategory, ProjectStatus, ProjectStep } from '@/domain'
 
@@ -10,6 +11,11 @@ function normalize(project: unknown): Project {
 export class PrismaProjectRepository implements IProjectRepository {
   async findAll(): Promise<Project[]> {
     const projects = await prisma.project.findMany({ orderBy: { createdAt: 'desc' } })
+    return projects.map(normalize)
+  }
+
+  async findCompleted(): Promise<Project[]> {
+    const projects = await prisma.project.findMany({ where: { status: 'completed' }, orderBy: { createdAt: 'desc' } })
     return projects.map(normalize)
   }
 
@@ -38,6 +44,7 @@ export class PrismaProjectRepository implements IProjectRepository {
       where: { id },
       data: { status, completedAt: status === 'completed' ? new Date() : null },
     })
+    await cacheService.del(...STATS_CACHE_KEYS)
     return normalize(project)
   }
 
@@ -53,5 +60,6 @@ export class PrismaProjectRepository implements IProjectRepository {
 
   async delete(id: string): Promise<void> {
     await prisma.project.delete({ where: { id } })
+    await cacheService.del(...STATS_CACHE_KEYS)
   }
 }

@@ -1,14 +1,24 @@
 'use client'
 
-import { useCallback } from 'react'
+import { useMemo } from 'react'
 import { useToastStore } from '@/lib/store/toast.store'
 
-export function useToast() {
+export interface ToastApi {
+  success: (message: string) => void
+  error: (message: string) => void
+  info: (message: string) => void
+}
+
+// Memoized so consumers can safely list `toast` in hook dependency arrays.
+export function useToast(): ToastApi {
   const push = useToastStore((s) => s.push)
 
-  return {
-    success: useCallback((message: string) => push(message, 'success'), [push]),
-    error: useCallback((message: string) => push(message, 'error'), [push]),
-    info: useCallback((message: string) => push(message, 'info'), [push]),
-  }
+  return useMemo(
+    () => ({
+      success: (message: string) => push(message, 'success'),
+      error: (message: string) => push(message, 'error'),
+      info: (message: string) => push(message, 'info'),
+    }),
+    [push]
+  )
 }

@@ -1,8 +1,8 @@
 import type { ITPRepository } from '@/repositories'
 import type { IDockerService } from '@/infrastructure/docker/docker.service'
-import { cacheService, CACHE_KEYS } from '@/infrastructure/cache'
+import type { TP } from '@/domain'
+import { labConfig } from '@/config/lab.config'
 
-const MAX_CONCURRENT_SESSIONS = parseInt(process.env.LAB_MAX_CONCURRENT_SESSIONS ?? '3', 10)
 const DEFAULT_TP_IMAGE = 'nyx/kali-tools'
 
 export class TPService {
@@ -15,9 +15,10 @@ export class TPService {
     const tp = await this.tpRepo.findById(tpId)
     if (!tp) throw new Error('TP introuvable')
 
-    const activeCount = (await cacheService.get<number>(CACHE_KEYS.tpActiveSessions)) ?? 0
-    if (activeCount >= MAX_CONCURRENT_SESSIONS) {
-      throw new Error(`Maximum ${MAX_CONCURRENT_SESSIONS} sessions concurrentes atteint`)
+    const { maxConcurrentSessions } = labConfig
+    const activeCount = await this.dockerService.countActiveTPSessions()
+    if (activeCount >= maxConcurrentSessions) {
+      throw new Error(`Maximum ${maxConcurrentSessions} sessions concurrentes atteint`)
     }
 
     const sessionId = crypto.randomUUID()
@@ -27,5 +28,14 @@ export class TPService {
 
   async stopSession(sessionId: string): Promise<void> {
     await this.dockerService.stopTPEnvironment(sessionId)
+  }
+
+  /** Marks one step as (un)completed. Returns null when the TP doesn't exist. */
+  async setStepCompleted(tpId: string, stepIndex: number, completed: boolean): Promise<TP | null> {
+    const tp = await this.tpRepo.findById(tpId)
+    if (!tp) return null
+
+    const steps = tp.steps.map((step, i) => (i === stepIndex ? { ...step, completed } : step))
+    return this.tpRepo.updateSteps(tpId, steps)
   }
 }

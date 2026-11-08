@@ -65,3 +65,17 @@ export interface Resource {
   isCurated: boolean
   createdAt: Date
 }
+
+/** Where the learner should pick up: an in-progress chapter, or the next chapter of the last active course. */
+export interface ResumePoint {
+  kind: 'in_progress' | 'next'
+  chapterId: string
+  chapterNumber: number
+  chapterTitle: string
+  courseSlug: string
+  courseTitle: string
+  courseColor: string
+  courseIcon: string
+  courseCompleted: number
+  courseTotal: number
+}

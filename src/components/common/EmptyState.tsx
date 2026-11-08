@@ -10,7 +10,7 @@ export function EmptyState({
   title: string
   description?: string
   action?: ReactNode
-}) {
+}): React.JSX.Element {
   return (
     <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed border-border py-14 text-center">
       <div className="rounded-full bg-surface p-3">

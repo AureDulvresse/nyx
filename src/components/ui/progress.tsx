@@ -11,7 +11,7 @@ export function Progress({
   colorClassName?: string
   /** Arbitrary hex/rgb color, for per-course tinting where a Tailwind class can't express it. */
   color?: string
-}) {
+}): React.JSX.Element {
   const clamped = Math.min(100, Math.max(0, value))
   return (
     <div className={cn('h-2 w-full overflow-hidden rounded-full bg-border', className)}>

@@ -2,9 +2,10 @@
 
 import { revalidatePath } from 'next/cache'
 import { courseRepo, resourceRepo } from '@/repositories'
-import { storageService } from '@/infrastructure/storage'
+import { storageService, STORAGE_BUCKETS } from '@/infrastructure/storage'
 import { checkRateLimit } from '@/lib/utils/rate-limit'
 import { ok, err, ActionResult } from '@/lib/utils/result'
+import { runAction } from '@/lib/utils/action.utils'
 import type { Course, Resource, ResourceType } from '@/domain'
 
 const MAX_UPLOAD_BYTES = 25 * 1024 * 1024
@@ -30,16 +31,17 @@ export async function uploadCourseCover(formData: FormData): Promise<ActionResul
   const allowed = await checkRateLimit(`upload:cover:${courseId}`, 10, 60)
   if (!allowed) return err('Trop de tentatives, réessaie dans un instant.', 'RATE_LIMIT')
 
-  try {
-    const buffer = Buffer.from(await file.arrayBuffer())
-    const key = `covers/${courseId}-${Date.now()}-${slugifyFilename(file.name)}`
-    const url = await storageService.upload(process.env.MINIO_BUCKET_COURSES!, key, buffer, file.type)
-    const course = await courseRepo.updateCoverImage(courseId, url)
-    revalidatePath('/courses')
-    return ok(course)
-  } catch {
-    return err('Échec de l’upload de la couverture.', 'UPLOAD_ERROR')
-  }
+  return runAction(
+    async () => {
+      const buffer = Buffer.from(await file.arrayBuffer())
+      const key = `covers/${courseId}-${Date.now()}-${slugifyFilename(file.name)}`
+      const url = await storageService.upload(STORAGE_BUCKETS.courses, key, buffer)
+      const course = await courseRepo.updateCoverImage(courseId, url)
+      revalidatePath('/courses')
+      return ok(course)
+    },
+    { message: 'Échec de l’upload de la couverture.', code: 'UPLOAD_ERROR' }
+  )
 }
 
 export async function uploadChapterMedia(formData: FormData): Promise<ActionResult<Resource>> {
@@ -59,15 +61,16 @@ export async function uploadChapterMedia(formData: FormData): Promise<ActionResu
   const allowed = await checkRateLimit(`upload:media:${chapterId}`, 10, 60)
   if (!allowed) return err('Trop de tentatives, réessaie dans un instant.', 'RATE_LIMIT')
 
-  try {
-    const buffer = Buffer.from(await file.arrayBuffer())
-    const key = `chapters/${chapterId}/${Date.now()}-${slugifyFilename(file.name)}`
-    const url = await storageService.upload(process.env.MINIO_BUCKET_UPLOADS!, key, buffer, file.type)
-    const type: ResourceType = isImage ? 'image' : 'video'
-    const resource = await resourceRepo.create({ chapterId, title: title.trim(), url, type })
-    revalidatePath('/courses')
-    return ok(resource)
-  } catch {
-    return err('Échec de l’upload du média.', 'UPLOAD_ERROR')
-  }
+  return runAction(
+    async () => {
+      const buffer = Buffer.from(await file.arrayBuffer())
+      const key = `chapters/${chapterId}/${Date.now()}-${slugifyFilename(file.name)}`
+      const url = await storageService.upload(STORAGE_BUCKETS.uploads, key, buffer)
+      const type: ResourceType = isImage ? 'image' : 'video'
+      const resource = await resourceRepo.create({ chapterId, title: title.trim(), url, type })
+      revalidatePath('/courses')
+      return ok(resource)
+    },
+    { message: 'Échec de l’upload du média.', code: 'UPLOAD_ERROR' }
+  )
 }

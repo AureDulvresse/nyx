@@ -1,6 +1,6 @@
 import { StarIcon } from 'hugeicons-react'
 
-export function PointsBadge({ points }: { points: number }) {
+export function PointsBadge({ points }: { points: number }): React.JSX.Element {
   return (
     <div className="flex items-center gap-1.5 rounded-full bg-purple/15 px-3 py-1.5 text-sm font-medium text-purple">
       <StarIcon size={16} />

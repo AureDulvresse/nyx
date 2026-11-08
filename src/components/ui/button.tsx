@@ -12,7 +12,7 @@ export const buttonVariants = cva(
         outline: 'border border-border bg-transparent hover:bg-surface text-text-primary',
         ghost: 'hover:bg-surface text-text-primary',
         destructive: 'bg-red text-white hover:bg-red/90',
-        success: 'bg-green text-[#0d1117] hover:bg-green/90',
+        success: 'bg-green text-background hover:bg-green/90',
         link: 'text-blue underline-offset-4 hover:underline',
       },
       size: {

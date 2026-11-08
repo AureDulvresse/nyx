@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { loginAction } from '@/actions'
 
-export function LoginForm() {
+export function LoginForm(): React.JSX.Element {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')

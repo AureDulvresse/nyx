@@ -1,16 +1,50 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 let mermaidModule: Promise<typeof import('mermaid')> | null = null
-function loadMermaid() {
+function loadMermaid(): Promise<typeof import('mermaid')> {
   if (!mermaidModule) mermaidModule = import('mermaid')
   return mermaidModule
 }
 
 let renderCount = 0
 
-export function MermaidDiagram({ source }: { source: string }) {
+// Mermaid computes derived shades from these, so it needs concrete color values rather than
+// `var(...)` references — resolve the globals.css tokens at render time instead of duplicating hex.
+function getThemeVariables(): Record<string, string> {
+  const styles = getComputedStyle(document.documentElement)
+  const token = (name: string): string => styles.getPropertyValue(`--${name}`).trim()
+  const background = token('background')
+  const surface = token('surface')
+  const border = token('border')
+  const text = token('text-primary')
+  const line = token('blue')
+
+  return {
+    background,
+    primaryColor: token('violet-nyx'),
+    primaryTextColor: text,
+    primaryBorderColor: token('purple'),
+    secondaryColor: surface,
+    secondaryTextColor: text,
+    secondaryBorderColor: border,
+    tertiaryColor: background,
+    lineColor: line,
+    textColor: text,
+    mainBkg: surface,
+    nodeBorder: border,
+    clusterBkg: surface,
+    edgeLabelBackground: background,
+    actorBkg: surface,
+    actorBorder: border,
+    actorTextColor: text,
+    signalColor: line,
+    signalTextColor: text,
+  }
+}
+
+export function MermaidDiagram({ source }: { source: string }): React.JSX.Element {
   const [svg, setSvg] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
@@ -24,27 +58,7 @@ export function MermaidDiagram({ source }: { source: string }) {
           theme: 'dark',
           securityLevel: 'strict',
           fontFamily: 'var(--font-geist-sans), sans-serif',
-          themeVariables: {
-            background: '#0d1117',
-            primaryColor: '#7c3aed',
-            primaryTextColor: '#e6edf3',
-            primaryBorderColor: '#a371f7',
-            secondaryColor: '#161b22',
-            secondaryTextColor: '#e6edf3',
-            secondaryBorderColor: '#30363d',
-            tertiaryColor: '#0d1117',
-            lineColor: '#58a6ff',
-            textColor: '#e6edf3',
-            mainBkg: '#161b22',
-            nodeBorder: '#30363d',
-            clusterBkg: '#161b22',
-            edgeLabelBackground: '#0d1117',
-            actorBkg: '#161b22',
-            actorBorder: '#30363d',
-            actorTextColor: '#e6edf3',
-            signalColor: '#58a6ff',
-            signalTextColor: '#e6edf3',
-          },
+          themeVariables: getThemeVariables(),
         })
 
         const id = `mermaid-diagram-${renderCount++}`

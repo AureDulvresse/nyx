@@ -21,7 +21,7 @@ export function PortfolioPage({
   completedProjects: Project[]
   certifications: Certification[]
   credits: { earned: number; total: number }
-}) {
+}): React.JSX.Element {
   const activeCerts = certifications.filter((c) => c.status !== 'not_started')
   const totalPoints = completedLabs.reduce((sum, l) => sum + l.score + l.bonusPoints, 0)
 

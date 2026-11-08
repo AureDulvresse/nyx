@@ -4,7 +4,21 @@ import { useCallback, useEffect, useState, useTransition } from 'react'
 import { searchCheat, toggleCheatFavorite } from '@/actions'
 import type { CheatEntry } from '@/domain'
 
-export function useCheatSearch(initialEntries: CheatEntry[]) {
+export interface CheatSearchState {
+  query: string
+  setQuery: (query: string) => void
+  category: string | undefined
+  setCategory: (category: string | undefined) => void
+  entries: CheatEntry[]
+  isPending: boolean
+  toggleFavorite: (id: string) => void
+}
+
+function flipFavorite(entries: CheatEntry[], id: string): CheatEntry[] {
+  return entries.map((e) => (e.id === id ? { ...e, isFavorite: !e.isFavorite } : e))
+}
+
+export function useCheatSearch(initialEntries: CheatEntry[]): CheatSearchState {
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState<string | undefined>(undefined)
   const [entries, setEntries] = useState(initialEntries)
@@ -26,9 +40,9 @@ export function useCheatSearch(initialEntries: CheatEntry[]) {
   // search-result array, so without a local flip the star only reflects the new state after the
   // next search (typing, changing category) happens to refetch it.
   const toggleFavorite = useCallback((id: string) => {
-    setEntries((prev) => prev.map((e) => (e.id === id ? { ...e, isFavorite: !e.isFavorite } : e)))
+    setEntries((prev) => flipFavorite(prev, id))
     toggleCheatFavorite({ cheatId: id }).then((res) => {
-      if (!res.success) setEntries((prev) => prev.map((e) => (e.id === id ? { ...e, isFavorite: !e.isFavorite } : e)))
+      if (!res.success) setEntries((prev) => flipFavorite(prev, id))
     })
   }, [])
 

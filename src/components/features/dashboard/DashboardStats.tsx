@@ -12,7 +12,7 @@ export function DashboardStats({
   flashcardsDue: number
   coursesCount: number
   labsCompleted: number
-}) {
+}): React.JSX.Element {
   const stats = [
     { label: 'Cours', value: coursesCount, icon: BookOpen01Icon, color: 'text-blue' },
     { label: 'Flashcards dues', value: flashcardsDue, icon: Cards01Icon, color: 'text-teal' },

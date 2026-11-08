@@ -10,7 +10,7 @@ export default function Error({
 }: {
   error: Error & { digest?: string }
   unstable_retry: () => void
-}) {
+}): React.JSX.Element {
   useEffect(() => {
     console.error('[Nyx] Erreur applicative:', error)
   }, [error])

@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { Certificate01Icon, BookOpen01Icon } from 'hugeicons-react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -25,9 +25,9 @@ function readinessColor(readiness: number): string {
   return 'bg-red'
 }
 
-export function CertificationCard({ cert }: { cert: Certification }) {
+export function CertificationCard({ cert }: { cert: Certification }): React.JSX.Element {
   return (
-    <motion.div whileHover={{ y: -3 }} transition={{ type: 'spring', stiffness: 300, damping: 22 }}>
+    <m.div whileHover={{ y: -3 }} transition={{ type: 'spring', stiffness: 300, damping: 22 }}>
       <Card className="p-5">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
@@ -57,6 +57,6 @@ export function CertificationCard({ cert }: { cert: Certification }) {
           {cert.linkedCourses.length} cours associé{cert.linkedCourses.length > 1 ? 's' : ''}
         </div>
       </Card>
-    </motion.div>
+    </m.div>
   )
 }

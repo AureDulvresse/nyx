@@ -6,7 +6,7 @@ import { updateTPStep } from '@/actions'
 import { cn } from '@/lib/utils/cn'
 import type { TPStep } from '@/domain'
 
-export function StepItem({ tpId, step, index }: { tpId: string; step: TPStep; index: number }) {
+export function StepItem({ tpId, step, index }: { tpId: string; step: TPStep; index: number }): React.JSX.Element {
   const [isPending, startTransition] = useTransition()
 
   const handleToggle = () => {
@@ -23,7 +23,7 @@ export function StepItem({ tpId, step, index }: { tpId: string; step: TPStep; in
         aria-label={step.completed ? 'Marquer comme non fait' : 'Valider cette étape'}
         className={cn(
           'flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm font-semibold transition-colors disabled:opacity-50',
-          step.completed ? 'bg-green text-[#0d1117]' : 'bg-background text-text-secondary border border-border hover:border-violet-nyx/50'
+          step.completed ? 'bg-green text-background' : 'bg-background text-text-secondary border border-border hover:border-violet-nyx/50'
         )}
       >
         {step.completed ? <CheckmarkSquare02Icon size={15} /> : index + 1}

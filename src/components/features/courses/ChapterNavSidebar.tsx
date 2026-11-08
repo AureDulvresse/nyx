@@ -12,7 +12,7 @@ export function ChapterNavSidebar({
   courseSlug: string
   chapters: Chapter[]
   currentNumber: number
-}) {
+}): React.JSX.Element {
   const completedCount = chapters.filter((c) => c.status === 'completed').length
   const percentage = chapters.length > 0 ? Math.round((completedCount / chapters.length) * 100) : 0
 

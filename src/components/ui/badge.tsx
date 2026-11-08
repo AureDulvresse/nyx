@@ -19,6 +19,6 @@ const badgeVariants = cva('inline-flex items-center whitespace-nowrap rounded-fu
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement>, VariantProps<typeof badgeVariants> {}
 
-export function Badge({ className, variant, ...props }: BadgeProps) {
+export function Badge({ className, variant, ...props }: BadgeProps): React.JSX.Element {
   return <span className={cn(badgeVariants({ variant, className }))} {...props} />
 }

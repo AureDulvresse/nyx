@@ -12,7 +12,7 @@ import type { ProjectCategory } from '@/domain'
 
 const CATEGORIES = Object.keys(PROJECT_CATEGORY_CONFIG) as ProjectCategory[]
 
-export function NewProjectModal({ onClose }: { onClose: () => void }) {
+export function NewProjectModal({ onClose }: { onClose: () => void }): React.JSX.Element {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [category, setCategory] = useState<ProjectCategory>('pentest')

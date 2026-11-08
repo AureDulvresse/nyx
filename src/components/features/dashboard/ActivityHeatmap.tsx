@@ -1,6 +1,6 @@
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { DateUtils } from '@/lib/utils/date.utils'
-import type { ActivityDay } from '@/services'
+import type { ActivityDay } from '@/domain'
 
 function levelFor(count: number): string {
   if (count === 0) return 'bg-surface'
@@ -9,7 +9,7 @@ function levelFor(count: number): string {
   return 'bg-violet-nyx'
 }
 
-export function ActivityHeatmap({ days }: { days: ActivityDay[] }) {
+export function ActivityHeatmap({ days }: { days: ActivityDay[] }): React.JSX.Element {
   const weeks: ActivityDay[][] = []
   for (let i = 0; i < days.length; i += 7) {
     weeks.push(days.slice(i, i + 7))

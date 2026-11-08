@@ -2,7 +2,7 @@ import { projectRepo } from '@/repositories'
 import { PageHeader } from '@/components/common/PageHeader'
 import { ProjectsExplorer } from '@/components/features/projects/ProjectsExplorer'
 
-export default async function Page() {
+export default async function Page(): Promise<React.JSX.Element> {
   const projects = await projectRepo.findAll()
 
   return (

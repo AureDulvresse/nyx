@@ -1,4 +1,4 @@
-import { Flashcard, SM2Quality, SM2Result } from '@/domain'
+import type { Flashcard, SM2Quality, SM2Result } from '@/domain'
 import { addDays } from 'date-fns'
 
 export function calculateSM2(
@@ -22,5 +22,4 @@ export function calculateSM2(
 
 export const FlashcardService = {
   calculateSM2,
-  isDue: (card: Flashcard): boolean => new Date(card.nextReview) <= new Date(),
 }

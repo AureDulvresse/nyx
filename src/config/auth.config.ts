@@ -1,6 +1,7 @@
 import type { NextAuthConfig } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import { verifyCredentials } from '@/lib/auth/credentials'
+
 export const authConfig: NextAuthConfig = {
   providers: [
     Credentials({

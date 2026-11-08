@@ -1,4 +1,4 @@
-import type { Chapter, ChapterStatus, Course, CourseProgress } from '@/domain'
+import type { Chapter, ChapterStatus, Course, CourseProgress, ResumePoint } from '@/domain'
 
 export interface ICourseRepository {
   findAll(): Promise<Course[]>
@@ -8,12 +8,22 @@ export interface ICourseRepository {
   updateCoverImage(id: string, coverImage: string): Promise<Course>
 }
 
+export interface GlobalProgress {
+  total: number
+  completed: number
+  percentage: number
+}
+
 export interface IChapterRepository {
   findById(id: string): Promise<Chapter | null>
   findByCourse(courseId: string): Promise<Chapter[]>
   updateStatus(id: string, status: ChapterStatus): Promise<Chapter>
+  /** Moves a chapter from not_started to in_progress; no-op otherwise. Returns true if it changed. */
+  markStarted(id: string): Promise<boolean>
   updateNotes(id: string, notes: string): Promise<Chapter>
   markReviewed(id: string): Promise<Chapter>
-  getGlobalProgress(): Promise<{ total: number; completed: number; percentage: number }>
+  getGlobalProgress(): Promise<GlobalProgress>
   getProgressByCourse(courseId: string): Promise<CourseProgress>
+  getAllCourseProgress(): Promise<CourseProgress[]>
+  findResumePoint(): Promise<ResumePoint | null>
 }

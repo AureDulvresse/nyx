@@ -1,12 +1,12 @@
 import { courseRepo, chapterRepo } from '@/repositories'
 import { PageHeader } from '@/components/common/PageHeader'
-import { ProgressRing } from '@/components/common/ProgressRing'
 import { CourseCatalog } from '@/components/features/courses/CourseCatalog'
+import { GlobalProgressSummary } from '@/components/features/courses/GlobalProgressSummary'
 
-export default async function Page() {
-  const courses = await courseRepo.findAll()
-  const [progresses, globalProgress] = await Promise.all([
-    Promise.all(courses.map((c) => chapterRepo.getProgressByCourse(c.id))),
+export default async function Page(): Promise<React.JSX.Element> {
+  const [courses, progresses, globalProgress] = await Promise.all([
+    courseRepo.findAll(),
+    chapterRepo.getAllCourseProgress(),
     chapterRepo.getGlobalProgress(),
   ])
 
@@ -15,17 +15,7 @@ export default async function Page() {
       <PageHeader
         title="Cours"
         description={`${courses.length} cours, ${globalProgress.total} chapitres — de Linux à l'IA appliquée à la cybersécurité.`}
-        actions={
-          <div className="flex items-center gap-3">
-            <ProgressRing percentage={globalProgress.percentage} size={48} strokeWidth={4} />
-            <div className="text-sm">
-              <p className="font-medium text-text-primary">
-                {globalProgress.completed}/{globalProgress.total}
-              </p>
-              <p className="text-text-secondary">chapitres</p>
-            </div>
-          </div>
-        }
+        actions={<GlobalProgressSummary {...globalProgress} />}
       />
       <CourseCatalog courses={courses} progresses={progresses} />
     </div>

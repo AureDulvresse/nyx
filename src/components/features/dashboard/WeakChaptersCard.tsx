@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import type { WeakChapter } from '@/domain'
 
-export function WeakChaptersCard({ chapters }: { chapters: WeakChapter[] }) {
+export function WeakChaptersCard({ chapters }: { chapters: WeakChapter[] }): React.JSX.Element | null {
   if (chapters.length === 0) return null
 
   return (

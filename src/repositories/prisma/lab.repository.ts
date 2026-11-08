@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma'
+import { cacheService, STATS_CACHE_KEYS } from '@/infrastructure/cache'
 import type { ILabRepository } from '../interfaces'
 import type { CompletedLabSession, Lab, LabSession, LabSessionStatus } from '@/domain'
 
@@ -10,10 +11,6 @@ export class PrismaLabRepository implements ILabRepository {
 
   async findById(id: string): Promise<Lab | null> {
     return prisma.lab.findUnique({ where: { id }, include: { flags: true } }) as unknown as Promise<Lab | null>
-  }
-
-  async findBySlug(slug: string): Promise<Lab | null> {
-    return prisma.lab.findUnique({ where: { slug }, include: { flags: true } }) as unknown as Promise<Lab | null>
   }
 
   async countActiveSessions(): Promise<number> {
@@ -56,9 +53,11 @@ export class PrismaLabRepository implements ILabRepository {
   }
 
   async createSession(id: string, labId: string, kaliId: string, networkId: string): Promise<LabSession> {
-    return prisma.labSession.create({
+    const session = await prisma.labSession.create({
       data: { id, labId, kaliId, networkId, status: 'active' },
-    }) as unknown as Promise<LabSession>
+    })
+    await cacheService.del(...STATS_CACHE_KEYS)
+    return session as unknown as LabSession
   }
 
   async findSession(sessionId: string): Promise<LabSession | null> {
@@ -71,7 +70,7 @@ export class PrismaLabRepository implements ILabRepository {
     score?: number,
     bonusPoints?: number
   ): Promise<LabSession> {
-    return prisma.labSession.update({
+    const session = await prisma.labSession.update({
       where: { id: sessionId },
       data: {
         status,
@@ -79,7 +78,9 @@ export class PrismaLabRepository implements ILabRepository {
         ...(bonusPoints !== undefined ? { bonusPoints } : {}),
         ...(status === 'completed' ? { completedAt: new Date() } : {}),
       },
-    }) as unknown as Promise<LabSession>
+    })
+    await cacheService.del(...STATS_CACHE_KEYS)
+    return session as unknown as LabSession
   }
 
   async captureFlag(sessionId: string, flagId: string): Promise<{ alreadyCaptured: boolean }> {
@@ -89,6 +90,7 @@ export class PrismaLabRepository implements ILabRepository {
     if (existing) return { alreadyCaptured: true }
 
     await prisma.flagCapture.create({ data: { flagId, sessionId } })
+    await cacheService.del(...STATS_CACHE_KEYS)
     return { alreadyCaptured: false }
   }
 

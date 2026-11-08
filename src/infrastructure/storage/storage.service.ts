@@ -1,40 +1,48 @@
-import { PutObjectCommand, GetObjectCommand, DeleteObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3'
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
-import { getMinioClient } from './minio.client'
+import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
+import path from 'node:path'
+import { STORAGE_PUBLIC_PREFIX, STORAGE_ROOT, type StorageBucket } from './storage.types'
 
 export interface IStorageService {
-  upload(bucket: string, key: string, body: Buffer | Uint8Array, contentType: string): Promise<string>
+  /** Writes the file and returns its public URL. */
+  upload(bucket: StorageBucket, key: string, body: Buffer | Uint8Array): Promise<string>
   getPublicUrl(bucket: string, key: string): string
-  getPresignedUrl(bucket: string, key: string, expiresIn?: number): Promise<string>
+  read(bucket: string, key: string): Promise<Buffer | null>
   delete(bucket: string, key: string): Promise<void>
-  list(bucket: string, prefix?: string): Promise<string[]>
 }
 
-export class MinioStorageService implements IStorageService {
-  private client = getMinioClient()
+// Local-disk storage (STORAGE_DIR, mounted as a volume in Docker), served by src/app/uploads.
+export class LocalStorageService implements IStorageService {
+  private readonly root = path.resolve(STORAGE_ROOT)
 
-  async upload(bucket: string, key: string, body: Buffer | Uint8Array, contentType: string): Promise<string> {
-    await this.client.send(new PutObjectCommand({ Bucket: bucket, Key: key, Body: body, ContentType: contentType }))
+  async upload(bucket: StorageBucket, key: string, body: Buffer | Uint8Array): Promise<string> {
+    const file = this.resolve(bucket, key)
+    await mkdir(path.dirname(file), { recursive: true })
+    await writeFile(file, body)
     return this.getPublicUrl(bucket, key)
   }
 
   getPublicUrl(bucket: string, key: string): string {
-    return `${process.env.MINIO_PUBLIC_URL}/${bucket}/${key}`
+    return `${STORAGE_PUBLIC_PREFIX}/${bucket}/${key}`
   }
 
-  async getPresignedUrl(bucket: string, key: string, expiresIn = 3600): Promise<string> {
-    const command = new GetObjectCommand({ Bucket: bucket, Key: key })
-    return getSignedUrl(this.client, command, { expiresIn })
+  async read(bucket: string, key: string): Promise<Buffer | null> {
+    try {
+      return await readFile(this.resolve(bucket, key))
+    } catch {
+      return null
+    }
   }
 
   async delete(bucket: string, key: string): Promise<void> {
-    await this.client.send(new DeleteObjectCommand({ Bucket: bucket, Key: key }))
+    await rm(this.resolve(bucket, key), { force: true })
   }
 
-  async list(bucket: string, prefix?: string): Promise<string[]> {
-    const result = await this.client.send(new ListObjectsV2Command({ Bucket: bucket, Prefix: prefix }))
-    return (result.Contents ?? []).map((o) => o.Key!).filter(Boolean)
+  // Resolves bucket/key under the storage root and rejects any path-traversal attempt.
+  private resolve(bucket: string, key: string): string {
+    const full = path.resolve(this.root, bucket, key)
+    if (!full.startsWith(this.root + path.sep)) throw new Error('Invalid storage path')
+    return full
   }
 }
 
-export const storageService: IStorageService = new MinioStorageService()
+export const storageService: IStorageService = new LocalStorageService()

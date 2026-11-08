@@ -1,7 +1,4 @@
-export interface ActivityDay {
-  date: string
-  count: number
-}
+import type { ActivityDay } from '@/domain'
 
 function toDayKey(date: Date): string {
   return date.toISOString().slice(0, 10)

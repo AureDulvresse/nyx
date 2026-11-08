@@ -3,34 +3,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react'
 import { submitExam } from '@/actions'
 import { useToast } from '@/hooks/useToast'
+import { ExamService, QuizService } from '@/services'
 import type { CourseExam, ExamAttemptResult, QuizQuestion } from '@/domain'
 
 // Certification-style pacing (CEH/Security+ ballpark) rather than the untimed, reveal-as-you-go
 // chapter quiz — the whole point of a final exam is to simulate real exam conditions.
 const SECONDS_PER_QUESTION = 90
 
-export function isMultiSelect(question: QuizQuestion): boolean {
-  return Array.isArray(question.correct) && question.correct.length > 1
-}
-
-function correctIndices(question: QuizQuestion): number[] {
-  return Array.isArray(question.correct) ? question.correct : [question.correct]
-}
-
-function shuffle<T>(items: T[]): T[] {
-  const copy = [...items]
-  for (let i = copy.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[copy[i], copy[j]] = [copy[j], copy[i]]
-  }
-  return copy
-}
-
 // Reorders one question's 4 options and remaps `correct` to match — so memorizing "the 2nd
 // option" from a previous attempt is useless, the content itself hasn't moved, only its position.
 function shuffleQuestionOptions(question: QuizQuestion): QuizQuestion {
-  const correctSet = new Set(correctIndices(question))
-  const order = shuffle([0, 1, 2, 3])
+  const correctSet = new Set(ExamService.correctIndices(question))
+  const order = QuizService.shuffle([0, 1, 2, 3])
   const options = order.map((i) => question.options[i]) as [string, string, string, string]
   const remapped = order.reduce<number[]>((acc, originalIndex, newIndex) => {
     if (correctSet.has(originalIndex)) acc.push(newIndex)
@@ -47,11 +31,27 @@ const MIN_SUBSET_SIZE = 20
 
 function buildShuffledQuestions(questions: QuizQuestion[]): QuizQuestion[] {
   const targetSize = Math.max(MIN_SUBSET_SIZE, Math.round(questions.length * SUBSET_RATIO))
-  const pool = questions.length > targetSize ? shuffle(questions).slice(0, targetSize) : shuffle(questions)
+  const pool = questions.length > targetSize ? QuizService.shuffle(questions).slice(0, targetSize) : QuizService.shuffle(questions)
   return pool.map(shuffleQuestionOptions)
 }
 
-export function useExamSession(exam: CourseExam) {
+export interface ExamSessionState {
+  shuffledQuestions: QuizQuestion[]
+  currentIndex: number
+  currentQuestion: QuizQuestion
+  total: number
+  answersByQuestion: Record<string, number[]>
+  answeredCount: number
+  remainingSeconds: number
+  result: ExamAttemptResult | null
+  isSubmitting: boolean
+  select: (choice: number) => void
+  goTo: (index: number) => void
+  submit: () => void
+  restart: () => void
+}
+
+export function useExamSession(exam: CourseExam): ExamSessionState {
   const [shuffledQuestions, setShuffledQuestions] = useState(() => buildShuffledQuestions(exam.questions))
   // Based on the drawn subset actually presented this attempt, not the full question bank — a
   // 60-question bank sliced down to 30 for this attempt should still get ~30 questions' worth of
@@ -106,7 +106,7 @@ export function useExamSession(exam: CourseExam) {
     (choice: number) => {
       setAnswersByQuestion((prev) => {
         const current = prev[currentQuestion.id] ?? []
-        if (!isMultiSelect(currentQuestion)) return { ...prev, [currentQuestion.id]: [choice] }
+        if (!ExamService.isMultiSelect(currentQuestion)) return { ...prev, [currentQuestion.id]: [choice] }
 
         const next = current.includes(choice) ? current.filter((c) => c !== choice) : [...current, choice]
         return { ...prev, [currentQuestion.id]: next }
@@ -165,10 +165,4 @@ export function useExamSession(exam: CourseExam) {
       restart,
     ]
   )
-}
-
-export function formatRemaining(seconds: number): string {
-  const m = Math.floor(seconds / 60)
-  const s = seconds % 60
-  return `${m}:${s.toString().padStart(2, '0')}`
 }

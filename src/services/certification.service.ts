@@ -1,12 +1,13 @@
-import { Certification, CourseProgress } from '@/domain'
+import type { Certification, CourseProgress } from '@/domain'
+import { ProgressService } from './progress.service'
 
 export const CertificationService = {
   computeReadiness(cert: Certification, courseProgresses: CourseProgress[]): number {
     const linked = courseProgresses.filter((c) => cert.linkedCourses.includes(c.slug))
-    if (linked.length === 0) return 0
+    return ProgressService.overallPercentage(linked)
+  },
 
-    const total = linked.reduce((sum, c) => sum + c.total, 0)
-    const completed = linked.reduce((sum, c) => sum + c.completed, 0)
-    return total > 0 ? Math.round((completed / total) * 100) : 0
+  withReadiness(certs: Certification[], courseProgresses: CourseProgress[]): Certification[] {
+    return certs.map((cert) => ({ ...cert, readiness: CertificationService.computeReadiness(cert, courseProgresses) }))
   },
 }

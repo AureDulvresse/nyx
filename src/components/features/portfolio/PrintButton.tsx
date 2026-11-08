@@ -3,7 +3,7 @@
 import { Download04Icon } from 'hugeicons-react'
 import { Button } from '@/components/ui/button'
 
-export function PrintButton() {
+export function PrintButton(): React.JSX.Element {
   return (
     <Button variant="secondary" onClick={() => window.print()}>
       <Download04Icon size={16} />

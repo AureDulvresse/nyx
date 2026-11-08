@@ -6,7 +6,7 @@ import { Terminal } from '@/components/features/terminal/Terminal'
 import { CommandJournal } from '@/components/features/terminal/CommandJournal'
 import { useTPSession } from '@/hooks/useTPSession'
 
-export function TPShell({ tpId }: { tpId: string }) {
+export function TPShell({ tpId }: { tpId: string }): React.JSX.Element {
   const { state, sessionId, wsUrl, error, isPending, startShell, stopShell } = useTPSession(tpId)
 
   if (state === 'idle') {

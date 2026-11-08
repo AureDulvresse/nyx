@@ -1,43 +1,28 @@
-'use client'
-
-import { useMemo, useTransition, type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import Link from 'next/link'
-import { Clock01Icon, Target02Icon, ArrowRight01Icon, CheckmarkCircle02Icon } from 'hugeicons-react'
+import { Clock01Icon, Target02Icon, ArrowRight01Icon, BookOpen01Icon } from 'hugeicons-react'
 import { ChapterNavSidebar } from './ChapterNavSidebar'
 import { ChapterFooterNav } from './ChapterFooterNav'
 import { CommentSection } from './CommentSection'
 import { ResourceSection } from './ResourceSection'
 import { PracticeLinks } from './PracticeLinks'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { updateChapterStatus, markChapterReviewed } from '@/actions'
-import { DateUtils } from '@/lib/utils/date.utils'
+import { ReadAloudButton } from './ReadAloudButton'
+import { ReadingProgressBar } from './ReadingProgressBar'
+import { ChapterTocDesktop, ChapterTocMobile } from './ChapterToc'
+import { ChapterKeyboardNav } from './ChapterKeyboardNav'
+import { ChapterCompleteButton, ChapterReviewedButton } from './ChapterHeaderActions'
+import { DifficultyBadge } from '@/components/common/DifficultyBadge'
 import { stripMarkdownForSpeech } from '@/lib/utils/speech.utils'
-import { AskNyxContextSetter } from '@/components/features/assistant/AskNyxContextSetter'
-import { ReadAloudButton } from '@/components/features/assistant/ReadAloudButton'
-import { useToast } from '@/hooks/useToast'
-import type { Chapter, Comment, Course, CourseProgress, Quiz, Resource, TP } from '@/domain'
-import type { ChapterFrontmatter } from '@/infrastructure/content'
+import { estimateReadingMinutes, extractHeadings } from '@/lib/utils/markdown.utils'
+import type { Chapter, ChapterFrontmatter, Comment, Course, Quiz, Resource, TP } from '@/domain'
 
-const DIFFICULTY_LABELS: Record<string, string> = {
-  beginner: 'Débutant',
-  intermediate: 'Intermédiaire',
-  advanced: 'Avancé',
-}
-
-const DIFFICULTY_VARIANT: Record<string, 'green' | 'orange' | 'red'> = {
-  beginner: 'green',
-  intermediate: 'orange',
-  advanced: 'red',
-}
-
+// Server component: only the interactive bits (progress bar, TOC, buttons, comments…) ship JS.
 export function ChapterPage({
   course,
   frontmatter,
   mdxContent,
   rawSource,
   currentChapter,
-  progress,
   comments,
   resources,
   quiz,
@@ -48,132 +33,102 @@ export function ChapterPage({
   mdxContent: ReactNode
   rawSource: string
   currentChapter: Chapter
-  progress: CourseProgress
   comments: Comment[]
   resources: Resource[]
   quiz: Quiz | null
   tp: TP | null
-}) {
-  const [isPending, startTransition] = useTransition()
-  const [isMarkingReviewed, startReviewTransition] = useTransition()
-  const speechText = useMemo(() => stripMarkdownForSpeech(rawSource), [rawSource])
-  const toast = useToast()
-
-  const toggleComplete = () => {
-    const markingComplete = currentChapter.status !== 'completed'
-    startTransition(async () => {
-      const res = await updateChapterStatus({
-        chapterId: currentChapter.id,
-        status: markingComplete ? 'completed' : 'in_progress',
-      })
-      if (res.success && markingComplete) {
-        toast.success(`Chapitre "${frontmatter.title}" marqué terminé.`)
-      }
-    })
-  }
-
-  const markReviewed = () => {
-    startReviewTransition(async () => {
-      await markChapterReviewed({ chapterId: currentChapter.id })
-    })
-  }
+}): React.JSX.Element {
+  const headings = extractHeadings(rawSource)
+  const speechText = stripMarkdownForSpeech(rawSource)
+  const readingMinutes = estimateReadingMinutes(rawSource)
 
   const sortedChapters = [...course.chapters].sort((a, b) => a.number - b.number)
   const currentIndex = sortedChapters.findIndex((c) => c.number === currentChapter.number)
   const previousChapter = currentIndex > 0 ? sortedChapters[currentIndex - 1] : null
   const nextChapter = currentIndex < sortedChapters.length - 1 ? sortedChapters[currentIndex + 1] : null
+  const hrefFor = (c: Chapter | null): string | null => (c ? `/courses/${course.slug}/${c.number}` : null)
 
   return (
     <div className="flex gap-8">
+      <ReadingProgressBar />
       <ChapterNavSidebar courseSlug={course.slug} chapters={course.chapters} currentNumber={currentChapter.number} />
 
-      <div className="min-w-0 flex-1 space-y-10">
+      <article className="min-w-0 flex-1 space-y-10">
         <div>
-          <nav className="mb-3 flex items-center gap-1.5 text-sm text-text-secondary">
+          <nav aria-label="Fil d'Ariane" className="mb-3 flex items-center gap-1.5 text-sm text-text-secondary">
             <Link href="/courses" className="hover:text-text-primary">
               Cours
             </Link>
-            <ArrowRight01Icon size={12} className="shrink-0" />
+            <ArrowRight01Icon size={12} className="shrink-0" aria-hidden />
             <Link href={`/courses/${course.slug}`} className="hover:text-text-primary">
               {course.title}
             </Link>
+            <ArrowRight01Icon size={12} className="shrink-0" aria-hidden />
+            <span aria-current="page">
+              Chapitre {currentChapter.number}/{sortedChapters.length}
+            </span>
           </nav>
 
-          <div className="mb-6 flex items-start justify-between gap-4">
+          <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row">
             <div>
               <h1 className="text-2xl font-bold text-text-primary">{frontmatter.title}</h1>
-              <div className="mt-2 flex items-center gap-2">
-                <Badge variant={DIFFICULTY_VARIANT[frontmatter.difficulty] ?? 'outline'}>
-                  {DIFFICULTY_LABELS[frontmatter.difficulty] ?? frontmatter.difficulty}
-                </Badge>
-                <span className="flex items-center gap-1 text-xs text-text-secondary">
-                  <Clock01Icon size={14} /> {frontmatter.duration} min
-                </span>
-                {currentChapter.lastReviewedAt ? (
-                  <button
-                    onClick={markReviewed}
-                    disabled={isMarkingReviewed}
-                    title="Marquer comme vérifié à nouveau aujourd'hui"
-                    className="flex items-center gap-1 text-xs text-text-secondary hover:text-teal"
-                  >
-                    <CheckmarkCircle02Icon size={14} className="text-teal" />
-                    Vérifié {DateUtils.relative(currentChapter.lastReviewedAt)}
-                  </button>
-                ) : (
-                  <button
-                    onClick={markReviewed}
-                    disabled={isMarkingReviewed}
-                    title="Marquer ce chapitre comme vérifié aujourd'hui (outils/CVE à jour)"
-                    className="flex items-center gap-1 text-xs text-text-secondary hover:text-teal"
-                  >
-                    <CheckmarkCircle02Icon size={14} />
-                    Jamais vérifié
-                  </button>
+              <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                <DifficultyBadge difficulty={frontmatter.difficulty} />
+                {frontmatter.duration > 0 && (
+                  <span className="flex items-center gap-1 text-xs text-text-secondary" title="Durée estimée du chapitre (lab compris)">
+                    <Clock01Icon size={14} aria-hidden /> {frontmatter.duration} min
+                  </span>
                 )}
+                <span className="flex items-center gap-1 text-xs text-text-secondary" title="Temps de lecture estimé">
+                  <BookOpen01Icon size={14} aria-hidden /> ~{readingMinutes} min de lecture
+                </span>
+                <ChapterReviewedButton chapterId={currentChapter.id} lastReviewedAt={currentChapter.lastReviewedAt ?? null} />
               </div>
               <div className="mt-3">
                 <ReadAloudButton text={speechText} />
               </div>
             </div>
-            <Button
-              disabled={isPending}
-              onClick={toggleComplete}
-              variant={currentChapter.status === 'completed' ? 'secondary' : 'success'}
-              className="shrink-0"
-            >
-              {currentChapter.status === 'completed' ? 'Marquer non terminé' : 'Marquer terminé'}
-            </Button>
+            <ChapterCompleteButton
+              chapterId={currentChapter.id}
+              chapterTitle={frontmatter.title}
+              status={currentChapter.status}
+            />
           </div>
-
-          <AskNyxContextSetter
-            context={{ kind: 'chapter', title: frontmatter.title, excerpt: speechText.slice(0, 3000) }}
-          />
 
           {frontmatter.objectives?.length > 0 && (
             <div className="mb-6 rounded-lg border border-violet-nyx/30 bg-violet-nyx/5 p-4">
               <p className="mb-2 flex items-center gap-2 text-sm font-semibold text-purple">
-                <Target02Icon size={16} /> Ce que vous allez apprendre
+                <Target02Icon size={16} aria-hidden /> Ce que vous allez apprendre
               </p>
               <ul className="space-y-1 text-sm text-text-secondary">
                 {frontmatter.objectives.map((o, i) => (
                   <li key={i} className="flex gap-2">
-                    <span className="text-purple">›</span> {o}
+                    <span className="text-purple" aria-hidden>
+                      ›
+                    </span>{' '}
+                    {o}
                   </li>
                 ))}
               </ul>
             </div>
           )}
 
-          {mdxContent}
+          <ChapterTocMobile headings={headings} />
+
+          {/* scroll-mt keeps anchored headings clear of the sticky header. */}
+          <div className="[&_h2]:scroll-mt-20 [&_h3]:scroll-mt-20">{mdxContent}</div>
         </div>
 
-        <ChapterFooterNav
-          courseSlug={course.slug}
-          currentChapterId={currentChapter.id}
-          isCurrentCompleted={currentChapter.status === 'completed'}
-          previous={previousChapter}
-          next={nextChapter}
-        />
+        <div className="space-y-3">
+          <ChapterFooterNav
+            courseSlug={course.slug}
+            currentChapterId={currentChapter.id}
+            isCurrentCompleted={currentChapter.status === 'completed'}
+            previous={previousChapter}
+            next={nextChapter}
+          />
+          <ChapterKeyboardNav previousHref={hrefFor(previousChapter)} nextHref={hrefFor(nextChapter)} />
+        </div>
 
         <hr className="border-border" />
         <PracticeLinks quiz={quiz} tp={tp} />
@@ -183,7 +138,9 @@ export function ChapterPage({
 
         <hr className="border-border" />
         <CommentSection chapterId={currentChapter.id} initialComments={comments} />
-      </div>
+      </article>
+
+      <ChapterTocDesktop headings={headings} />
     </div>
   )
 }

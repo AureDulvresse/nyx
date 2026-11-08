@@ -1,18 +1,18 @@
 'use client'
 
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { Task01Icon, CheckmarkCircle02Icon, ListViewIcon } from 'hugeicons-react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import type { TP } from '@/domain'
 
-export function TPCard({ tp }: { tp: TP }) {
+export function TPCard({ tp }: { tp: TP }): React.JSX.Element {
   const isDone = Boolean(tp.completedAt)
 
   return (
     <Link href={`/tp/${tp.id}`} className="block h-full">
-      <motion.div whileHover={{ y: -3 }} transition={{ type: 'spring', stiffness: 300, damping: 22 }} className="h-full">
+      <m.div whileHover={{ y: -3 }} transition={{ type: 'spring', stiffness: 300, damping: 22 }} className="h-full">
         <Card className="h-full p-5 transition-colors hover:border-violet-nyx/50">
           <div className="flex items-start justify-between">
             <div className="rounded-lg bg-purple/15 p-2.5">
@@ -32,7 +32,7 @@ export function TPCard({ tp }: { tp: TP }) {
             </span>
           </div>
         </Card>
-      </motion.div>
+      </m.div>
     </Link>
   )
 }

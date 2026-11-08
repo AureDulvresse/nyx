@@ -1,19 +1,35 @@
 import type Docker from 'dockerode'
-import { Lab, DockerTarget } from '@/domain'
+import type { Lab, DockerTarget } from '@/domain'
 import { sessions } from './sessions.store'
 import { cacheService, CACHE_KEYS, CACHE_TTL } from '@/infrastructure/cache'
 import { getDockerClient } from './docker.client'
 
+export interface EnvironmentHandle {
+  kaliId: string
+  networkId: string
+}
+
 export interface IDockerService {
-  startLabEnvironment(lab: Lab, sessionId: string): Promise<{ kaliId: string; networkId: string }>
+  startLabEnvironment(lab: Lab, sessionId: string): Promise<EnvironmentHandle>
   stopLabEnvironment(sessionId: string): Promise<void>
-  isSessionRunning(sessionId: string): Promise<boolean>
-  startTPEnvironment(
-    sessionId: string,
-    kaliImage: string,
-    targets: DockerTarget[]
-  ): Promise<{ kaliId: string; networkId: string }>
+  startTPEnvironment(sessionId: string, kaliImage: string, targets: DockerTarget[]): Promise<EnvironmentHandle>
   stopTPEnvironment(sessionId: string): Promise<void>
+  countActiveTPSessions(): Promise<number>
+}
+
+type SessionKind = 'lab' | 'tp'
+
+interface CachedSession extends EnvironmentHandle {
+  startedAt: string
+}
+
+const SESSION_CACHE: Record<SessionKind, { key: (sessionId: string) => string; ttl: number }> = {
+  lab: { key: CACHE_KEYS.labSession, ttl: CACHE_TTL.labSession },
+  tp: { key: CACHE_KEYS.tpSession, ttl: CACHE_TTL.tpSession },
+}
+
+function networkName(sessionId: string): string {
+  return `cl-${sessionId}`
 }
 
 // Labs reference public images (Kali, Metasploitable, etc.) that are never guaranteed to already
@@ -63,7 +79,7 @@ async function createSessionNetwork(docker: Docker, sessionId: string): Promise<
     try {
       const prefix = subnetPrefix(cidr)
       const network = await docker.createNetwork({
-        Name: `cl-${sessionId}`,
+        Name: networkName(sessionId),
         Driver: 'bridge',
         IPAM: { Config: [{ Subnet: cidr, Gateway: `${prefix}.1` }] },
       })
@@ -76,96 +92,39 @@ async function createSessionNetwork(docker: Docker, sessionId: string): Promise<
 }
 
 export class DockerLabService implements IDockerService {
-  private get docker() {
+  private get docker(): Docker {
     return getDockerClient()
   }
 
-  async startLabEnvironment(lab: Lab, sessionId: string) {
+  startLabEnvironment(lab: Lab, sessionId: string): Promise<EnvironmentHandle> {
+    return this.startEnvironment('lab', sessionId, lab.kaliImage, lab.targets)
+  }
+
+  stopLabEnvironment(sessionId: string): Promise<void> {
+    return this.stopEnvironment('lab', sessionId)
+  }
+
+  startTPEnvironment(sessionId: string, kaliImage: string, targets: DockerTarget[]): Promise<EnvironmentHandle> {
+    return this.startEnvironment('tp', sessionId, kaliImage, targets)
+  }
+
+  stopTPEnvironment(sessionId: string): Promise<void> {
+    return this.stopEnvironment('tp', sessionId)
+  }
+
+  async countActiveTPSessions(): Promise<number> {
+    return (await cacheService.get<number>(CACHE_KEYS.tpActiveSessions)) ?? 0
+  }
+
+  private async startEnvironment(
+    kind: SessionKind,
+    sessionId: string,
+    kaliImage: string,
+    targets: DockerTarget[]
+  ): Promise<EnvironmentHandle> {
     const docker = this.docker
     const { network, prefix } = await createSessionNetwork(docker, sessionId)
-
-    try {
-      await ensureImage(docker, lab.kaliImage)
-
-      const kali = await docker.createContainer({
-        Image: lab.kaliImage,
-        name: `kali-${sessionId}`,
-        Cmd: ['/bin/bash'],
-        Tty: true,
-        OpenStdin: true,
-        HostConfig: {
-          NetworkMode: `cl-${sessionId}`,
-          CapAdd: ['NET_ADMIN', 'NET_RAW'],
-          Memory: 512 * 1024 * 1024,
-          NanoCpus: 500_000_000,
-          Ulimits: [{ Name: 'nofile', Soft: 1024, Hard: 2048 }],
-        },
-      })
-      await kali.start()
-
-      for (const target of lab.targets) {
-        await ensureImage(docker, target.image)
-        const ctn = await docker.createContainer({
-          Image: target.image,
-          name: `${target.name}-${sessionId}`,
-          Hostname: target.hostname ?? target.name,
-          HostConfig: { NetworkMode: `cl-${sessionId}` },
-          NetworkingConfig: {
-            EndpointsConfig: {
-              [`cl-${sessionId}`]: { IPAMConfig: { IPv4Address: staticIpFor(prefix, target.ip) } },
-            },
-          },
-        })
-        await ctn.start()
-      }
-
-      await cacheService.set(
-        CACHE_KEYS.labSession(sessionId),
-        { kaliId: kali.id, networkId: network.id, startedAt: new Date().toISOString() },
-        CACHE_TTL.labSession
-      )
-      sessions.set(sessionId, { kaliId: kali.id })
-
-      return { kaliId: kali.id, networkId: network.id }
-    } catch (err) {
-      // Don't leak the network (or a partially started container) when any step above fails —
-      // otherwise every failed attempt (missing image, OOM, etc.) piles up orphaned Docker
-      // resources that the user has to clean up by hand.
-      await this.stopLabEnvironment(sessionId).catch(() => {})
-      await network.remove().catch(() => {})
-      throw err
-    }
-  }
-
-  async stopLabEnvironment(sessionId: string) {
-    const docker = this.docker
-    const cached = await cacheService.get<{ kaliId: string; networkId: string }>(CACHE_KEYS.labSession(sessionId))
-
-    const containers = await docker.listContainers({ all: true, filters: { name: [sessionId] } })
-
-    await Promise.allSettled(
-      containers.map(async (c) => {
-        const ctn = docker.getContainer(c.Id)
-        if (c.State === 'running') await ctn.stop({ t: 5 }).catch(() => {})
-        await ctn.remove({ force: true }).catch(() => {})
-      })
-    )
-
-    if (cached?.networkId) {
-      await docker.getNetwork(cached.networkId).remove().catch(() => {})
-    }
-
-    await cacheService.del(CACHE_KEYS.labSession(sessionId))
-    sessions.delete(sessionId)
-  }
-
-  async isSessionRunning(sessionId: string): Promise<boolean> {
-    return cacheService.exists(CACHE_KEYS.labSession(sessionId))
-  }
-
-  async startTPEnvironment(sessionId: string, kaliImage: string, targets: DockerTarget[]) {
-    const docker = this.docker
-    const { network, prefix } = await createSessionNetwork(docker, sessionId)
+    const netName = networkName(sessionId)
 
     try {
       await ensureImage(docker, kaliImage)
@@ -177,7 +136,7 @@ export class DockerLabService implements IDockerService {
         Tty: true,
         OpenStdin: true,
         HostConfig: {
-          NetworkMode: `cl-${sessionId}`,
+          NetworkMode: netName,
           CapAdd: ['NET_ADMIN', 'NET_RAW'],
           Memory: 512 * 1024 * 1024,
           NanoCpus: 500_000_000,
@@ -192,41 +151,50 @@ export class DockerLabService implements IDockerService {
           Image: target.image,
           name: `${target.name}-${sessionId}`,
           Hostname: target.hostname ?? target.name,
-          HostConfig: { NetworkMode: `cl-${sessionId}` },
+          HostConfig: { NetworkMode: netName },
           NetworkingConfig: {
             EndpointsConfig: {
-              [`cl-${sessionId}`]: { IPAMConfig: { IPv4Address: staticIpFor(prefix, target.ip) } },
+              [netName]: { IPAMConfig: { IPv4Address: staticIpFor(prefix, target.ip) } },
             },
           },
         })
         await ctn.start()
       }
 
-      await cacheService.set(
-        CACHE_KEYS.tpSession(sessionId),
-        { kaliId: kali.id, networkId: network.id, startedAt: new Date().toISOString() },
-        CACHE_TTL.tpSession
+      const handle: EnvironmentHandle = { kaliId: kali.id, networkId: network.id }
+      const cache = SESSION_CACHE[kind]
+      await cacheService.set<CachedSession>(
+        cache.key(sessionId),
+        { ...handle, startedAt: new Date().toISOString() },
+        cache.ttl
       )
       sessions.set(sessionId, { kaliId: kali.id })
-      // stopTPEnvironment only decrements when the matching session key is still around (see its
-      // comment) — a session abandoned past its own TTL (crash, closed tab, never explicitly
-      // stopped) would otherwise leave this counter incremented forever. Refreshing its TTL here
-      // bounds that drift to one session-timeout window instead of letting it accumulate forever:
-      // once nobody starts a new TP session for that long, the whole counter key just expires away.
-      await cacheService.incr(CACHE_KEYS.tpActiveSessions)
-      await cacheService.expire(CACHE_KEYS.tpActiveSessions, CACHE_TTL.tpSession)
 
-      return { kaliId: kali.id, networkId: network.id }
+      if (kind === 'tp') {
+        // stopEnvironment only decrements when the matching session key is still around (see its
+        // comment) — a session abandoned past its own TTL (crash, closed tab, never explicitly
+        // stopped) would otherwise leave this counter incremented forever. Refreshing its TTL here
+        // bounds that drift to one session-timeout window instead of letting it accumulate forever:
+        // once nobody starts a new TP session for that long, the whole counter key just expires away.
+        await cacheService.incr(CACHE_KEYS.tpActiveSessions)
+        await cacheService.expire(CACHE_KEYS.tpActiveSessions, CACHE_TTL.tpSession)
+      }
+
+      return handle
     } catch (err) {
-      await this.stopTPEnvironment(sessionId).catch(() => {})
+      // Don't leak the network (or a partially started container) when any step above fails —
+      // otherwise every failed attempt (missing image, OOM, etc.) piles up orphaned Docker
+      // resources that the user has to clean up by hand.
+      await this.stopEnvironment(kind, sessionId).catch(() => {})
       await network.remove().catch(() => {})
       throw err
     }
   }
 
-  async stopTPEnvironment(sessionId: string) {
+  private async stopEnvironment(kind: SessionKind, sessionId: string): Promise<void> {
     const docker = this.docker
-    const cached = await cacheService.get<{ kaliId: string; networkId: string }>(CACHE_KEYS.tpSession(sessionId))
+    const cacheKey = SESSION_CACHE[kind].key(sessionId)
+    const cached = await cacheService.get<CachedSession>(cacheKey)
 
     const containers = await docker.listContainers({ all: true, filters: { name: [sessionId] } })
 
@@ -242,12 +210,12 @@ export class DockerLabService implements IDockerService {
       await docker.getNetwork(cached.networkId).remove().catch(() => {})
     }
 
-    // Guarded on `cached`: startTPEnvironment sets the session key before incrementing the counter,
+    // Guarded on `cached`: startEnvironment sets the session key before incrementing the counter,
     // so if this is a cleanup call for a session that failed before that increment ever ran (see the
     // catch block above), `cached` is null and there is nothing to give back.
-    if (cached) await cacheService.decr(CACHE_KEYS.tpActiveSessions)
+    if (kind === 'tp' && cached) await cacheService.decr(CACHE_KEYS.tpActiveSessions)
 
-    await cacheService.del(CACHE_KEYS.tpSession(sessionId))
+    await cacheService.del(cacheKey)
     sessions.delete(sessionId)
   }
 }

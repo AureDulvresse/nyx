@@ -13,7 +13,7 @@ export function Header({
   streak?: number
   credits?: { earned: number; total: number }
   points?: number
-}) {
+}): React.JSX.Element {
   return (
     <header className="sticky top-0 z-20 flex items-center justify-between border-b border-border bg-background/80 px-4 py-3 backdrop-blur lg:px-8 print:hidden">
       <MobileNav />

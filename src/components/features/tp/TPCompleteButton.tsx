@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { completeTP } from '@/actions'
 import { useToast } from '@/hooks/useToast'
 
-export function TPCompleteButton({ tpId, initiallyCompleted }: { tpId: string; initiallyCompleted: boolean }) {
+export function TPCompleteButton({ tpId, initiallyCompleted }: { tpId: string; initiallyCompleted: boolean }): React.JSX.Element {
   const [completed, setCompleted] = useState(initiallyCompleted)
   const [isPending, startTransition] = useTransition()
   const toast = useToast()

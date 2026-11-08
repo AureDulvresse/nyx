@@ -1,11 +1,14 @@
 'use client'
 
-import { useRef } from 'react'
-import { useTerminal } from '@/hooks/useTerminal'
+import dynamic from 'next/dynamic'
+import { Skeleton } from '@/components/common/Skeleton'
 
-export function Terminal({ wsUrl }: { wsUrl: string | null }) {
-  const containerRef = useRef<HTMLDivElement>(null)
-  useTerminal(containerRef, wsUrl)
+// xterm (+ addons + CSS) only runs in the browser: load it lazily, client-side only.
+const TerminalInner = dynamic(() => import('./TerminalInner'), {
+  ssr: false,
+  loading: () => <Skeleton className="h-full w-full rounded-lg border border-border" />,
+})
 
-  return <div ref={containerRef} className="h-full w-full overflow-hidden rounded-lg border border-border bg-background p-2" />
+export function Terminal({ wsUrl }: { wsUrl: string | null }): React.JSX.Element {
+  return <TerminalInner wsUrl={wsUrl} />
 }

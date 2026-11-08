@@ -3,7 +3,7 @@ import { labRepo, courseRepo } from '@/repositories'
 import { MDXLoader } from '@/infrastructure/content'
 import { LabMissionPage } from '@/components/features/labs/LabMissionPage'
 
-export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+export default async function Page({ params }: { params: Promise<{ id: string }> }): Promise<React.JSX.Element> {
   const { id } = await params
   const lab = await labRepo.findById(id)
   if (!lab || !lab.published) notFound()

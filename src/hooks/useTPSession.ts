@@ -3,10 +3,20 @@
 import { useState, useCallback, useTransition } from 'react'
 import { startTPSession, stopTPSession } from '@/actions'
 
-type TPSessionState = 'idle' | 'loading' | 'active'
+export type TPShellState = 'idle' | 'loading' | 'active'
 
-export function useTPSession(tpId: string) {
-  const [state, setState] = useState<TPSessionState>('idle')
+export interface TPSessionState {
+  state: TPShellState
+  sessionId: string | null
+  wsUrl: string | null
+  error: string | null
+  isPending: boolean
+  startShell: () => void
+  stopShell: () => void
+}
+
+export function useTPSession(tpId: string): TPSessionState {
+  const [state, setState] = useState<TPShellState>('idle')
   const [sessionId, setSessionId] = useState<string | null>(null)
   const [wsUrl, setWsUrl] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)

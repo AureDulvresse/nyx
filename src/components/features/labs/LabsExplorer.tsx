@@ -1,13 +1,14 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { motion } from 'framer-motion'
-import { Search01Icon, Award01Icon, CheckmarkCircle02Icon, GridViewIcon } from 'hugeicons-react'
-import { Input } from '@/components/ui/input'
+import { m } from 'framer-motion'
+import { Award01Icon, CheckmarkCircle02Icon, GridViewIcon } from 'hugeicons-react'
+import { SearchInput } from '@/components/common/SearchInput'
+import { FilterChip } from '@/components/common/FilterChip'
+import { NoResults } from '@/components/common/NoResults'
 import { LabCard } from './LabCard'
 import { LAB_CATEGORY_CONFIG } from '@/lib/lab-category'
-import { LAB_DIFFICULTY_LABELS } from '@/lib/constants'
-import { cn } from '@/lib/utils/cn'
+import { DIFFICULTY_LABELS } from '@/lib/constants'
 import type { Lab, LabCategory, LabDifficulty } from '@/domain'
 
 type SortKey = 'default' | 'difficulty' | 'time' | 'points'
@@ -21,7 +22,7 @@ const SORT_LABELS: Record<SortKey, string> = {
   points: 'Points',
 }
 
-export function LabsExplorer({ labs, pointsByLab = {} }: { labs: Lab[]; pointsByLab?: Record<string, number> }) {
+export function LabsExplorer({ labs, pointsByLab = {} }: { labs: Lab[]; pointsByLab?: Record<string, number> }): React.JSX.Element {
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState<LabCategory | null>(null)
   const [difficulty, setDifficulty] = useState<LabDifficulty | null>(null)
@@ -66,15 +67,7 @@ export function LabsExplorer({ labs, pointsByLab = {} }: { labs: Lab[]; pointsBy
 
       <div className="space-y-3">
         <div className="flex flex-wrap items-center gap-3">
-          <div className="relative max-w-md flex-1">
-            <Search01Icon size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary" />
-            <Input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Rechercher un lab..."
-              className="pl-10"
-            />
-          </div>
+          <SearchInput value={query} onChange={setQuery} placeholder="Rechercher un lab..." className="max-w-md flex-1" />
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value as SortKey)}
@@ -88,76 +81,50 @@ export function LabsExplorer({ labs, pointsByLab = {} }: { labs: Lab[]; pointsBy
           </select>
         </div>
         <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => setCategory(null)}
-            className={cn(
-              'rounded-full px-3 py-1.5 text-xs font-medium transition-colors',
-              !category ? 'bg-violet-nyx text-white' : 'bg-surface text-text-secondary hover:text-text-primary'
-            )}
-          >
+          <FilterChip active={!category} onClick={() => setCategory(null)}>
             Toutes catégories
-          </button>
+          </FilterChip>
           {categoriesPresent.map((c) => {
             const config = LAB_CATEGORY_CONFIG[c]
             return (
-              <button
-                key={c}
-                onClick={() => setCategory(c)}
-                className={cn(
-                  'flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors',
-                  category === c ? 'bg-violet-nyx text-white' : 'bg-surface text-text-secondary hover:text-text-primary'
-                )}
-              >
+              <FilterChip key={c} active={category === c} onClick={() => setCategory(c)} className="flex items-center gap-1.5">
                 <config.icon size={13} />
                 {config.label}
-              </button>
+              </FilterChip>
             )
           })}
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => setDifficulty(null)}
-            className={cn(
-              'rounded-full border px-3 py-1 text-xs font-medium transition-colors',
-              !difficulty ? 'border-violet-nyx text-purple' : 'border-border text-text-secondary hover:text-text-primary'
-            )}
-          >
+          <FilterChip active={!difficulty} onClick={() => setDifficulty(null)} variant="outline">
             Tous niveaux
-          </button>
-          {(Object.keys(LAB_DIFFICULTY_LABELS) as LabDifficulty[]).map((d) => (
-            <button
-              key={d}
-              onClick={() => setDifficulty(d)}
-              className={cn(
-                'rounded-full border px-3 py-1 text-xs font-medium transition-colors',
-                difficulty === d ? 'border-violet-nyx text-purple' : 'border-border text-text-secondary hover:text-text-primary'
-              )}
-            >
-              {LAB_DIFFICULTY_LABELS[d]}
-            </button>
+          </FilterChip>
+          {(Object.keys(DIFFICULTY_LABELS) as LabDifficulty[]).map((d) => (
+            <FilterChip key={d} active={difficulty === d} onClick={() => setDifficulty(d)} variant="outline">
+              {DIFFICULTY_LABELS[d]}
+            </FilterChip>
           ))}
         </div>
       </div>
 
       {filtered.length > 0 ? (
-        <motion.div
+        <m.div
           initial="hidden"
           animate="visible"
           variants={{ visible: { transition: { staggerChildren: 0.05 } } }}
           className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
         >
           {filtered.map((lab) => (
-            <motion.div
+            <m.div
               key={lab.id}
               variants={{ hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }}
             >
               <LabCard lab={lab} pointsEarned={pointsByLab[lab.id]} />
-            </motion.div>
+            </m.div>
           ))}
-        </motion.div>
+        </m.div>
       ) : (
-        <p className="py-10 text-center text-text-secondary">Aucun lab ne correspond à ces filtres.</p>
+        <NoResults>Aucun lab ne correspond à ces filtres.</NoResults>
       )}
     </div>
   )

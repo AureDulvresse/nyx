@@ -14,7 +14,7 @@ function Callout({
   icon: React.ComponentType<{ size?: number; className?: string }>
   colorClass: string
   label: string
-}) {
+}): React.JSX.Element {
   return (
     <div className={cn('my-6 rounded-lg border-l-4 bg-surface p-4', colorClass)}>
       <div className="flex items-center gap-2 text-sm font-semibold">
@@ -26,31 +26,31 @@ function Callout({
   )
 }
 
-export const CehCallout = ({ children }: { children: ReactNode }) => (
+export const CehCallout = ({ children }: { children: ReactNode }): React.JSX.Element => (
   <Callout icon={Alert01Icon} colorClass="border-red text-red" label="CEH / OSCP">
     {children}
   </Callout>
 )
 
-export const AuditCallout = ({ children }: { children: ReactNode }) => (
+export const AuditCallout = ({ children }: { children: ReactNode }): React.JSX.Element => (
   <Callout icon={Shield02Icon} colorClass="border-green text-green" label="Audit / Conformité">
     {children}
   </Callout>
 )
 
-export const TipCallout = ({ children }: { children: ReactNode }) => (
+export const TipCallout = ({ children }: { children: ReactNode }): React.JSX.Element => (
   <Callout icon={Idea01Icon} colorClass="border-blue text-blue" label="Astuce">
     {children}
   </Callout>
 )
 
-export const WarningCallout = ({ children }: { children: ReactNode }) => (
+export const WarningCallout = ({ children }: { children: ReactNode }): React.JSX.Element => (
   <Callout icon={AlertCircleIcon} colorClass="border-orange text-orange" label="Attention">
     {children}
   </Callout>
 )
 
-export const LegalCallout = ({ children }: { children: ReactNode }) => (
+export const LegalCallout = ({ children }: { children: ReactNode }): React.JSX.Element => (
   <Callout icon={Legal01Icon} colorClass="border-orange text-orange" label="Cadre légal">
     {children}
   </Callout>
@@ -68,7 +68,7 @@ export function Figure({
   caption?: string
   width?: number
   height?: number
-}) {
+}): React.JSX.Element {
   return (
     <figure className="my-6">
       <div className="overflow-hidden rounded-lg border border-border">
@@ -87,7 +87,7 @@ export function CompareTable({
   titleA: string
   titleB: string
   rows: { a: string; b: string }[]
-}) {
+}): React.JSX.Element {
   return (
     <div className="my-6 overflow-x-auto rounded-lg border border-border">
       <table className="w-full text-sm">
@@ -114,7 +114,7 @@ export function Steps({
   steps,
 }: {
   steps: { title: string; description: string; code?: string }[]
-}) {
+}): React.JSX.Element {
   return (
     <ol className="my-6 space-y-4">
       {steps.map((step, i) => (
@@ -141,7 +141,7 @@ export function AttackDefenseTable({
   rows,
 }: {
   rows: { phase: string; attack: string; defense: string }[]
-}) {
+}): React.JSX.Element {
   return (
     <div className="my-6 overflow-x-auto rounded-lg border border-border">
       <table className="w-full text-sm">
@@ -174,7 +174,7 @@ function getTextContent(node: ReactNode): string {
   return ''
 }
 
-function CodeBlock({ children }: { children: ReactNode }) {
+function CodeBlock({ children }: { children: ReactNode }): React.JSX.Element {
   const child = children as ReactElement<{ className?: string; children?: ReactNode }>
   const className = isValidElement(child) ? (child.props.className ?? '') : ''
 

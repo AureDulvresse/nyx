@@ -1,22 +1,17 @@
 'use client'
 
 import Link from 'next/link'
-import { motion } from 'framer-motion'
-import * as Icons from 'hugeicons-react'
+import { m } from 'framer-motion'
+import { CourseIcon } from '@/components/common/CourseIcon'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import type { Course, CourseProgress } from '@/domain'
 
-export function CourseCard({ course, progress }: { course: Course; progress?: CourseProgress }) {
-  const Icon = (Icons as unknown as Record<
-    string,
-    React.ComponentType<{ size?: number; className?: string; style?: React.CSSProperties }>
-  >)[course.icon] ?? Icons.BookOpen01Icon
-
+export function CourseCard({ course, progress }: { course: Course; progress?: CourseProgress }): React.JSX.Element {
   return (
     <Link href={`/courses/${course.slug}`} className="block h-full">
-      <motion.div
+      <m.div
         whileHover={{ y: -3 }}
         transition={{ type: 'spring', stiffness: 300, damping: 22 }}
         className="h-full"
@@ -37,7 +32,7 @@ export function CourseCard({ course, progress }: { course: Course; progress?: Co
 
           <div className={course.coverImage ? 'relative mt-12 flex items-start justify-between gap-2' : 'flex items-start justify-between gap-2'}>
             <div className="rounded-lg p-2.5" style={{ backgroundColor: `${course.color}22` }}>
-              <Icon size={22} className="shrink-0" style={{ color: course.color }} />
+              <CourseIcon name={course.icon} size={22} className="shrink-0" style={{ color: course.color }} />
             </div>
             <div className="flex flex-col items-end gap-1">
               <Badge variant="outline">{course.category}</Badge>
@@ -64,7 +59,7 @@ export function CourseCard({ course, progress }: { course: Course; progress?: Co
             </div>
           )}
         </Card>
-      </motion.div>
+      </m.div>
     </Link>
   )
 }

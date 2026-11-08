@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { SearchRemoveIcon } from 'hugeicons-react'
 import { buttonVariants } from '@/components/ui/button'
 
-export default function NotFound() {
+export default function NotFound(): React.JSX.Element {
   return (
     <div className="flex flex-col items-center justify-center gap-4 rounded-xl border border-border bg-surface px-6 py-20 text-center">
       <SearchRemoveIcon size={40} className="text-text-secondary" />

@@ -1,22 +1,23 @@
 import Link from 'next/link'
-import * as Icons from 'hugeicons-react'
 import { PageHeader } from '@/components/common/PageHeader'
+import { CourseIcon } from '@/components/common/CourseIcon'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import type { Course, CourseProgress } from '@/domain'
 import type { LearningPath } from '@/lib/learning-paths'
 
-const IconMap = Icons as unknown as Record<string, React.ComponentType<{ size?: number; className?: string; style?: React.CSSProperties }>>
-
 export function LearningPathsPage({
   paths,
-  courseBySlug,
-  progressBySlug,
+  courses,
+  progresses,
 }: {
   paths: LearningPath[]
-  courseBySlug: Map<string, Course>
-  progressBySlug: Map<string, CourseProgress>
-}) {
+  courses: Course[]
+  progresses: CourseProgress[]
+}): React.JSX.Element {
+  const courseBySlug = new Map(courses.map((c) => [c.slug, c]))
+  const progressBySlug = new Map(progresses.map((p) => [p.slug, p]))
+
   return (
     <div className="space-y-8">
       <PageHeader
@@ -45,7 +46,6 @@ export function LearningPathsPage({
                 <ol className="space-y-2">
                   {pathCourses.map((course, i) => {
                     const progress = progressBySlug.get(course.slug)
-                    const Icon = IconMap[course.icon] ?? Icons.BookOpen01Icon
                     const done = progress ? progress.courseCompleted : false
                     return (
                       <li key={course.slug}>
@@ -56,7 +56,7 @@ export function LearningPathsPage({
                           <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-background text-xs text-text-secondary">
                             {i + 1}
                           </span>
-                          <Icon size={16} style={{ color: course.color }} className="shrink-0" />
+                          <CourseIcon name={course.icon} size={16} style={{ color: course.color }} className="shrink-0" />
                           <span className="min-w-0 flex-1 truncate text-text-primary">{course.title}</span>
                           {progress && (
                             <span className={`shrink-0 text-xs ${done ? 'text-green' : 'text-text-secondary'}`}>

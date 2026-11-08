@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils/cn'
 import type { CheatEntry } from '@/domain'
 
-export function CommandCard({ entry, onToggleFavorite }: { entry: CheatEntry; onToggleFavorite?: (id: string) => void }) {
+export function CommandCard({ entry, onToggleFavorite }: { entry: CheatEntry; onToggleFavorite?: (id: string) => void }): React.JSX.Element {
   const [copied, setCopied] = useState(false)
 
   const handleCopy = async () => {

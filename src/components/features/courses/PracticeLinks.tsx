@@ -3,7 +3,7 @@ import { HelpCircleIcon, Task01Icon, IncognitoIcon, ArrowRight01Icon } from 'hug
 import { Card } from '@/components/ui/card'
 import type { Quiz, TP } from '@/domain'
 
-export function PracticeLinks({ quiz, tp }: { quiz: Quiz | null; tp: TP | null }) {
+export function PracticeLinks({ quiz, tp }: { quiz: Quiz | null; tp: TP | null }): React.JSX.Element {
   const links = [
     quiz && {
       href: `/quiz/${quiz.chapterId}`,

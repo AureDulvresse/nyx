@@ -1,7 +1,8 @@
 'use client'
 
-import { Search01Icon, StarIcon } from 'hugeicons-react'
-import { Input } from '@/components/ui/input'
+import { StarIcon } from 'hugeicons-react'
+import { SearchInput } from '@/components/common/SearchInput'
+import { FilterChip } from '@/components/common/FilterChip'
 import { cn } from '@/lib/utils/cn'
 
 export function CheatSearchBar({
@@ -20,39 +21,18 @@ export function CheatSearchBar({
   onCategoryChange: (c?: string) => void
   favoritesOnly: boolean
   onFavoritesOnlyChange: (v: boolean) => void
-}) {
+}): React.JSX.Element {
   return (
     <div className="space-y-3">
-      <div className="relative">
-        <Search01Icon size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary" />
-        <Input
-          value={query}
-          onChange={(e) => onQueryChange(e.target.value)}
-          placeholder="Rechercher une commande, un outil..."
-          className="pl-10"
-        />
-      </div>
+      <SearchInput value={query} onChange={onQueryChange} placeholder="Rechercher une commande, un outil..." />
       <div className="flex flex-wrap gap-2">
-        <button
-          onClick={() => onCategoryChange(undefined)}
-          className={cn(
-            'rounded-full px-3 py-1 text-xs font-medium transition-colors',
-            !category ? 'bg-violet-nyx text-white' : 'bg-surface text-text-secondary hover:text-text-primary'
-          )}
-        >
+        <FilterChip active={!category} onClick={() => onCategoryChange(undefined)} className="py-1">
           Toutes
-        </button>
+        </FilterChip>
         {categories.map((c) => (
-          <button
-            key={c}
-            onClick={() => onCategoryChange(c)}
-            className={cn(
-              'rounded-full px-3 py-1 text-xs font-medium transition-colors',
-              category === c ? 'bg-violet-nyx text-white' : 'bg-surface text-text-secondary hover:text-text-primary'
-            )}
-          >
+          <FilterChip key={c} active={category === c} onClick={() => onCategoryChange(c)} className="py-1">
             {c}
-          </button>
+          </FilterChip>
         ))}
         <button
           onClick={() => onFavoritesOnlyChange(!favoritesOnly)}

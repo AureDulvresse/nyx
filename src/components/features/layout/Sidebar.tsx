@@ -35,7 +35,7 @@ const ICONS: Record<string, React.ComponentType<{ size?: number; className?: str
   Album02Icon,
 }
 
-export function Sidebar() {
+export function Sidebar(): React.JSX.Element {
   const pathname = usePathname()
 
   return (

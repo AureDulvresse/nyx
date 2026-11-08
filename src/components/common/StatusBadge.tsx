@@ -7,7 +7,7 @@ const STATUS_CONFIG: Record<ChapterStatus, { label: string; variant: 'green' | '
   not_started: { label: 'À faire', variant: 'outline' },
 }
 
-export function StatusBadge({ status }: { status: ChapterStatus }) {
+export function StatusBadge({ status }: { status: ChapterStatus }): React.JSX.Element {
   const config = STATUS_CONFIG[status]
   return <Badge variant={config.variant}>{config.label}</Badge>
 }

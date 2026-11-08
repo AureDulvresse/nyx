@@ -3,7 +3,9 @@ import next from 'next'
 import { WebSocketServer, WebSocket } from 'ws'
 import * as pty from 'node-pty'
 import { sessions } from './src/infrastructure/docker/sessions.store'
-import { cacheService, CACHE_KEYS } from './src/infrastructure/cache'
+import { cacheService, CACHE_KEYS, CACHE_TTL } from './src/infrastructure/cache'
+import { labConfig } from './src/config/lab.config'
+import { TERMINAL_WS_PATH } from './src/lib/constants'
 // NOT a top-level import: `src/repositories` transitively imports `@/lib/prisma`, which builds its
 // PrismaPg connection pool from `process.env.DATABASE_URL` at module-evaluation time. Top-level
 // imports execute before `app.prepare()` below runs Next's own .env loading, so importing it here
@@ -22,10 +24,14 @@ function getCommandLogRepo(): Promise<CommandLogRepo> {
 // log. It won't perfectly reconstruct what a real terminal emulator would show (e.g. mid-line
 // edits via arrow keys still append rather than splice), but it captures typed commands well
 // enough for a post-session review.
-function createLineBuffer(sessionId: string) {
+interface LineBuffer {
+  feed(chunk: string): void
+}
+
+function createLineBuffer(sessionId: string): LineBuffer {
   let buffer = ''
   return {
-    feed(chunk: string) {
+    feed(chunk: string): void {
       let i = 0
       while (i < chunk.length) {
         const char = chunk[i]
@@ -61,7 +67,7 @@ function createLineBuffer(sessionId: string) {
 }
 
 const dev = process.env.NODE_ENV !== 'production'
-const port = parseInt(process.env.PORT ?? '3000')
+const port = parseInt(process.env.PORT ?? '3000', 10)
 const app = next({ dev })
 const handle = app.getRequestHandler()
 
@@ -83,7 +89,7 @@ app.prepare().then(() => {
 
   server.on('upgrade', (req, socket, head) => {
     const { pathname } = new URL(req.url!, 'http://localhost')
-    if (pathname === '/ws/terminal') {
+    if (pathname === TERMINAL_WS_PATH) {
       wss.handleUpgrade(req, socket, head, (ws) => wss.emit('connection', ws, req))
     } else {
       nextUpgradeHandler(req, socket, head).catch(() => socket.destroy())
@@ -107,8 +113,8 @@ app.prepare().then(() => {
 
     // The session could be a lab or a TP — EXPIRE is a no-op on a key that doesn't exist, so
     // refreshing both is harmless and avoids needing to know which type this session is.
-    await cacheService.expire(CACHE_KEYS.labSession(sessionId), 7200)
-    await cacheService.expire(CACHE_KEYS.tpSession(sessionId), 7200)
+    await cacheService.expire(CACHE_KEYS.labSession(sessionId), CACHE_TTL.labSession)
+    await cacheService.expire(CACHE_KEYS.tpSession(sessionId), CACHE_TTL.tpSession)
 
     // `docker exec` spawns the LOCAL `docker` CLI on the host running this server, not a shell
     // inside the container — so `cwd` here would set the working directory for that host-side
@@ -166,7 +172,7 @@ app.prepare().then(() => {
         ws.close(1001, 'Session timeout')
         term.kill()
       },
-      parseInt(process.env.LAB_SESSION_TIMEOUT_HOURS ?? '2') * 3600 * 1000
+      labConfig.sessionTimeoutHours * 3600 * 1000
     )
 
     ws.on('close', () => clearTimeout(timeout))
@@ -174,10 +180,10 @@ app.prepare().then(() => {
 
   server.listen(port, () => {
     console.log(`> Nyx ready on http://localhost:${port}`)
-    console.log(`> WebSocket terminal on ws://localhost:${port}/ws/terminal`)
+    console.log(`> WebSocket terminal on ws://localhost:${port}${TERMINAL_WS_PATH}`)
   })
 
-  const shutdown = async () => {
+  const shutdown = (): void => {
     console.log('> Shutting down...')
     server.close()
     process.exit(0)

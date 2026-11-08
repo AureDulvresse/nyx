@@ -30,7 +30,7 @@ export function ProjectDetail({
 }: {
   project: Project
   courseTitles: Record<string, string>
-}) {
+}): React.JSX.Element {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [notes, setNotes] = useState(project.notes ?? '')

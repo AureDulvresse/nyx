@@ -3,7 +3,7 @@
 import { Logout01Icon } from 'hugeicons-react'
 import { logoutAction } from '@/actions'
 
-export function LogoutButton() {
+export function LogoutButton(): React.JSX.Element {
   return (
     <button
       onClick={() => logoutAction()}

@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import type { Course } from '@/domain'
 
-export function OnboardingBanner({ firstCourse }: { firstCourse: Course | null }) {
+export function OnboardingBanner({ firstCourse }: { firstCourse: Course | null }): React.JSX.Element | null {
   if (!firstCourse) return null
 
   return (

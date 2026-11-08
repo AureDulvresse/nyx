@@ -5,15 +5,13 @@ import type { Flashcard, SM2Result } from '@/domain'
 
 export class PrismaFlashcardRepository implements IFlashcardRepository {
   async findDueByDeck(deck: string): Promise<Flashcard[]> {
-    const cached = await cacheService.get<Flashcard[]>(CACHE_KEYS.flashcardsDue(deck))
-    if (cached) return cached
-
-    const cards = await prisma.flashcard.findMany({
-      where: { deck, nextReview: { lte: new Date() } },
-      orderBy: { nextReview: 'asc' },
+    return cacheService.getOrSet(CACHE_KEYS.flashcardsDue(deck), CACHE_TTL.flashcards, async () => {
+      const cards = await prisma.flashcard.findMany({
+        where: { deck, nextReview: { lte: new Date() } },
+        orderBy: { nextReview: 'asc' },
+      })
+      return cards as unknown as Flashcard[]
     })
-    await cacheService.set(CACHE_KEYS.flashcardsDue(deck), cards, CACHE_TTL.flashcards)
-    return cards as unknown as Flashcard[]
   }
 
   async findAllDecks(): Promise<string[]> {

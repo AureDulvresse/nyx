@@ -16,7 +16,7 @@ export function NotesPage({
 }: {
   chapterNotes: ChapterNoteItem[]
   comments: CommentWithContext[]
-}) {
+}): React.JSX.Element {
   const [query, setQuery] = useState('')
 
   const filteredNotes = useMemo(() => {

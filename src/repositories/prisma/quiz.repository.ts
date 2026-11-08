@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma'
+import { cacheService, STATS_CACHE_KEYS } from '@/infrastructure/cache'
 import type { IQuizRepository } from '../interfaces'
 import type { Quiz, QuizAttempt, QuizAttemptResult, QuizAttemptWithContext } from '@/domain'
 
@@ -12,7 +13,7 @@ export class PrismaQuizRepository implements IQuizRepository {
   }
 
   async recordAttempt(quizId: string, result: QuizAttemptResult): Promise<QuizAttempt> {
-    return prisma.quizAttempt.create({
+    const attempt = await prisma.quizAttempt.create({
       data: {
         quizId,
         score: result.score,
@@ -20,7 +21,9 @@ export class PrismaQuizRepository implements IQuizRepository {
         answers: result.answers,
         duration: result.duration,
       },
-    }) as unknown as Promise<QuizAttempt>
+    })
+    await cacheService.del(...STATS_CACHE_KEYS)
+    return attempt as unknown as QuizAttempt
   }
 
   async getRecentAttempts(limit: number): Promise<QuizAttempt[]> {

@@ -6,7 +6,9 @@ import { tpRepo } from '@/repositories'
 import { dockerLabService } from '@/infrastructure/docker/docker.service'
 import { TPService } from '@/services'
 import { ok, err, ActionResult } from '@/lib/utils/result'
+import { runAction } from '@/lib/utils/action.utils'
 import { checkRateLimit } from '@/lib/utils/rate-limit'
+import { terminalWsUrl } from '@/lib/constants'
 import type { TP } from '@/domain'
 import {
   UpdateTPNotesSchema,
@@ -22,43 +24,43 @@ export async function updateTPNotes(input: z.infer<typeof UpdateTPNotesSchema>):
   const v = UpdateTPNotesSchema.safeParse(input)
   if (!v.success) return err(v.error.message, 'VALIDATION')
 
-  try {
-    const tp = await tpRepo.updateNotes(v.data.tpId, v.data.notes)
-    revalidatePath('/tp')
-    return ok(tp)
-  } catch {
-    return err('Failed to update TP notes', 'DB_ERROR')
-  }
+  return runAction(
+    async () => {
+      const tp = await tpRepo.updateNotes(v.data.tpId, v.data.notes)
+      revalidatePath('/tp')
+      return ok(tp)
+    },
+    { message: 'Failed to update TP notes', code: 'DB_ERROR' }
+  )
 }
 
 export async function completeTP(input: z.infer<typeof CompleteTPSchema>): Promise<ActionResult<TP>> {
   const v = CompleteTPSchema.safeParse(input)
   if (!v.success) return err(v.error.message, 'VALIDATION')
 
-  try {
-    const tp = await tpRepo.complete(v.data.tpId)
-    revalidatePath('/tp')
-    return ok(tp)
-  } catch {
-    return err('Failed to complete TP', 'DB_ERROR')
-  }
+  return runAction(
+    async () => {
+      const tp = await tpRepo.complete(v.data.tpId)
+      revalidatePath('/tp')
+      return ok(tp)
+    },
+    { message: 'Failed to complete TP', code: 'DB_ERROR' }
+  )
 }
 
 export async function updateTPStep(input: z.infer<typeof UpdateTPStepSchema>): Promise<ActionResult<TP>> {
   const v = UpdateTPStepSchema.safeParse(input)
   if (!v.success) return err(v.error.message, 'VALIDATION')
 
-  try {
-    const tp = await tpRepo.findById(v.data.tpId)
-    if (!tp) return err('TP introuvable', 'NOT_FOUND')
-
-    const steps = tp.steps.map((step, i) => (i === v.data.stepIndex ? { ...step, completed: v.data.completed } : step))
-    const updated = await tpRepo.updateSteps(v.data.tpId, steps)
-    revalidatePath('/tp')
-    return ok(updated)
-  } catch {
-    return err('Failed to update TP step', 'DB_ERROR')
-  }
+  return runAction(
+    async () => {
+      const updated = await tpService.setStepCompleted(v.data.tpId, v.data.stepIndex, v.data.completed)
+      if (!updated) return err('TP introuvable', 'NOT_FOUND')
+      revalidatePath('/tp')
+      return ok(updated)
+    },
+    { message: 'Failed to update TP step', code: 'DB_ERROR' }
+  )
 }
 
 export async function startTPSession(
@@ -70,22 +72,24 @@ export async function startTPSession(
   const allowed = await checkRateLimit(`tp-start:${v.data.tpId}`, 5, 60)
   if (!allowed) return err('Trop de démarrages, patiente un instant.', 'RATE_LIMIT')
 
-  try {
-    const { sessionId } = await tpService.startSession(v.data.tpId)
-    return ok({ sessionId, wsUrl: `/ws/terminal?sessionId=${sessionId}` })
-  } catch (e) {
-    return err(e instanceof Error ? e.message : 'Failed to start TP session')
-  }
+  return runAction(
+    async () => {
+      const { sessionId } = await tpService.startSession(v.data.tpId)
+      return ok({ sessionId, wsUrl: terminalWsUrl(sessionId) })
+    },
+    { message: 'Failed to start TP session', exposeError: true }
+  )
 }
 
 export async function stopTPSession(input: z.infer<typeof StopTPSessionSchema>): Promise<ActionResult> {
   const v = StopTPSessionSchema.safeParse(input)
   if (!v.success) return err(v.error.message, 'VALIDATION')
 
-  try {
-    await tpService.stopSession(v.data.sessionId)
-    return ok(undefined)
-  } catch {
-    return err('Failed to stop TP session', 'DB_ERROR')
-  }
+  return runAction(
+    async () => {
+      await tpService.stopSession(v.data.sessionId)
+      return ok(undefined)
+    },
+    { message: 'Failed to stop TP session', code: 'DB_ERROR' }
+  )
 }

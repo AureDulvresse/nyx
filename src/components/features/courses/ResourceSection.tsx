@@ -19,7 +19,7 @@ const TYPE_LABELS: Record<ResourceType, string> = {
   image: 'Image',
 }
 
-export function ResourceSection({ chapterId, initialResources }: { chapterId: string; initialResources: Resource[] }) {
+export function ResourceSection({ chapterId, initialResources }: { chapterId: string; initialResources: Resource[] }): React.JSX.Element {
   const [resources, setResources] = useState(initialResources)
   const [showForm, setShowForm] = useState(false)
   const [mode, setMode] = useState<'link' | 'file'>('link')

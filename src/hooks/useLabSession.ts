@@ -1,12 +1,23 @@
 'use client'
 
 import { useState, useCallback, useTransition } from 'react'
-import { startLabSession, stopLabSession, submitFlag } from '@/actions/lab.actions'
+import { startLabSession, stopLabSession, submitFlag } from '@/actions'
 import type { LabSession, FlagSubmitResult } from '@/domain'
 
-type LabState = 'idle' | 'loading' | 'active' | 'completed'
+export type LabState = 'idle' | 'loading' | 'active' | 'completed'
 
-export function useLabSession(labId: string) {
+export interface LabSessionState {
+  state: LabState
+  session: LabSession | null
+  wsUrl: string | null
+  error: string | null
+  isPending: boolean
+  startLab: () => void
+  stopLab: () => void
+  submitFlag: (flagValue: string, activeElapsedSeconds?: number) => Promise<FlagSubmitResult>
+}
+
+export function useLabSession(labId: string): LabSessionState {
   const [state, setState] = useState<LabState>('idle')
   const [session, setSession] = useState<LabSession | null>(null)
   const [wsUrl, setWsUrl] = useState<string | null>(null)

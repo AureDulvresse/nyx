@@ -2,9 +2,23 @@
 
 import { useCallback, useMemo, useState, useTransition } from 'react'
 import { submitQuiz } from '@/actions'
-import type { Quiz, QuizAttemptResult } from '@/domain'
+import type { Quiz, QuizAttemptResult, QuizQuestion } from '@/domain'
 
-export function useQuizSession(quiz: Quiz) {
+export interface QuizSessionState {
+  currentIndex: number
+  currentQuestion: QuizQuestion
+  total: number
+  selected: number | null
+  revealed: boolean
+  result: QuizAttemptResult | null
+  isSubmitting: boolean
+  select: (choice: number) => void
+  reveal: () => void
+  next: () => void
+  restart: () => void
+}
+
+export function useQuizSession(quiz: Quiz): QuizSessionState {
   const [startedAt] = useState(() => Date.now())
   const [currentIndex, setCurrentIndex] = useState(0)
   const [answers, setAnswers] = useState<{ questionId: string; chosen: number }[]>([])

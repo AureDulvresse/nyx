@@ -1,27 +1,14 @@
-export const COLORS = {
-  background: '#0d1117',
-  surface: '#161b22',
-  border: '#30363d',
-  textPrimary: '#e6edf3',
-  textSecondary: '#8b949e',
-  green: '#3fb950',
-  blue: '#58a6ff',
-  red: '#f85149',
-  orange: '#e3b341',
-  purple: '#a371f7',
-  teal: '#2dd4bf',
-} as const
+// Minimum score ratio for a quiz attempt to count as passed.
+export const QUIZ_PASS_RATIO = 0.6
 
-export const CATEGORY_LABELS: Record<string, string> = {
-  Offensif: 'Offensif',
-  Défensif: 'Défensif',
-  Fondamentaux: 'Fondamentaux',
-  Data: 'Data',
-  'IA / Cyber': 'IA / Cyber',
-  Transversal: 'Transversal',
+// WebSocket endpoint served by server.ts that bridges xterm.js to `docker exec` in a session's Kali box.
+export const TERMINAL_WS_PATH = '/ws/terminal'
+
+export function terminalWsUrl(sessionId: string): string {
+  return `${TERMINAL_WS_PATH}?sessionId=${sessionId}`
 }
 
-export const LAB_DIFFICULTY_LABELS: Record<string, string> = {
+export const DIFFICULTY_LABELS: Record<string, string> = {
   beginner: 'Débutant',
   intermediate: 'Intermédiaire',
   advanced: 'Avancé',

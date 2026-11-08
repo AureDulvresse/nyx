@@ -1,7 +1,7 @@
 import { readFile, readdir } from 'node:fs/promises'
 import path from 'node:path'
 import matter from 'gray-matter'
-import type { ChapterContent, ChapterFrontmatter, LabContent, LabFrontmatter } from './content.types'
+import type { ChapterContent, ChapterFrontmatter, LabContent, LabFrontmatter } from '@/domain'
 
 const CONTENT_ROOT = path.join(process.cwd(), 'content')
 
@@ -21,16 +21,6 @@ export const MDXLoader = {
     const raw = await readFile(filePath, 'utf-8')
     const { data, content } = matter(raw)
     return { frontmatter: data as ChapterFrontmatter, source: content }
-  },
-
-  async listChapterNumbers(slug: string): Promise<number[]> {
-    const dir = path.join(CONTENT_ROOT, 'courses', slug)
-    const files = await readdir(dir).catch(() => [] as string[])
-    return files
-      .filter((f) => f.endsWith('.md'))
-      .map((f) => parseInt(f.slice(0, 2), 10))
-      .filter((n) => !Number.isNaN(n))
-      .sort((a, b) => a - b)
   },
 
   async getLab(slug: string): Promise<LabContent | null> {

@@ -4,7 +4,7 @@ import { CheckmarkSquare01Icon, Square01Icon, CheckmarkCircle01Icon, CircleIcon 
 import { cn } from '@/lib/utils/cn'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { isMultiSelect } from '@/hooks/useExamSession'
+import { ExamService } from '@/services'
 import type { QuizQuestion } from '@/domain'
 
 // Unlike QuestionCard (chapter quizzes), there's no per-question reveal here — real exam
@@ -21,8 +21,8 @@ export function ExamQuestionCard({
   total: number
   selected: number[]
   onSelect: (choice: number) => void
-}) {
-  const multi = isMultiSelect(question)
+}): React.JSX.Element {
+  const multi = ExamService.isMultiSelect(question)
   const OptionIcon = multi
     ? (i: number) => (selected.includes(i) ? CheckmarkSquare01Icon : Square01Icon)
     : (i: number) => (selected.includes(i) ? CheckmarkCircle01Icon : CircleIcon)

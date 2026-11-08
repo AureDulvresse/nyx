@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { useToast } from '@/hooks/useToast'
 import type { FlagSubmitResult } from '@/domain'
 
-export function FlagForm({ onSubmit }: { onSubmit: (flag: string) => Promise<FlagSubmitResult> }) {
+export function FlagForm({ onSubmit }: { onSubmit: (flag: string) => Promise<FlagSubmitResult> }): React.JSX.Element {
   const [value, setValue] = useState('')
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
   const [isPending, startTransition] = useTransition()

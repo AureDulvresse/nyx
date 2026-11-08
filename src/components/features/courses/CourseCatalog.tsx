@@ -1,15 +1,15 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { Search01Icon } from 'hugeicons-react'
-import { Input } from '@/components/ui/input'
-import { cn } from '@/lib/utils/cn'
+import { SearchInput } from '@/components/common/SearchInput'
+import { FilterChip } from '@/components/common/FilterChip'
+import { NoResults } from '@/components/common/NoResults'
 import { CourseGrid } from './CourseGrid'
 import type { Course, CourseCategory, CourseProgress } from '@/domain'
 
 const CATEGORY_ORDER: CourseCategory[] = ['Fondamentaux', 'Offensif', 'Défensif', 'Data', 'IA / Cyber', 'Transversal']
 
-export function CourseCatalog({ courses, progresses }: { courses: Course[]; progresses: CourseProgress[] }) {
+export function CourseCatalog({ courses, progresses }: { courses: Course[]; progresses: CourseProgress[] }): React.JSX.Element {
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState<CourseCategory | null>(null)
 
@@ -36,42 +36,21 @@ export function CourseCatalog({ courses, progresses }: { courses: Course[]; prog
   return (
     <div className="space-y-8">
       <div className="space-y-3">
-        <div className="relative max-w-md">
-          <Search01Icon size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary" />
-          <Input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Rechercher un cours..."
-            className="pl-10"
-          />
-        </div>
+        <SearchInput value={query} onChange={setQuery} placeholder="Rechercher un cours..." className="max-w-md" />
         <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => setCategory(null)}
-            className={cn(
-              'rounded-full px-3 py-1.5 text-xs font-medium transition-colors',
-              !category ? 'bg-violet-nyx text-white' : 'bg-surface text-text-secondary hover:text-text-primary'
-            )}
-          >
+          <FilterChip active={!category} onClick={() => setCategory(null)}>
             Toutes catégories
-          </button>
+          </FilterChip>
           {categoriesPresent.map((c) => (
-            <button
-              key={c}
-              onClick={() => setCategory(c)}
-              className={cn(
-                'rounded-full px-3 py-1.5 text-xs font-medium transition-colors',
-                category === c ? 'bg-violet-nyx text-white' : 'bg-surface text-text-secondary hover:text-text-primary'
-              )}
-            >
+            <FilterChip key={c} active={category === c} onClick={() => setCategory(c)}>
               {c}
-            </button>
+            </FilterChip>
           ))}
         </div>
       </div>
 
       {filtered.length === 0 ? (
-        <p className="py-10 text-center text-text-secondary">Aucun cours ne correspond à ta recherche.</p>
+        <NoResults>Aucun cours ne correspond à ta recherche.</NoResults>
       ) : isFiltering ? (
         <CourseGrid courses={filtered} progresses={progresses} />
       ) : (

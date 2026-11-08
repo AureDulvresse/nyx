@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma'
+import { cacheService, STATS_CACHE_KEYS } from '@/infrastructure/cache'
 import type { ITPRepository } from '../interfaces'
 import type { TP, TPStep } from '@/domain'
 
@@ -24,6 +25,8 @@ export class PrismaTPRepository implements ITPRepository {
   }
 
   async complete(id: string): Promise<TP> {
-    return prisma.tP.update({ where: { id }, data: { completedAt: new Date() } }) as unknown as Promise<TP>
+    const tp = await prisma.tP.update({ where: { id }, data: { completedAt: new Date() } })
+    await cacheService.del(...STATS_CACHE_KEYS)
+    return tp as unknown as TP
   }
 }

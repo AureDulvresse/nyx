@@ -1,16 +1,16 @@
 'use client'
 
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { Cards01Icon } from 'hugeicons-react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 
-export function DeckCard({ deck, dueCount, totalCount }: { deck: string; dueCount: number; totalCount: number }) {
+export function DeckCard({ deck, dueCount, totalCount }: { deck: string; dueCount: number; totalCount: number }): React.JSX.Element {
   return (
     <Link href={`/flashcards/review?deck=${encodeURIComponent(deck)}`} className="block h-full">
-      <motion.div whileHover={{ y: -3 }} transition={{ type: 'spring', stiffness: 300, damping: 22 }} className="h-full">
+      <m.div whileHover={{ y: -3 }} transition={{ type: 'spring', stiffness: 300, damping: 22 }} className="h-full">
         <Card className="h-full p-5 transition-colors hover:border-violet-nyx/50">
           <div className="flex items-start justify-between">
             <div className="rounded-lg bg-teal/15 p-2.5">
@@ -26,7 +26,7 @@ export function DeckCard({ deck, dueCount, totalCount }: { deck: string; dueCoun
             </div>
           )}
         </Card>
-      </motion.div>
+      </m.div>
     </Link>
   )
 }

@@ -10,7 +10,7 @@ export function ProgressRing({
   strokeWidth?: number
   color?: string
   label?: string
-}) {
+}): React.JSX.Element {
   const radius = (size - strokeWidth) / 2
   const circumference = 2 * Math.PI * radius
   const offset = circumference - (Math.min(100, Math.max(0, percentage)) / 100) * circumference

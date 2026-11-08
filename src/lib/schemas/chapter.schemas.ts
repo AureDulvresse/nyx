@@ -13,3 +13,7 @@ export const UpdateChapterNotesSchema = z.object({
 export const MarkChapterReviewedSchema = z.object({
   chapterId: z.string().min(1),
 })
+
+export const MarkChapterStartedSchema = z.object({
+  chapterId: z.string().min(1),
+})

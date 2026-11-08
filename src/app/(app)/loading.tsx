@@ -1,6 +1,6 @@
 import { Skeleton } from '@/components/common/Skeleton'
 
-export default function Loading() {
+export default function Loading(): React.JSX.Element {
   return (
     <div className="space-y-8">
       <div className="space-y-2">

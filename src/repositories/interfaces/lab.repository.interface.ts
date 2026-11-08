@@ -3,7 +3,6 @@ import type { CompletedLabSession, Lab, LabSession, LabSessionStatus } from '@/d
 export interface ILabRepository {
   findAll(): Promise<Lab[]>
   findById(id: string): Promise<Lab | null>
-  findBySlug(slug: string): Promise<Lab | null>
   countActiveSessions(): Promise<number>
   countCompletedSessions(): Promise<number>
   findCompletedSessions(): Promise<CompletedLabSession[]>

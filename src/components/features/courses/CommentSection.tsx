@@ -8,7 +8,7 @@ import { addComment, deleteComment } from '@/actions'
 import { DateUtils } from '@/lib/utils/date.utils'
 import type { Comment } from '@/domain'
 
-export function CommentSection({ chapterId, initialComments }: { chapterId: string; initialComments: Comment[] }) {
+export function CommentSection({ chapterId, initialComments }: { chapterId: string; initialComments: Comment[] }): React.JSX.Element {
   const [comments, setComments] = useState(initialComments)
   const [content, setContent] = useState('')
   const [isPending, startTransition] = useTransition()

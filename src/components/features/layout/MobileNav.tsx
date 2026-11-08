@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { Menu01Icon, Cancel01Icon, ShieldKeyIcon } from 'hugeicons-react'
 import { NAV_SECTIONS } from '@/lib/constants'
 
-export function MobileNav() {
+export function MobileNav(): React.JSX.Element {
   const [open, setOpen] = useState(false)
 
   return (

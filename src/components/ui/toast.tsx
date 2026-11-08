@@ -19,7 +19,7 @@ const VARIANT_ICON: Record<ToastVariant, typeof CheckmarkCircle02Icon> = {
 
 const AUTO_DISMISS_MS = 5000
 
-function ToastItem({ toast }: { toast: Toast }) {
+function ToastItem({ toast }: { toast: Toast }): React.JSX.Element {
   const dismiss = useToastStore((s) => s.dismiss)
   const Icon = VARIANT_ICON[toast.variant]
 
@@ -49,7 +49,7 @@ function ToastItem({ toast }: { toast: Toast }) {
   )
 }
 
-export function ToastContainer() {
+export function ToastContainer(): React.JSX.Element | null {
   const toasts = useToastStore((s) => s.toasts)
 
   if (toasts.length === 0) return null

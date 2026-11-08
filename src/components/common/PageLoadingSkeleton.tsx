@@ -2,7 +2,7 @@ import { Skeleton } from './Skeleton'
 
 // Shared by every route's loading.tsx — grid matches card-based explorers (courses, labs,
 // flashcards, projects), list matches row-based pages (notes, cheatsheet, TP, certifications).
-export function PageLoadingSkeleton({ variant = 'grid', count = 6 }: { variant?: 'grid' | 'list'; count?: number }) {
+export function PageLoadingSkeleton({ variant = 'grid', count = 6 }: { variant?: 'grid' | 'list'; count?: number }): React.JSX.Element {
   return (
     <div className="space-y-8">
       <div className="space-y-2">

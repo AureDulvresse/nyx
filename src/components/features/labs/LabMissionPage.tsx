@@ -1,24 +1,15 @@
 import Link from 'next/link'
 import { Clock01Icon, Award01Icon, Flag03Icon, BookOpen01Icon, TransactionHistoryIcon } from 'hugeicons-react'
 import { PageHeader } from '@/components/common/PageHeader'
+import { DifficultyBadge } from '@/components/common/DifficultyBadge'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { NetworkMap } from './NetworkMap'
 import { LabMission } from './LabMission'
 import { MDXRenderer } from '@/components/features/mdx/MDXRenderer'
-import { LAB_DIFFICULTY_LABELS } from '@/lib/constants'
 import { LAB_CATEGORY_CONFIG } from '@/lib/lab-category'
 import { DateUtils } from '@/lib/utils/date.utils'
-import { stripMarkdownForSpeech } from '@/lib/utils/speech.utils'
-import { AskNyxContextSetter } from '@/components/features/assistant/AskNyxContextSetter'
-import type { Course, Lab, LabSession } from '@/domain'
-import type { LabContent } from '@/infrastructure/content'
-
-const DIFFICULTY_VARIANT: Record<string, 'green' | 'orange' | 'red'> = {
-  beginner: 'green',
-  intermediate: 'orange',
-  advanced: 'red',
-}
+import type { Course, Lab, LabContent, LabSession } from '@/domain'
 
 const SESSION_STATUS_VARIANT: Record<LabSession['status'], 'green' | 'red' | 'orange' | 'outline'> = {
   completed: 'green',
@@ -44,19 +35,16 @@ export function LabMissionPage({
   content: LabContent | null
   sessions?: LabSession[]
   prerequisiteCourses?: Course[]
-}) {
+}): React.JSX.Element {
   const category = LAB_CATEGORY_CONFIG[lab.category] ?? LAB_CATEGORY_CONFIG.exploitation
   const Icon = category.icon
   const pastSessions = sessions.filter((s) => s.status !== 'active')
-  const excerpt = content ? stripMarkdownForSpeech(content.source).slice(0, 3000) : lab.description
   // Never pass hint/value to the client here — those stay locked behind unlockHint() until paid
   // for, and shipping them in this server-rendered prop would defeat that entirely.
   const publicFlags = (lab.flags ?? []).map((f) => ({ id: f.id, flagId: f.flagId, points: f.points }))
 
   return (
     <div className="space-y-8">
-      <AskNyxContextSetter context={{ kind: 'lab', title: lab.title, excerpt }} />
-
       <PageHeader
         title={lab.title}
         description={lab.description}
@@ -65,7 +53,7 @@ export function LabMissionPage({
             <Badge variant="outline" className="flex items-center gap-1">
               <Icon size={12} className={category.color} /> {category.label}
             </Badge>
-            <Badge variant={DIFFICULTY_VARIANT[lab.difficulty]}>{LAB_DIFFICULTY_LABELS[lab.difficulty]}</Badge>
+            <DifficultyBadge difficulty={lab.difficulty} />
           </>
         }
       />

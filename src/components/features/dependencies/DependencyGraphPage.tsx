@@ -1,13 +1,11 @@
 import Link from 'next/link'
-import * as Icons from 'hugeicons-react'
 import { PageHeader } from '@/components/common/PageHeader'
+import { CourseIcon } from '@/components/common/CourseIcon'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import type { Course } from '@/domain'
 
-const IconMap = Icons as unknown as Record<string, React.ComponentType<{ size?: number; className?: string; style?: React.CSSProperties }>>
-
-export function DependencyGraphPage({ courses }: { courses: Course[] }) {
+export function DependencyGraphPage({ courses }: { courses: Course[] }): React.JSX.Element {
   const bySlug = new Map(courses.map((c) => [c.slug, c]))
   const dependents = new Map<string, Course[]>()
   for (const course of courses) {
@@ -27,7 +25,6 @@ export function DependencyGraphPage({ courses }: { courses: Course[] }) {
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
         {courses.map((course) => {
-          const Icon = IconMap[course.icon] ?? Icons.BookOpen01Icon
           const dependsOnCourses = course.dependsOn.map((s) => bySlug.get(s)).filter((c): c is Course => !!c)
           const referencedBy = dependents.get(course.slug) ?? []
 
@@ -35,7 +32,7 @@ export function DependencyGraphPage({ courses }: { courses: Course[] }) {
             <Card key={course.slug} className="p-4">
               <Link href={`/courses/${course.slug}`} className="flex items-center gap-2">
                 <div className="rounded-md p-1.5" style={{ backgroundColor: `${course.color}22` }}>
-                  <Icon size={16} style={{ color: course.color }} />
+                  <CourseIcon name={course.icon} size={16} style={{ color: course.color }} />
                 </div>
                 <h3 className="font-semibold text-text-primary hover:text-purple">{course.title}</h3>
               </Link>

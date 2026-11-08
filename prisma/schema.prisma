@@ -55,6 +55,8 @@ model Chapter {
   @@unique([courseId, number])
   @@index([courseId])
   @@index([status])
+  @@index([courseId, status])
+  @@index([completedAt])
 }
 
 model Comment {
@@ -132,7 +134,7 @@ model ExamAttempt {
   duration  Int?
   createdAt DateTime   @default(now())
 
-  @@index([examId])
+  @@index([examId, passed])
   @@index([createdAt])
 }
 
@@ -271,6 +273,7 @@ model LabSession {
   captures    FlagCapture[]
   hintUnlocks HintUnlock[]
 
+  @@index([labId])
   @@index([status])
   @@index([startedAt])
 }

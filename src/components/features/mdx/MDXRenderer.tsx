@@ -5,7 +5,7 @@ import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import rehypeHighlight from 'rehype-highlight'
 import { MDX_COMPONENTS } from './mdx-components'
 
-export function MDXRenderer({ source }: { source: string }) {
+export function MDXRenderer({ source }: { source: string }): React.JSX.Element {
   return (
     <div className="prose prose-invert max-w-none prose-headings:text-text-primary prose-p:text-text-secondary prose-strong:text-text-primary prose-a:text-blue prose-code:text-teal prose-pre:bg-background prose-pre:border prose-pre:border-border">
       <MDXRemote

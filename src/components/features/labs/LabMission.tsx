@@ -16,16 +16,16 @@ import { Terminal } from '@/components/features/terminal/Terminal'
 import { CommandJournal } from '@/components/features/terminal/CommandJournal'
 import { FlagForm } from './FlagForm'
 import { useLabSession } from '@/hooks/useLabSession'
-import { useLabTimer, formatElapsed } from '@/hooks/useLabTimer'
+import { useLabTimer } from '@/hooks/useLabTimer'
+import { formatDuration } from '@/lib/utils/date.utils'
 import { unlockHint } from '@/actions'
-import { useAskNyxStore } from '@/lib/store/ask-nyx.store'
 import { useToast } from '@/hooks/useToast'
 import { cn } from '@/lib/utils/cn'
 import type { FlagSubmitResult, Lab, LabFlagPublic } from '@/domain'
 
 const HINT_PENALTY_RATIO = 0.15
 
-export function LabMission({ lab, flags }: { lab: Lab; flags: LabFlagPublic[] }) {
+export function LabMission({ lab, flags }: { lab: Lab; flags: LabFlagPublic[] }): React.JSX.Element {
   const { state, session, wsUrl, error, isPending, startLab, stopLab, submitFlag } = useLabSession(lab.id)
   const elapsedSeconds = useLabTimer(state === 'active')
   const estimatedSeconds = lab.estimatedTime * 60
@@ -35,7 +35,6 @@ export function LabMission({ lab, flags }: { lab: Lab; flags: LabFlagPublic[] })
   const [unlockedHints, setUnlockedHints] = useState<Map<string, string>>(new Map())
   const [unlockingFlagId, setUnlockingFlagId] = useState<string | null>(null)
   const [hintError, setHintError] = useState<string | null>(null)
-  const setLabHints = useAskNyxStore((s) => s.setLabHints)
   const totalFlags = flags.length
   const toast = useToast()
 
@@ -64,17 +63,13 @@ export function LabMission({ lab, flags }: { lab: Lab; flags: LabFlagPublic[] })
         return
       }
 
-      setUnlockedHints((prev) => {
-        const next = new Map(prev).set(flagId, result.data.hint)
-        setLabHints(Array.from(next.values()), totalFlags)
-        return next
-      })
+      setUnlockedHints((prev) => new Map(prev).set(flagId, result.data.hint))
 
       if (!result.data.alreadyUnlocked) {
         toast.info(`Indice débloqué (-${result.data.penalty} pts).`)
       }
     },
-    [session, totalFlags, setLabHints]
+    [session, toast]
   )
 
   if (state === 'idle') {
@@ -92,7 +87,7 @@ export function LabMission({ lab, flags }: { lab: Lab; flags: LabFlagPublic[] })
   if (state === 'loading') {
     return (
       <div className="rounded-lg border border-border bg-surface p-10 text-center text-text-secondary">
-        Provisionnement de l'environnement Docker... <span className="text-xs">(le chrono estimé ne démarre qu'une fois le terminal connecté)</span>
+        Provisionnement de l&apos;environnement Docker... <span className="text-xs">(le chrono estimé ne démarre qu&apos;une fois le terminal connecté)</span>
       </div>
     )
   }
@@ -107,7 +102,7 @@ export function LabMission({ lab, flags }: { lab: Lab; flags: LabFlagPublic[] })
           )}
         >
           <Clock01Icon size={15} />
-          {formatElapsed(elapsedSeconds)} / {lab.estimatedTime} min estimées
+          {formatDuration(elapsedSeconds)} / {lab.estimatedTime} min estimées
         </div>
         {totalFlags > 0 && (
           <div className="flex items-center gap-1.5 rounded-full bg-violet-nyx/15 px-3 py-1 text-sm font-medium text-purple">
@@ -127,7 +122,7 @@ export function LabMission({ lab, flags }: { lab: Lab; flags: LabFlagPublic[] })
           >
             {isFullscreen ? <MinimizeScreenIcon size={16} /> : <FullScreenIcon size={16} />}
           </button>
-          <div className={isFullscreen ? 'h-full' : 'h-[420px]'}>
+          <div className={isFullscreen ? 'h-full' : 'h-105'}>
             <Terminal wsUrl={wsUrl} />
           </div>
         </div>
@@ -179,7 +174,7 @@ export function LabMission({ lab, flags }: { lab: Lab; flags: LabFlagPublic[] })
                         ) : (
                           <Money01Icon size={12} />
                         )}
-                        Débloquer l'indice (-{cost} pts)
+                        Débloquer l&apos;indice (-{cost} pts)
                       </button>
                     )}
                   </div>

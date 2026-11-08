@@ -5,7 +5,7 @@ import { CommandLineIcon } from 'hugeicons-react'
 import { getCommandLog } from '@/actions'
 import type { CommandLogEntry } from '@/domain'
 
-export function CommandJournal({ sessionId }: { sessionId: string }) {
+export function CommandJournal({ sessionId }: { sessionId: string }): React.JSX.Element | null {
   const [entries, setEntries] = useState<CommandLogEntry[]>([])
 
   useEffect(() => {

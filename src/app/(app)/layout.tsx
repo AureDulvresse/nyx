@@ -1,7 +1,7 @@
 import { Sidebar } from "@/components/features/layout/Sidebar";
 import { Header } from "@/components/features/layout/Header";
-import { AskNyxWidget } from "@/components/features/assistant/AskNyxWidget";
 import { ToastContainer } from "@/components/ui/toast";
+import { MotionProvider } from "@/components/common/MotionProvider";
 import { statsRepo } from "@/repositories";
 import { calculateStreak, calculateScore } from "@/services";
 import { auth } from "@/auth";
@@ -11,7 +11,7 @@ export default async function AppLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>) {
+}>): Promise<React.JSX.Element> {
   const session = await auth();
   if (!session?.user) redirect("/login");
 
@@ -24,14 +24,15 @@ export default async function AppLayout({
   const points = calculateScore(progressionCounts);
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      <Sidebar />
-      <div className="flex h-screen flex-1 flex-col overflow-y-auto">
-        <Header streak={streak} credits={credits} points={points} />
-        <main className="flex-1 px-4 py-6 lg:px-8">{children}</main>
+    <MotionProvider>
+      <div className="flex h-screen overflow-hidden">
+        <Sidebar />
+        <div className="flex h-screen flex-1 flex-col overflow-y-auto">
+          <Header streak={streak} credits={credits} points={points} />
+          <main className="flex-1 px-4 py-6 lg:px-8">{children}</main>
+        </div>
+        <ToastContainer />
       </div>
-      <AskNyxWidget />
-      <ToastContainer />
-    </div>
+    </MotionProvider>
   );
 }

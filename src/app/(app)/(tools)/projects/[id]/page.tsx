@@ -4,7 +4,7 @@ import { ArrowLeft01Icon } from 'hugeicons-react'
 import { projectRepo, courseRepo } from '@/repositories'
 import { ProjectDetail } from '@/components/features/projects/ProjectDetail'
 
-export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+export default async function Page({ params }: { params: Promise<{ id: string }> }): Promise<React.JSX.Element> {
   const { id } = await params
   const [project, courses] = await Promise.all([projectRepo.findById(id), courseRepo.findAll()])
   if (!project) notFound()

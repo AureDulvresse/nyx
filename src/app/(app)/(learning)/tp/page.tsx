@@ -2,7 +2,7 @@ import { tpRepo } from '@/repositories'
 import { PageHeader } from '@/components/common/PageHeader'
 import { TPExplorer } from '@/components/features/tp/TPExplorer'
 
-export default async function Page() {
+export default async function Page(): Promise<React.JSX.Element> {
   const tps = await tpRepo.findAll()
 
   return (

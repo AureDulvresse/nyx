@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "tsx watch server.ts",
     "build": "next build",
-    "start": "ts-node --project tsconfig.server.json server.ts",
+    "start": "tsx server.ts",
     "lint": "eslint",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
@@ -22,8 +22,6 @@
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1095.0",
-    "@aws-sdk/s3-request-presigner": "^3.1095.0",
     "@prisma/adapter-pg": "^7.9.0",
     "@prisma/client": "^7.9.0",
     "@tailwindcss/typography": "^0.5.20",
@@ -60,6 +58,7 @@
     "remark-mermaidjs": "^7.0.0",
     "sharp": "^0.35.3",
     "tailwind-merge": "^3.6.0",
+    "tsx": "^4.23.15",
     "ws": "^8.21.1",
     "zod": "^4.4.3",
     "zustand": "^5.0.14"
@@ -79,8 +78,6 @@
     "eslint-config-prettier": "^10.1.8",
     "prettier": "^3.9.6",
     "tailwindcss": "^4",
-    "ts-node": "^10.9.2",
-    "tsx": "^4.23.1",
     "typescript": "^5"
   }
 }

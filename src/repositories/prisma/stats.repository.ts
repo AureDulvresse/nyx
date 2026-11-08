@@ -1,10 +1,20 @@
 import { prisma } from '@/lib/prisma'
-import type { IStatsRepository } from '../interfaces'
+import type { IStatsRepository, ProgressionCounts } from '../interfaces'
+import { QUIZ_PASS_RATIO } from '@/lib/constants'
+import { cacheService, CACHE_KEYS, CACHE_TTL } from '@/infrastructure/cache'
 
 const DAY_LABELS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
 
 export class PrismaStatsRepository implements IStatsRepository {
   async getActivityDates(): Promise<Date[]> {
+    // Cached as ISO strings (JSON); revive to Date for callers.
+    const isoDates = await cacheService.getOrSet(CACHE_KEYS.statsActivityDates, CACHE_TTL.progress, () =>
+      this.loadActivityDates().then((dates) => dates.map((d) => d.toISOString()))
+    )
+    return isoDates.map((d) => new Date(d))
+  }
+
+  private async loadActivityDates(): Promise<Date[]> {
     const [chapters, attempts, labSessions, flagCaptures] = await Promise.all([
       prisma.chapter.findMany({ where: { completedAt: { not: null } }, select: { completedAt: true } }),
       prisma.quizAttempt.findMany({ select: { createdAt: true } }),
@@ -45,13 +55,11 @@ export class PrismaStatsRepository implements IStatsRepository {
     return DAY_LABELS.map((day, i) => ({ day, chapters: counts[i] }))
   }
 
-  async getProgressionCounts(): Promise<{
-    chaptersCompleted: number
-    quizzesPassed: number
-    tpsCompleted: number
-    labsCompleted: number
-    projectsCompleted: number
-  }> {
+  async getProgressionCounts(): Promise<ProgressionCounts> {
+    return cacheService.getOrSet(CACHE_KEYS.statsProgressionCounts, CACHE_TTL.progress, () => this.loadProgressionCounts())
+  }
+
+  private async loadProgressionCounts(): Promise<ProgressionCounts> {
     const [chaptersCompleted, attempts, tpsCompleted, labsCompleted, projectsCompleted] = await Promise.all([
       prisma.chapter.count({ where: { status: 'completed' } }),
       prisma.quizAttempt.findMany({ select: { score: true, total: true } }),
@@ -60,12 +68,16 @@ export class PrismaStatsRepository implements IStatsRepository {
       prisma.project.count({ where: { status: 'completed' } }),
     ])
 
-    const quizzesPassed = attempts.filter((a) => a.total > 0 && a.score / a.total >= 0.6).length
+    const quizzesPassed = attempts.filter((a) => a.total > 0 && a.score / a.total >= QUIZ_PASS_RATIO).length
 
     return { chaptersCompleted, quizzesPassed, tpsCompleted, labsCompleted, projectsCompleted }
   }
 
   async getEarnedCredits(): Promise<{ earned: number; total: number }> {
+    return cacheService.getOrSet(CACHE_KEYS.statsEarnedCredits, CACHE_TTL.progress, () => this.loadEarnedCredits())
+  }
+
+  private async loadEarnedCredits(): Promise<{ earned: number; total: number }> {
     const [courses, chapters] = await Promise.all([
       prisma.course.findMany({ select: { id: true, credits: true } }),
       prisma.chapter.findMany({ select: { courseId: true, status: true } }),
@@ -84,5 +96,3 @@ export class PrismaStatsRepository implements IStatsRepository {
     return { earned: Math.round(earned * 10) / 10, total }
   }
 }
-
-export const statsRepo = new PrismaStatsRepository()

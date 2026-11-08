@@ -5,9 +5,11 @@ import { WeeklyChart } from './WeeklyChart'
 import { LevelCard } from './LevelCard'
 import { ActivityHeatmap } from './ActivityHeatmap'
 import { WeakChaptersCard } from './WeakChaptersCard'
+import { ResumeCard } from './ResumeCard'
+import { TodayCard } from './TodayCard'
 import { CourseGrid } from '@/components/features/courses/CourseGrid'
-import type { Course, QuizAttempt, WeakChapter } from '@/domain'
-import type { SkillLevel, ActivityDay } from '@/services'
+import type { ActivityDay, Course, QuizAttempt, ResumePoint, SkillLevel, WeakChapter } from '@/domain'
+import type { TodayPlan } from '@/services/today.service'
 
 export function DashboardPage({
   globalProgress,
@@ -19,6 +21,8 @@ export function DashboardPage({
   skill,
   activityHeatmap,
   weakChapters,
+  resume,
+  today,
 }: {
   globalProgress: { total: number; completed: number; percentage: number }
   courses: Course[]
@@ -29,12 +33,25 @@ export function DashboardPage({
   skill: SkillLevel
   activityHeatmap: ActivityDay[]
   weakChapters: WeakChapter[]
-}) {
+  resume: ResumePoint | null
+  today: TodayPlan
+}): React.JSX.Element {
   return (
     <div className="space-y-8">
       <PageHeader title="Dashboard" description="Bienvenue sur Nyx — reprends là où tu t'es arrêté." />
 
-      {globalProgress.completed === 0 && <OnboardingBanner firstCourse={courses[0] ?? null} />}
+      {!resume && globalProgress.completed === 0 && <OnboardingBanner firstCourse={courses[0] ?? null} />}
+
+      <div className="grid gap-6 lg:grid-cols-5">
+        {resume && (
+          <div className="lg:col-span-3">
+            <ResumeCard resume={resume} />
+          </div>
+        )}
+        <div className={resume ? 'lg:col-span-2' : 'lg:col-span-5'}>
+          <TodayCard plan={today} />
+        </div>
+      </div>
 
       <LevelCard skill={skill} />
 

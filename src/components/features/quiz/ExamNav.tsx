@@ -13,7 +13,7 @@ export function ExamNav({
   currentIndex: number
   answersByQuestion: Record<string, number[]>
   onGoTo: (index: number) => void
-}) {
+}): React.JSX.Element {
   return (
     <div className="flex flex-wrap gap-1.5">
       {questions.map((q, i) => {

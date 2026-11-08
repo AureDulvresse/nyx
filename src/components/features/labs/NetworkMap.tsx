@@ -1,7 +1,7 @@
 import { ServerStack01Icon, IncognitoIcon } from 'hugeicons-react'
 import type { DockerTarget } from '@/domain'
 
-export function NetworkMap({ targets }: { targets: DockerTarget[] }) {
+export function NetworkMap({ targets }: { targets: DockerTarget[] }): React.JSX.Element {
   return (
     <div className="flex flex-wrap items-center gap-4 rounded-lg border border-border bg-background p-4">
       <div className="flex flex-col items-center gap-1 text-center">

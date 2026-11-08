@@ -2,6 +2,7 @@ import type { Project, ProjectCategory, ProjectStatus, ProjectStep } from '@/dom
 
 export interface IProjectRepository {
   findAll(): Promise<Project[]>
+  findCompleted(): Promise<Project[]>
   findById(id: string): Promise<Project | null>
   create(input: {
     title: string

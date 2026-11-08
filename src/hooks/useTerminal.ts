@@ -1,20 +1,29 @@
 'use client'
 
-import { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { Terminal as XTerm } from '@xterm/xterm'
 import { FitAddon } from '@xterm/addon-fit'
 import { WebLinksAddon } from '@xterm/addon-web-links'
 import { SearchAddon } from '@xterm/addon-search'
 import '@xterm/xterm/css/xterm.css'
 
-export function useTerminal(containerRef: React.RefObject<HTMLDivElement | null>, wsUrl: string | null) {
+export interface TerminalControls {
+  search: (text: string) => boolean
+  clear: () => void
+  fit: () => void
+}
+
+export function useTerminal(
+  containerRef: React.RefObject<HTMLDivElement | null>,
+  wsUrl: string | null
+): TerminalControls {
   const termRef = useRef<XTerm | null>(null)
-  const wsRef = useRef<WebSocket | null>(null)
   const fitRef = useRef<FitAddon | null>(null)
   const searchRef = useRef<SearchAddon | null>(null)
 
-  const connect = useCallback(() => {
-    if (!wsUrl || !containerRef.current) return
+  useEffect(() => {
+    const container = containerRef.current
+    if (!wsUrl || !container) return
 
     const term = new XTerm({
       theme: {
@@ -46,7 +55,7 @@ export function useTerminal(containerRef: React.RefObject<HTMLDivElement | null>
     term.loadAddon(fit)
     term.loadAddon(links)
     term.loadAddon(search)
-    term.open(containerRef.current)
+    term.open(container)
     fit.fit()
 
     termRef.current = term
@@ -55,34 +64,40 @@ export function useTerminal(containerRef: React.RefObject<HTMLDivElement | null>
 
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
     const ws = new WebSocket(`${protocol}//${window.location.host}${wsUrl}&cols=${term.cols}&rows=${term.rows}`)
-    wsRef.current = ws
 
     ws.onopen = () => term.writeln('\x1b[32m[Nyx]\x1b[0m Terminal connecté. Bon pentest!\r\n')
     ws.onmessage = (e) => term.write(typeof e.data === 'string' ? e.data : new Uint8Array(e.data))
     ws.onclose = () => term.writeln('\r\n\x1b[31m[Nyx]\x1b[0m Connexion fermée.')
     ws.onerror = () => term.writeln('\r\n\x1b[31m[Nyx]\x1b[0m Erreur de connexion.')
 
-    term.onData((data) => ws.readyState === WebSocket.OPEN && ws.send(data))
+    term.onData((data) => {
+      if (ws.readyState === WebSocket.OPEN) ws.send(data)
+    })
 
     const observer = new ResizeObserver(() => {
       fit.fit()
-      ws.readyState === WebSocket.OPEN &&
+      if (ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({ type: 'resize', cols: term.cols, rows: term.rows }))
+      }
     })
-    observer.observe(containerRef.current)
+    observer.observe(container)
 
     return () => {
       observer.disconnect()
       ws.close()
       term.dispose()
+      termRef.current = null
+      fitRef.current = null
+      searchRef.current = null
     }
   }, [wsUrl, containerRef])
 
-  useEffect(() => connect(), [connect])
-
-  return {
-    search: (text: string) => searchRef.current?.findNext(text),
-    clear: () => termRef.current?.clear(),
-    fit: () => fitRef.current?.fit(),
-  }
+  return useMemo(
+    () => ({
+      search: (text: string) => searchRef.current?.findNext(text) ?? false,
+      clear: () => termRef.current?.clear(),
+      fit: () => fitRef.current?.fit(),
+    }),
+    []
+  )
 }

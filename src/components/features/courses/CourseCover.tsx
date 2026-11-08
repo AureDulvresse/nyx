@@ -2,21 +2,16 @@
 
 import { useRef, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import * as Icons from 'hugeicons-react'
 import { ImageUpload01Icon } from 'hugeicons-react'
+import { CourseIcon } from '@/components/common/CourseIcon'
 import { uploadCourseCover } from '@/actions'
 import type { Course } from '@/domain'
 
-export function CourseCover({ course }: { course: Course }) {
+export function CourseCover({ course }: { course: Course }): React.JSX.Element {
   const router = useRouter()
   const inputRef = useRef<HTMLInputElement>(null)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
-  const Icon =
-    (Icons as unknown as Record<
-      string,
-      React.ComponentType<{ size?: number; className?: string; style?: React.CSSProperties }>
-    >)[course.icon] ?? Icons.BookOpen01Icon
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -48,7 +43,7 @@ export function CourseCover({ course }: { course: Course }) {
           className="flex h-full w-full items-center justify-center"
           style={{ background: `linear-gradient(135deg, ${course.color}33, ${course.color}0d)` }}
         >
-          <Icon size={48} className="opacity-40" style={{ color: course.color }} />
+          <CourseIcon name={course.icon} size={48} className="opacity-40" style={{ color: course.color }} />
         </div>
       )}
 

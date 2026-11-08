@@ -1,4 +1,4 @@
-// Turns a chapter/lab's raw MDX source into something Piper can read naturally: code blocks and
+// Turns a chapter/lab's raw MDX source into something the speech engine can read naturally: code blocks and
 // data-heavy self-closing components (Steps, CompareTable...) are dropped since reading their raw
 // syntax aloud is unintelligible, while prose callouts (WarningCallout, TipCallout...) keep their
 // inner text since it's often the most important safety/context note in the chapter.
@@ -22,11 +22,8 @@ export function stripMarkdownForSpeech(markdown: string): string {
     .trim()
 }
 
-// Piper synthesizes one WAV per request, buffered fully server-side before any bytes reach the
-// browser (see infra/piper/server.py) — sending a whole chapter as a single request means a single
-// long-running synthesis with no way to tell "finished early" from "cut short", and no visible error
-// either way. Splitting into chunks bounds each request and lets useTextToSpeech chain playback via
-// audio.onended, so a full chapter is actually read start to finish instead of stopping partway.
+// Long utterances get cut off silently by some browsers' speechSynthesis (notably Chrome after
+// ~15s) — splitting into bounded chunks chained via onend lets a full chapter be read through.
 const MAX_SPEECH_CHUNK_LENGTH = 1500
 
 export function splitTextForSpeech(text: string, maxLength = MAX_SPEECH_CHUNK_LENGTH): string[] {
@@ -38,12 +35,12 @@ export function splitTextForSpeech(text: string, maxLength = MAX_SPEECH_CHUNK_LE
   const chunks: string[] = []
   let current = ''
 
-  const flush = () => {
+  const flush = (): void => {
     if (current) chunks.push(current.trim())
     current = ''
   }
 
-  const addPiece = (piece: string) => {
+  const addPiece = (piece: string): void => {
     if (!piece) return
     if (piece.length > maxLength) {
       // A single sentence is still too long on its own — hard-split as a last resort.

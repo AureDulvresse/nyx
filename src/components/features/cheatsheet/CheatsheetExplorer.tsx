@@ -6,7 +6,7 @@ import { CommandGrid } from './CommandGrid'
 import { useCheatSearch } from '@/hooks/useCheatSearch'
 import type { CheatEntry } from '@/domain'
 
-export function CheatsheetExplorer({ initialEntries, categories }: { initialEntries: CheatEntry[]; categories: string[] }) {
+export function CheatsheetExplorer({ initialEntries, categories }: { initialEntries: CheatEntry[]; categories: string[] }): React.JSX.Element {
   const { query, setQuery, category, setCategory, entries, toggleFavorite } = useCheatSearch(initialEntries)
   const [favoritesOnly, setFavoritesOnly] = useState(false)
   const visibleEntries = favoritesOnly ? entries.filter((e) => e.isFavorite) : entries

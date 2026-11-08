@@ -22,7 +22,7 @@ export function ChapterFooterNav({
   isCurrentCompleted: boolean
   previous: Chapter | null
   next: Chapter | null
-}) {
+}): React.JSX.Element | null {
   const router = useRouter()
   const [showConfirm, setShowConfirm] = useState(false)
   const [isPending, startTransition] = useTransition()

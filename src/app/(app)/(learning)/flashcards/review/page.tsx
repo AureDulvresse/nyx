@@ -2,7 +2,7 @@ import { flashcardRepo } from '@/repositories'
 import { PageHeader } from '@/components/common/PageHeader'
 import { ReviewSession } from '@/components/features/flashcards/ReviewSession'
 
-export default async function Page({ searchParams }: { searchParams: Promise<{ deck?: string }> }) {
+export default async function Page({ searchParams }: { searchParams: Promise<{ deck?: string }> }): Promise<React.JSX.Element> {
   const { deck } = await searchParams
   const cards = deck ? await flashcardRepo.findDueByDeck(deck) : []
 

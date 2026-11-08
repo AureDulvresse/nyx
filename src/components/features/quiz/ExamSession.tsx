@@ -6,11 +6,12 @@ import { Button } from '@/components/ui/button'
 import { ExamQuestionCard } from './ExamQuestionCard'
 import { ExamNav } from './ExamNav'
 import { ExamResult } from './ExamResult'
-import { useExamSession, formatRemaining } from '@/hooks/useExamSession'
+import { useExamSession } from '@/hooks/useExamSession'
+import { formatDuration } from '@/lib/utils/date.utils'
 import { cn } from '@/lib/utils/cn'
 import type { CourseExam } from '@/domain'
 
-export function ExamSession({ exam, courseSlug }: { exam: CourseExam; courseSlug: string }) {
+export function ExamSession({ exam, courseSlug }: { exam: CourseExam; courseSlug: string }): React.JSX.Element {
   const {
     shuffledQuestions,
     currentIndex,
@@ -61,7 +62,7 @@ export function ExamSession({ exam, courseSlug }: { exam: CourseExam; courseSlug
           )}
         >
           <Clock01Icon size={15} />
-          {formatRemaining(remainingSeconds)}
+          {formatDuration(remainingSeconds)}
         </div>
       </div>
 
@@ -87,7 +88,7 @@ export function ExamSession({ exam, courseSlug }: { exam: CourseExam; courseSlug
             {answeredCount} / {total} répondues
           </span>
           <Button disabled={isSubmitting} onClick={submit}>
-            Terminer l'examen
+            Terminer l&apos;examen
           </Button>
         </div>
       </div>

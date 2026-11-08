@@ -4,16 +4,13 @@ import { Badge } from '@/components/ui/badge'
 import { ProgressRing } from '@/components/common/ProgressRing'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils/cn'
+import { ExamService } from '@/services'
 import type { ExamAttemptResult, QuizQuestion } from '@/domain'
-
-function correctIndices(question: QuizQuestion): number[] {
-  return Array.isArray(question.correct) ? question.correct : [question.correct]
-}
 
 // Weak-topic breakdown for a failed attempt: which tags had at least one wrong answer, and how
 // many. No question-by-question reveal here on purpose — see the WeakTopics vs QuestionReview
 // split below.
-function WeakTopics({ result, questions }: { result: ExamAttemptResult; questions: QuizQuestion[] }) {
+function WeakTopics({ result, questions }: { result: ExamAttemptResult; questions: QuizQuestion[] }): React.JSX.Element | null {
   const byId = new Map(questions.map((q) => [q.id, q]))
   const wrongByTag = new Map<string, number>()
 
@@ -45,7 +42,7 @@ function WeakTopics({ result, questions }: { result: ExamAttemptResult; question
 // Full per-question breakdown — only ever rendered for a PASSED attempt (see ExamResult below).
 // Revealing exact right/wrong answers on a FAILED attempt would let someone grind pass-fail-retry
 // cycles into free answer-key lookups instead of actually re-studying the material.
-function QuestionReview({ result, questions }: { result: ExamAttemptResult; questions: QuizQuestion[] }) {
+function QuestionReview({ result, questions }: { result: ExamAttemptResult; questions: QuizQuestion[] }): React.JSX.Element {
   const byId = new Map(questions.map((q) => [q.id, q]))
 
   return (
@@ -54,7 +51,7 @@ function QuestionReview({ result, questions }: { result: ExamAttemptResult; ques
       {result.answers.map((a, i) => {
         const question = byId.get(a.questionId)
         if (!question) return null
-        const correct = correctIndices(question)
+        const correct = ExamService.correctIndices(question)
 
         return (
           <Card key={a.questionId} className="p-4">
@@ -102,7 +99,7 @@ export function ExamResult({
   passingPercentage: number
   courseSlug: string
   onRetry: () => void
-}) {
+}): React.JSX.Element {
   return (
     <Card className="flex flex-col items-center gap-4 p-8 text-center">
       <ProgressRing percentage={result.percentage} size={110} color={result.passed ? 'var(--green)' : 'var(--red)'} />
@@ -125,7 +122,7 @@ export function ExamResult({
 
       <div className="flex gap-2">
         <Button variant="secondary" onClick={onRetry}>
-          Repasser l'examen
+          Repasser l&apos;examen
         </Button>
         <Link href={`/courses/${courseSlug}`}>
           <Button>Retour au cours</Button>

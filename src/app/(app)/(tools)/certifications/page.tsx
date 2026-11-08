@@ -1,16 +1,11 @@
-import { certificationRepo, chapterRepo, courseRepo } from '@/repositories'
+import { certificationRepo, chapterRepo } from '@/repositories'
 import { PageHeader } from '@/components/common/PageHeader'
 import { CertificationCard } from '@/components/features/certifications/CertificationCard'
 import { CertificationService } from '@/services'
 
-export default async function Page() {
-  const [certs, courses] = await Promise.all([certificationRepo.findAll(), courseRepo.findAll()])
-  const progresses = await Promise.all(courses.map((c) => chapterRepo.getProgressByCourse(c.id)))
-
-  const certsWithReadiness = certs.map((cert) => ({
-    ...cert,
-    readiness: CertificationService.computeReadiness(cert, progresses),
-  }))
+export default async function Page(): Promise<React.JSX.Element> {
+  const [certs, progresses] = await Promise.all([certificationRepo.findAll(), chapterRepo.getAllCourseProgress()])
+  const certsWithReadiness = CertificationService.withReadiness(certs, progresses)
 
   return (
     <div className="space-y-8">

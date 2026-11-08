@@ -2,7 +2,7 @@ import { cheatRepo } from '@/repositories'
 import { PageHeader } from '@/components/common/PageHeader'
 import { CheatsheetExplorer } from '@/components/features/cheatsheet/CheatsheetExplorer'
 
-export default async function Page() {
+export default async function Page(): Promise<React.JSX.Element> {
   const [entries, categories] = await Promise.all([cheatRepo.search(), cheatRepo.listCategories()])
 
   return (

@@ -1,13 +1,21 @@
 import type { ILabRepository } from '@/repositories'
 import type { IDockerService } from '@/infrastructure/docker/docker.service'
-import type { FlagSubmitResult, HintUnlockResult, LabSession } from '@/domain'
+import type { CompletedLabSession, FlagSubmitResult, HintUnlockResult, LabSession } from '@/domain'
+import { labConfig } from '@/config/lab.config'
 
-const MAX_CONCURRENT_SESSIONS = parseInt(process.env.LAB_MAX_CONCURRENT_SESSIONS ?? '3', 10)
-const SESSION_TIMEOUT_HOURS = parseInt(process.env.LAB_SESSION_TIMEOUT_HOURS ?? '2', 10)
 // Deducted once per flag the first time its hint is unlocked — steep enough that solving without
 // help still matters for the score, light enough that a genuinely stuck user isn't punished out
 // of finishing the lab.
 const HINT_PENALTY_RATIO = 0.15
+
+// Best score (incl. bonus) reached per lab across all completed sessions, keyed by lab id.
+export function bestPointsByLab(sessions: Pick<CompletedLabSession, 'labId' | 'score' | 'bonusPoints'>[]): Record<string, number> {
+  const points: Record<string, number> = {}
+  for (const s of sessions) {
+    points[s.labId] = Math.max(points[s.labId] ?? 0, s.score + s.bonusPoints)
+  }
+  return points
+}
 
 export class LabService {
   constructor(
@@ -16,7 +24,7 @@ export class LabService {
   ) {}
 
   private async reapStaleSessions(): Promise<void> {
-    const cutoff = new Date(Date.now() - SESSION_TIMEOUT_HOURS * 3600 * 1000)
+    const cutoff = new Date(Date.now() - labConfig.sessionTimeoutHours * 3600 * 1000)
     const stale = await this.labRepo.findStaleActiveSessions(cutoff)
     await Promise.allSettled(
       stale.map(async (session) => {
@@ -26,15 +34,16 @@ export class LabService {
     )
   }
 
-  async startSession(labId: string, userId: string): Promise<LabSession> {
+  async startSession(labId: string): Promise<LabSession> {
     // A session whose Docker containers were torn down without going through stopSession (browser
     // closed, process killed, host rebooted) stays "active" in the DB forever otherwise, silently
     // eating one of the few concurrent slots until nobody can start a lab at all.
     await this.reapStaleSessions()
 
+    const { maxConcurrentSessions } = labConfig
     const activeCount = await this.labRepo.countActiveSessions()
-    if (activeCount >= MAX_CONCURRENT_SESSIONS) {
-      throw new Error(`Maximum ${MAX_CONCURRENT_SESSIONS} sessions concurrentes atteint`)
+    if (activeCount >= maxConcurrentSessions) {
+      throw new Error(`Maximum ${maxConcurrentSessions} sessions concurrentes atteint`)
     }
 
     const lab = await this.labRepo.findById(labId)

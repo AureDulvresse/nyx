@@ -1,4 +1,6 @@
-import { QuizQuestion, QuizAttemptResult } from '@/domain'
+import type { QuizQuestion, QuizAttemptResult } from '@/domain'
+import { QUIZ_PASS_RATIO } from '@/lib/constants'
+import { toPercentage } from '@/lib/utils/math.utils'
 
 export const QuizService = {
   grade(
@@ -17,8 +19,8 @@ export const QuizService = {
     return {
       score,
       total,
-      percentage: total > 0 ? Math.round((score / total) * 100) : 0,
-      passed: total > 0 && score / total >= 0.6,
+      percentage: toPercentage(score, total),
+      passed: total > 0 && score / total >= QUIZ_PASS_RATIO,
       answers: graded,
       duration: Math.round(durationMs / 1000),
     }
