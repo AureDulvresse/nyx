@@ -9,7 +9,7 @@ Nyx est une plateforme personnelle d'apprentissage de la cybersécurité : cours
 - **Données** : PostgreSQL avec Prisma 7 ; Redis pour le cache et les sessions.
 - **Fichiers** : stockage disque local (`./storage`, volume `uploads_data` dans Docker), servi sous `/uploads`.
 - **Labs** : conteneurs Docker ; images et scénarios dans [infra/](./infra/) et [content/labs/](./content/labs/).
-- **Lecture audio** : synthèse vocale native du navigateur (aucun service serveur).
+- **Lecture audio** : Piper, synthèse vocale neuronale locale (service `piper` du Compose), audio mis en cache sur disque.
 - **Code** : composants sous [src/](./src/), schéma et seed sous [prisma/](./prisma/), cours sous [content/courses/](./content/courses/).
 
 Les scripts et services disponibles sont définis dans [package.json](./package.json) et [docker-compose.yml](./docker-compose.yml). Il existe également une configuration de préproduction avec Nginx dans [docker-compose.preprod.yml](./docker-compose.preprod.yml).
@@ -52,6 +52,8 @@ DOCKER_SOCKET="/var/run/docker.sock"
 LAB_SESSION_TIMEOUT_HOURS="2"
 LAB_MAX_CONCURRENT_SESSIONS="3"
 
+PIPER_URL="http://localhost:8082"
+
 # Optionnel — répertoire des fichiers uploadés (défaut : ./storage)
 # STORAGE_DIR="./storage"
 ```
@@ -61,10 +63,10 @@ Générer le secret d'authentification avec `openssl rand -base64 32`, puis remp
 ### 3. Démarrer les dépendances
 
 ```bash
-docker compose up -d postgres redis
+docker compose up -d postgres redis piper
 ```
 
-PostgreSQL est publié sur `localhost:5432` et Redis sur `localhost:6379`.
+PostgreSQL est publié sur `localhost:5432`, Redis sur `localhost:6379` et Piper sur `localhost:8082`. Le premier build de Piper télécharge la voix française (~60 Mo). Piper est facultatif : sans lui, seul le bouton « Écouter ce chapitre » est indisponible.
 
 ### 4. Initialiser la base et charger les données de démonstration
 
@@ -116,7 +118,7 @@ La configuration préproduction utilise l'image construite par le [Dockerfile](.
 2. Démarrez d'abord les services dépendants et créez le réseau Compose :
 
    ```bash
-   docker compose up -d postgres redis
+   docker compose up -d postgres redis piper
    ```
 
 3. Initialisez la base depuis l'hôte si nécessaire (avec les URL `localhost` du fichier `.env.local`) :

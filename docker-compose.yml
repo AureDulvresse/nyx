@@ -16,6 +16,7 @@ services:
       - DATABASE_URL=postgresql://nyx:${POSTGRES_PASSWORD:-nyx_dev_secret}@postgres:5432/nyx?schema=public
       - DIRECT_URL=postgresql://nyx:${POSTGRES_PASSWORD:-nyx_dev_secret}@postgres:5432/nyx?schema=public
       - REDIS_URL=redis://redis:6379
+      - PIPER_URL=http://piper:8000
     env_file: .env.local
     volumes:
       - .:/app
@@ -60,6 +61,15 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
+
+  # Synthèse vocale locale (lecture audio des chapitres). Voix modifiable via les build args
+  # PIPER_VOICE / VOICE_PATH (voir infra/piper/Dockerfile).
+  piper:
+    build:
+      context: ./infra/piper
+    ports:
+      - "8082:8000"
     restart: unless-stopped
 
 volumes:

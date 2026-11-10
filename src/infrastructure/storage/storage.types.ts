@@ -2,6 +2,7 @@ export const STORAGE_BUCKETS = {
   courses: 'courses',
   labs: 'labs',
   uploads: 'uploads',
+  tts: 'tts',
 } as const
 
 export type StorageBucket = (typeof STORAGE_BUCKETS)[keyof typeof STORAGE_BUCKETS]

@@ -1,7 +1,7 @@
 # Pile pré-prod : l'app buildée en production (pas de bind-mount du code source, pas de hot
 # reload) derrière nginx, en local sur http://localhost:8080. Réutilise les services déjà lancés
-# par `docker-compose.yml` (postgres, redis) via leur réseau —
-# démarre-les d'abord avec `docker compose up -d postgres redis`.
+# par `docker-compose.yml` (postgres, redis, piper) via leur réseau —
+# démarre-les d'abord avec `docker compose up -d postgres redis piper`.
 #
 # Lancement :
 #   docker-compose -f docker-compose.preprod.yml up -d --build
@@ -24,6 +24,7 @@ services:
       - DATABASE_URL=postgresql://nyx:${POSTGRES_PASSWORD:-nyx_dev_secret}@postgres:5432/nyx?schema=public
       - DIRECT_URL=postgresql://nyx:${POSTGRES_PASSWORD:-nyx_dev_secret}@postgres:5432/nyx?schema=public
       - REDIS_URL=redis://redis:6379
+      - PIPER_URL=http://piper:8000
       - NEXTAUTH_URL=http://localhost:8080
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock

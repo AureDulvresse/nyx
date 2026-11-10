@@ -2,6 +2,11 @@
 // data-heavy self-closing components (Steps, CompareTable...) are dropped since reading their raw
 // syntax aloud is unintelligible, while prose callouts (WarningCallout, TipCallout...) keep their
 // inner text since it's often the most important safety/context note in the chapter.
+function withFinalPunctuation(text: string): string {
+  const trimmed = text.trim()
+  return /[.!?:;,…]$/.test(trimmed) ? trimmed : `${trimmed}.`
+}
+
 export function stripMarkdownForSpeech(markdown: string): string {
   return markdown
     .replace(/```[\s\S]*?```/g, '')
@@ -13,8 +18,12 @@ export function stripMarkdownForSpeech(markdown: string): string {
     .replace(/<([A-Z]\w*)[^>]*>([\s\S]*?)<\/\1>/g, '$2')
     .replace(/!\[.*?\]\(.*?\)/g, '')
     .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-    .replace(/^#{1,6}\s+/gm, '')
-    .replace(/^[-*]\s+/gm, '')
+    // Headings and list items rarely end with punctuation: without one, the voice runs them into
+    // the next sentence with no pause.
+    .replace(/^#{1,6}\s+(.+)$/gm, (_m, title: string) => `\n${withFinalPunctuation(title)}\n`)
+    .replace(/^\s*(?:[-*+]|\d+\.)\s+(.+)$/gm, (_m, item: string) => withFinalPunctuation(item))
+    .replace(/\s*(?:->|=>|→)\s*/g, ', ')
+    .replace(/\|/g, ', ')
     .replace(/\*\*([^*]+)\*\*/g, '$1')
     .replace(/\*([^*]+)\*/g, '$1')
     .replace(/`([^`]+)`/g, '$1')
@@ -22,53 +31,56 @@ export function stripMarkdownForSpeech(markdown: string): string {
     .trim()
 }
 
-// Long utterances get cut off silently by some browsers' speechSynthesis (notably Chrome after
-// ~15s) — splitting into bounded chunks chained via onend lets a full chapter be read through.
-const MAX_SPEECH_CHUNK_LENGTH = 1500
+// Chunks are synthesized one by one by Piper while the previous one plays: a short first chunk
+// makes playback start almost immediately, later chunks stay bounded so each request is fast.
+const FIRST_SPEECH_CHUNK_LENGTH = 200
+const MAX_SPEECH_CHUNK_LENGTH = 700
 
-export function splitTextForSpeech(text: string, maxLength = MAX_SPEECH_CHUNK_LENGTH): string[] {
-  const paragraphs = text
+export function splitTextForSpeech(
+  text: string,
+  maxLength = MAX_SPEECH_CHUNK_LENGTH,
+  firstMaxLength = FIRST_SPEECH_CHUNK_LENGTH
+): string[] {
+  const sentences = text
     .split(/\n{2,}/)
-    .map((p) => p.trim())
+    .flatMap((paragraph) => paragraph.replace(/\s+/g, ' ').match(/[^.!?…]+[.!?…]+["»)]*\s*|[^.!?…]+$/g) ?? [])
+    .map((sentence) => sentence.trim())
     .filter(Boolean)
 
   const chunks: string[] = []
   let current = ''
+  const limit = (): number => (chunks.length === 0 ? firstMaxLength : maxLength)
 
-  const flush = (): void => {
-    if (current) chunks.push(current.trim())
-    current = ''
-  }
-
-  const addPiece = (piece: string): void => {
-    if (!piece) return
-    if (piece.length > maxLength) {
-      // A single sentence is still too long on its own — hard-split as a last resort.
-      flush()
-      for (let i = 0; i < piece.length; i += maxLength) {
-        chunks.push(piece.slice(i, i + maxLength).trim())
+  for (const sentence of sentences) {
+    for (const piece of splitLongSentence(sentence, maxLength)) {
+      const candidate = current ? `${current} ${piece}` : piece
+      if (current && candidate.length > limit()) {
+        chunks.push(current)
+        current = piece
+      } else {
+        current = candidate
       }
-      return
     }
-    const candidate = current ? `${current} ${piece}` : piece
-    if (candidate.length > maxLength) {
-      flush()
-      current = piece
+  }
+  if (current) chunks.push(current)
+  return chunks
+}
+
+// Last resort for a single sentence longer than a chunk: cut on commas, then on spaces — never
+// mid-word, which would make the voice stumble.
+function splitLongSentence(sentence: string, maxLength: number): string[] {
+  if (sentence.length <= maxLength) return [sentence]
+  const parts: string[] = []
+  let current = ''
+  for (const word of sentence.split(/(?<=,)\s+|\s+/)) {
+    const candidate = current ? `${current} ${word}` : word
+    if (current && candidate.length > maxLength) {
+      parts.push(current)
+      current = word
     } else {
       current = candidate
     }
   }
-
-  for (const paragraph of paragraphs) {
-    if (paragraph.length <= maxLength) {
-      addPiece(paragraph)
-      continue
-    }
-    // Paragraph alone exceeds the limit — fall back to sentence boundaries.
-    const sentences = paragraph.match(/[^.!?]+[.!?]+(\s+|$)|[^.!?]+$/g) ?? [paragraph]
-    for (const sentence of sentences) addPiece(sentence.trim())
-  }
-  flush()
-
-  return chunks.length > 0 ? chunks : [text.trim()].filter(Boolean)
+  if (current) parts.push(current)
+  return parts
 }

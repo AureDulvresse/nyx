@@ -13,15 +13,15 @@ mettre ce fichier à jour quand une règle ou un choix d'architecture change.
 
 | Module | Description |
 | --- | --- |
-| **Cours** | ~25 cours Markdown/MDX (`content/courses/<slug>/`), chapitres avec progression, lecture audio (synthèse vocale du navigateur), commentaires, ressources, examen de fin de cours |
+| **Cours** | ~25 cours Markdown/MDX (`content/courses/<slug>/`), chapitres avec progression, lecture audio (Piper, voix neuronale locale), commentaires, ressources, examen de fin de cours |
 | **Apprentissage** | Quiz par chapitre, flashcards (SM-2), travaux pratiques (TP) |
 | **Nyx Labs** | Missions Docker isolées (Kali + cibles), terminal web, flags, indices |
 | **Outils** | Cheatsheet, certifications, parcours, dépendances entre cours, notes, projets, portfolio |
 | **Dashboard** | Progression, streak, points, crédits |
 
 **Hors périmètre (supprimé volontairement — ne pas réintroduire sans décision explicite)** :
-assistant IA « Ask Nyx » (Ollama), reconnaissance vocale (Whisper), synthèse vocale serveur (Piper),
-stockage objet MinIO/S3. Objectif : une application légère qui démarre avec **PostgreSQL + Redis** seulement.
+assistant IA « Ask Nyx » (Ollama), reconnaissance vocale (Whisper), stockage objet MinIO/S3.
+Objectif : une application légère — **PostgreSQL + Redis** (+ **Piper** pour la lecture audio, facultatif).
 
 ---
 
@@ -36,6 +36,7 @@ stockage objet MinIO/S3. Objectif : une application légère qui démarre avec *
 - **Auth** : NextAuth v5 (JWT, page `/login`), routes protégées par `src/proxy.ts`
 - **UI** : Tailwind 4, composants shadcn-like (`src/components/ui`), **hugeicons-react** (jamais Lucide), framer-motion, recharts, xterm.js, Mermaid
 - **Validation / état** : zod, zustand
+- **Synthèse vocale** : Piper (`infra/piper`, FastAPI) appelé par `src/app/api/tts/route.ts` (auth + rate-limit), audio mis en cache sur disque (bucket `tts`), lecture continue côté client via Web Audio API (`useTextToSpeech`)
 - **Fichiers uploadés** : disque local (`STORAGE_DIR`, défaut `./storage`), servis par `src/app/uploads/[...path]/route.ts`
 
 ---
@@ -44,7 +45,7 @@ stockage objet MinIO/S3. Objectif : une application légère qui démarre avec *
 
 | Fichier | Contenu |
 | --- | --- |
-| `docker-compose.yml` | `postgres`, `redis`, `app` (stage `dev` du Dockerfile, code monté, hot reload) |
+| `docker-compose.yml` | `postgres`, `redis`, `piper`, `app` (stage `dev` du Dockerfile, code monté, hot reload) |
 | `docker-compose.preprod.yml` | `app` (stage `runner`, build de prod) + `nginx` sur `:8080`, réseau `nyx_default` |
 | `Dockerfile` | Stages `base` → `deps` → `dev` / `builder` → `runner` (sans outils de compilation ni devDependencies) |
 | `infra/kali-tools`, `infra/labs/*` | Images des labs (`npm run docker:build-kali`, `npm run docker:build-labs`) |
@@ -69,6 +70,7 @@ NEXTAUTH_URL="http://localhost:3000"
 DOCKER_SOCKET="/var/run/docker.sock"
 LAB_SESSION_TIMEOUT_HOURS="2"
 LAB_MAX_CONCURRENT_SESSIONS="3"
+PIPER_URL="http://localhost:8082"
 # STORAGE_DIR="./storage"   # optionnel
 ```
 
@@ -177,7 +179,7 @@ Les schémas zod vivent dans `src/lib/schemas/` et sont partagés entre actions 
 ## 9. Stockage des fichiers
 
 - `storageService` (`src/infrastructure/storage`) implémente `IStorageService` sur disque local.
-- Clés résolues sous `STORAGE_DIR` avec protection contre le path traversal ; buckets logiques `courses`, `labs`, `uploads`.
+- Clés résolues sous `STORAGE_DIR` avec protection contre le path traversal ; buckets logiques `courses`, `labs`, `uploads`, `tts` (cache audio).
 - Servi sous `/uploads/<bucket>/<key>` (authentifié via le proxy), avec un CSP `sandbox` pour neutraliser les SVG.
 - Uploads validés : type MIME autorisé, 25 Mo max, rate-limit Redis.
 
@@ -217,7 +219,7 @@ Images statiques : `public/images/courses/<slug>/`.
 ## 11. Commandes
 
 ```bash
-docker compose up -d postgres redis          # dépendances
+docker compose up -d postgres redis piper    # dépendances
 npx prisma generate && npm run db:push       # schéma
 npm run db:seed                              # ⚠️ réinitialise toutes les données (dev uniquement)
 npm run dev                                  # serveur custom + hot reload (tsx watch)
