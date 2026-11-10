@@ -2347,7 +2347,7 @@ async function main() {
               "La Kill Chain contient plus de techniques documentées qu'ATT&CK"
             ],
             "correct": 0,
-            "explanation": "Le tableau comparatif du chapitre oppose les 7 étapes linéaires de la Kill Chain aux 14 tactiques et centaines de techniques documentées d'ATT&CK, avec des cas réels référencés.",
+            "explanation": "Le tableau comparatif du chapitre oppose les 7 étapes linéaires de la Kill Chain aux 15 tactiques (14 avant 2026) et centaines de techniques documentées d'ATT&CK, avec des cas réels référencés.",
             "difficulty": "hard",
             "tags": [
               "mitre-attck",
@@ -2409,15 +2409,15 @@ async function main() {
           },
           {
             "id": "q2",
-            "question": "Combien de fonctions comporte le NIST Cybersecurity Framework ?",
+            "question": "Combien de fonctions comporte le NIST Cybersecurity Framework 2.0 (2024) ?",
             "options": [
               "3",
               "5",
-              "7",
+              "6",
               "10"
             ],
-            "correct": 1,
-            "explanation": "Le NIST CSF est structuré en 5 fonctions : Identify, Protect, Detect, Respond, Recover.",
+            "correct": 2,
+            "explanation": "Le NIST CSF 2.0 compte 6 fonctions : Govern (ajoutée en 2024), Identify, Protect, Detect, Respond, Recover. La version 1.1 n'en comptait que 5.",
             "difficulty": "easy",
             "tags": [
               "normes"
@@ -2493,7 +2493,7 @@ async function main() {
           },
           {
             "id": "q7",
-            "question": "Quelles sont les 5 fonctions du NIST Cybersecurity Framework citées dans le chapitre ?",
+            "question": "Quelles sont les 5 fonctions historiques du NIST Cybersecurity Framework (version 1.1), reprises dans la version 2.0 ?",
             "options": [
               "Identify, Protect, Detect, Respond, Recover",
               "Plan, Do, Check, Act, Review",
@@ -2501,7 +2501,7 @@ async function main() {
               "Identify, Protect, Investigate, Respond, Restore"
             ],
             "correct": 0,
-            "explanation": "Le NIST CSF est structuré en 5 fonctions : Identify, Protect, Detect, Respond, Recover.",
+            "explanation": "Le NIST CSF 1.1 était structuré en 5 fonctions : Identify, Protect, Detect, Respond, Recover. Le CSF 2.0 (2024) y ajoute une sixième fonction transverse, Govern.",
             "difficulty": "easy",
             "tags": [
               "nist-csf"
@@ -2737,7 +2737,7 @@ async function main() {
           },
           {
             "id": "q5",
-            "question": "Dans une trame Ethernet capturée avec tcpdump -X, quel champ EtherType indique que la charge utile est un paquet IPv4 ?",
+            "question": "Dans une trame Ethernet capturée avec tcpdump -XX, quel champ EtherType indique que la charge utile est un paquet IPv4 ?",
             "options": [
               "0800",
               "0806",
@@ -5495,7 +5495,7 @@ async function main() {
               "Pandoc"
             ],
             "correct": 2,
-            "explanation": "Le chapitre cite Serpico, Dradis et PlexTrac comme plateformes dédiées pentest avec gabarits de findings et export automatisé.",
+            "explanation": "Le chapitre cite Dradis et PlexTrac (ainsi que SysReptor et Ghostwriter) comme plateformes dédiées pentest avec gabarits de findings et export automatisé ; Serpico n’est plus maintenu.",
             "difficulty": "medium",
             "tags": [
               "outils",
@@ -8640,7 +8640,7 @@ async function main() {
               "Six"
             ],
             "correct": 1,
-            "explanation": "Le modèle NIST (SP 800-61) comporte quatre phases : préparation, détection et analyse, confinement/éradication/remédiation, et activités post-incident.",
+            "explanation": "Le modèle NIST SP 800-61r2 comporte quatre phases : préparation, détection et analyse, confinement/éradication/remédiation, et activités post-incident.",
             "difficulty": "easy",
             "tags": [
               "nist",
@@ -9003,7 +9003,7 @@ async function main() {
               "Chiffrer le dump avant analyse"
             ],
             "correct": 1,
-            "explanation": "Volatility doit connaître la version exacte de l'OS (le profil) pour interpréter correctement les structures mémoire avant toute extraction de données.",
+            "explanation": "Volatility doit connaître la version exacte de l'OS pour interpréter correctement les structures mémoire : c'était le « profil » de Volatility 2 ; Volatility 3 le détecte automatiquement via des tables de symboles.",
             "difficulty": "medium",
             "tags": [
               "volatility",
@@ -10741,7 +10741,7 @@ async function main() {
               "ECDSA"
             ],
             "correct": 1,
-            "explanation": "CRYSTALS-Kyber a été standardisé pour l'échange de clé, en remplacement progressif de RSA/ECDHE.",
+            "explanation": "CRYSTALS-Kyber a été standardisé pour l'échange de clé (FIPS 203, sous le nom ML-KEM, août 2024), en remplacement progressif de RSA/ECDHE.",
             "difficulty": "easy",
             "tags": [
               "kyber",
@@ -10758,7 +10758,7 @@ async function main() {
               "SHA-256"
             ],
             "correct": 1,
-            "explanation": "CRYSTALS-Dilithium a été standardisé pour les signatures numériques, en remplacement progressif de RSA/ECDSA.",
+            "explanation": "CRYSTALS-Dilithium a été standardisé pour les signatures numériques (FIPS 204, sous le nom ML-DSA, août 2024), en remplacement progressif de RSA/ECDSA.",
             "difficulty": "easy",
             "tags": [
               "dilithium",
@@ -11278,10 +11278,10 @@ async function main() {
               "≈208 millions",
               "26 × 8 = 208",
               "≈208 milliards",
-              "≈6 milliards de milliards"
+              "≈6 millions de milliards"
             ],
             "correct": 2,
-            "explanation": "26^8 ≈ 208 milliards de combinaisons possibles, contre ≈6 milliards de milliards pour un mot de passe de 8 caractères mixtes (94 caractères).",
+            "explanation": "26^8 ≈ 208 milliards de combinaisons possibles, contre ≈6 millions de milliards pour un mot de passe de 8 caractères mixtes (94 caractères).",
             "difficulty": "medium",
             "tags": [
               "espace-recherche"
@@ -16097,15 +16097,15 @@ async function main() {
           },
           {
             "id": "q7",
-            "question": "Pourquoi un système d'IA utilisé pour le blocage automatique de comptes est-il susceptible de relever d'une catégorie à risque élevé selon l'AI Act, d'après ce chapitre ?",
+            "question": "Selon l'AI Act, qu'est-ce qui détermine si un système d'IA utilisé en cybersécurité (par exemple le blocage automatique de comptes) est classé « à haut risque » ?",
             "options": [
-              "Parce qu'il s'agit d'une décision de sécurité à fort impact, imposant des obligations de transparence et de supervision renforcées",
+              "Son cas d'usage : le haut risque dépend des domaines listés (annexe III : emploi, biométrie, services essentiels…), pas du seul fait de faire de la cybersécurité",
               "Parce que le blocage de comptes ne concerne jamais les utilisateurs",
               "Parce que l'AI Act ne s'applique qu'aux entreprises non européennes",
               "Parce que les comptes bloqués sont automatiquement supprimés"
             ],
             "correct": 0,
-            "explanation": "Le chapitre explique qu'un système de sécurité à fort impact comme le blocage automatique de comptes relève d'une catégorie à risque élevé.",
+            "explanation": "Un composant purement dédié à la cybersécurité n'est pas à haut risque par défaut (considérant 55) : c'est le cas d'usage, au regard de l'annexe III, qui le détermine. Un blocage automatique de comptes qui conditionne l'accès à un service essentiel ou à l'emploi peut en revanche y entrer.",
             "difficulty": "hard",
             "tags": [
               "ai-act"
@@ -16634,15 +16634,15 @@ async function main() {
           },
           {
             "id": "q5",
-            "question": "Selon le tableau comparatif, combien de tactiques compte le framework MITRE ATT&CK ?",
+            "question": "Combien de tactiques compte la matrice MITRE ATT&CK Enterprise actuelle (v20) ?",
             "options": [
-              "14",
+              "15",
               "7",
               "20",
               "5"
             ],
             "correct": 0,
-            "explanation": "Le tableau comparatif oppose les 7 phases générales de la Kill Chain aux 14 tactiques de MITRE ATT&CK, chacune détaillée en de nombreuses techniques précises.",
+            "explanation": "Le tableau comparatif oppose les 7 phases générales de la Kill Chain aux 15 tactiques de MITRE ATT&CK (14 jusqu'en 2025, avant la scission de Defense Evasion en Stealth et Defense Impairment), chacune détaillée en de nombreuses techniques précises.",
             "difficulty": "medium",
             "tags": [
               "soc",
@@ -17267,7 +17267,7 @@ async function main() {
             "question": "Parmi les leviers concrets de progression N1 → N2 cités dans le chapitre, lequel concerne la connaissance de l'environnement surveillé ?",
             "options": [
               "Connaître les comportements normaux de son organisation pour repérer un écart réel",
-              "Mémoriser l'intégralité des 14 tactiques MITRE ATT&CK sans les appliquer",
+              "Mémoriser l'intégralité des 15 tactiques MITRE ATT&CK sans les appliquer",
               "Éviter de pratiquer l'investigation sur des cas simulés",
               "Se limiter strictement aux procédures écrites sans jamais les questionner"
             ],
@@ -25248,7 +25248,7 @@ async function main() {
           },
           {
             "id": "q6",
-            "question": "Dans l'exemple du chapitre, une matrix build sur 3 versions de Node.js (18, 20, 22) combinée à 2 systèmes d'exploitation génère combien de jobs exécutés en parallèle ?",
+            "question": "Dans l'exemple du chapitre, une matrix build sur 3 versions de Node.js (20, 22, 24) combinée à 2 systèmes d'exploitation génère combien de jobs exécutés en parallèle ?",
             "options": [
               "6",
               "3",
@@ -26788,7 +26788,7 @@ async function main() {
             "question": "Pour atteindre le niveau SLSA 3, que faut-il en plus d'une simple signature cosign en fin de pipeline ?",
             "options": [
               "Rien de plus, la signature suffit à elle seule",
-              "Une plateforme de build qui génère elle-même une provenance isolée du code utilisateur, non-falsifiable même par un administrateur",
+              "Une plateforme de build qui génère elle-même une provenance isolée des étapes de build, non falsifiable par le code du projet (SLSA v1.0 Build L3)",
               "Un SBOM exclusivement au format SPDX",
               "Une revue manuelle de code par au moins deux personnes"
             ],
@@ -29935,7 +29935,7 @@ async function main() {
           ],
           "question": "Quels algorithmes le NIST a-t-il standardisés pour la cryptographie post-quantique, respectivement pour l'échange de clé et les signatures ?",
           "difficulty": "easy",
-          "explanation": "CRYSTALS-Kyber a été standardisé pour l'échange de clé, CRYSTALS-Dilithium pour les signatures numériques."
+          "explanation": "CRYSTALS-Kyber a été standardisé pour l'échange de clé (ML-KEM, FIPS 203) et CRYSTALS-Dilithium pour les signatures numériques (ML-DSA, FIPS 204), en août 2024."
         },
         {
           "id": "e29",
@@ -30139,7 +30139,7 @@ async function main() {
         },
         {
           "id": "e40",
-          "question": "Que doit fournir une entité à une autorité de certification lors d'une demande de signature de certificat (CSR), sans jamais la transmettre ?",
+          "question": "Lors d'une demande de signature de certificat (CSR), quel élément l'entité ne doit-elle JAMAIS transmettre à l'autorité de certification ?",
           "options": [
             "Sa clé privée, qui doit rester strictement confidentielle",
             "Sa clé publique",
@@ -30233,13 +30233,13 @@ async function main() {
           "id": "e45",
           "question": "Dans un handshake TLS, à quel moment le client vérifie-t-il la chaîne de confiance du certificat présenté ?",
           "options": [
-            "Après réception du ServerHello et du certificat, avant l'échange de clé",
+            "Après réception du certificat (envoyé chiffré après le ServerHello), avant de terminer le handshake",
             "Avant même d'envoyer le ClientHello",
             "Uniquement après l'établissement complet de la clé de session",
             "Jamais, cette vérification est déléguée au serveur"
           ],
           "correct": 0,
-          "explanation": "Le client vérifie la chaîne de confiance du certificat juste après avoir reçu le ServerHello et le certificat, avant de procéder à l'échange de clé.",
+          "explanation": "En TLS 1.3, l'échange de clé (key_share) a lieu dès le ClientHello/ServerHello ; le certificat est ensuite envoyé chiffré, et le client vérifie la chaîne de confiance (puis la signature CertificateVerify) avant d'envoyer son message Finished.",
           "difficulty": "easy",
           "tags": [
             "cryptographie",
@@ -33683,7 +33683,7 @@ async function main() {
           ],
           "question": "Quel modèle est utilisé pour structurer la réponse à incident, avec les phases préparation/détection/confinement/post-incident ?",
           "difficulty": "easy",
-          "explanation": "Le modèle NIST (SP 800-61) structure la réponse à incident en quatre phases."
+          "explanation": "Le modèle NIST SP 800-61r2 structure la réponse à incident en quatre phases (la révision 3 de 2025 l'aligne sur les fonctions du CSF 2.0)."
         },
         {
           "id": "e2",
@@ -34247,7 +34247,7 @@ async function main() {
             "Pour désactiver les protections antivirus du poste d'analyse"
           ],
           "correct": 0,
-          "explanation": "Les structures internes du noyau et de la mémoire varient selon la version de l'OS ; Volatility doit connaître le profil exact pour les interpréter correctement.",
+          "explanation": "Les structures internes du noyau et de la mémoire varient selon la version de l'OS ; Volatility doit la connaître exactement pour les interpréter (profil choisi à la main dans Volatility 2, tables de symboles détectées automatiquement dans Volatility 3).",
           "difficulty": "medium",
           "tags": [
             "dfir",
@@ -37339,9 +37339,9 @@ async function main() {
             "Identify, Prevent, Detect, React, Restore",
             "Assess, Protect, Detect, Respond, Recover"
           ],
-          "question": "Quelles sont les 5 fonctions du NIST Cybersecurity Framework ?",
+          "question": "Quelles sont les 5 fonctions historiques du NIST Cybersecurity Framework (version 1.1), reprises dans la version 2.0 ?",
           "difficulty": "medium",
-          "explanation": "Le NIST CSF est structuré en 5 fonctions : Identify, Protect, Detect, Respond, Recover."
+          "explanation": "Le NIST CSF 1.1 était structuré en 5 fonctions : Identify, Protect, Detect, Respond, Recover. Le CSF 2.0 (2024) y ajoute une sixième fonction transverse, Govern."
         },
         {
           "id": "e23",
@@ -37572,7 +37572,7 @@ async function main() {
             "Le C2iF"
           ],
           "correct": 1,
-          "explanation": "L'article 47 de la LPM de 2018 permet à l'ANSSI et à certains organismes de test agréés d'effectuer des scans de vulnérabilités sur des OIV, dans un cadre très encadré de cyberdéfense nationale.",
+          "explanation": "La LPM de 2018 a renforcé les capacités de l'ANSSI, qui peut, dans un cadre légal strict de cyberdéfense nationale, mettre en œuvre des dispositifs de détection et d'analyse pour protéger les opérateurs d'importance vitale (OIV).",
           "difficulty": "medium",
           "tags": [
             "légal",
@@ -39616,13 +39616,13 @@ async function main() {
           "correct": 1,
           "options": [
             "≈208 milliards",
-            "≈6 milliards de milliards",
+            "≈6 millions de milliards",
             "≈94 millions",
             "≈8^94"
           ],
           "question": "Selon le tableau du cours, quel est approximativement l'espace de recherche d'un mot de passe de 8 caractères mixtes (alphabet de 94 caractères) ?",
           "difficulty": "medium",
-          "explanation": "94^8 ≈ 6 milliards de milliards de combinaisons possibles, contre ≈208 milliards pour un mot de passe de 8 minuscules uniquement."
+          "explanation": "94^8 ≈ 6 millions de milliards de combinaisons possibles, contre ≈208 milliards pour un mot de passe de 8 minuscules uniquement."
         },
         {
           "id": "e14",
@@ -42193,11 +42193,11 @@ async function main() {
             "3",
             "10",
             "4",
-            "6"
+            "8"
           ],
-          "question": "Combien de métriques de base compose le score CVSS v3.1, selon le chapitre 3 ?",
+          "question": "Combien de métriques de base compose le score CVSS v3.1 ?",
           "difficulty": "easy",
-          "explanation": "Le chapitre 3 liste six métriques de base : AV, AC, PR, UI, et les trois impacts C/I/A."
+          "explanation": "CVSS v3.1 compte huit métriques de base : AV, AC, PR, UI, S (Scope) et les trois impacts C, I, A. (CVSS 4.0 en compte onze.)"
         },
         {
           "id": "e15",
@@ -43269,7 +43269,7 @@ async function main() {
         },
         {
           "id": "e28",
-          "question": "Dans une trame Ethernet capturée avec tcpdump -X, quel champ EtherType indique que la charge utile est un paquet IPv6 ?",
+          "question": "Dans une trame Ethernet capturée avec tcpdump -XX, quel champ EtherType indique que la charge utile est un paquet IPv6 ?",
           "options": [
             "0800",
             "0806",
@@ -44652,14 +44652,14 @@ async function main() {
           ],
           "correct": 0,
           "options": [
-            "La Kill Chain offre une vue d'ensemble simple en 7 phases, tandis qu'ATT&CK détaille 14 tactiques et de nombreuses techniques précises",
+            "La Kill Chain offre une vue d'ensemble simple en 7 phases, tandis qu'ATT&CK détaille 15 tactiques et de nombreuses techniques précises",
             "MITRE ATT&CK est toujours plus simple à communiquer que la Kill Chain",
             "Les deux frameworks contiennent exactement le même niveau de détail",
             "La Kill Chain contient davantage de techniques opérationnelles qu'ATT&CK"
           ],
           "question": "Quelle différence de niveau de détail le chapitre 4 établit-il entre la Cyber Kill Chain et MITRE ATT&CK ?",
           "difficulty": "medium",
-          "explanation": "La Kill Chain propose une vue d'ensemble simple en 7 phases séquentielles, tandis qu'ATT&CK offre un niveau de détail opérationnel supérieur avec 14 tactiques et de nombreuses techniques."
+          "explanation": "La Kill Chain propose une vue d'ensemble simple en 7 phases séquentielles, tandis qu'ATT&CK offre un niveau de détail opérationnel supérieur avec 15 tactiques (14 avant 2026) et de nombreuses techniques."
         },
         {
           "id": "e13",
@@ -46501,7 +46501,7 @@ async function main() {
           "id": "e21",
           "question": "Quel type de backend est recommandé pour stocker le fichier terraform.tfstate en équipe, selon le chapitre ?",
           "options": [
-            "Un backend distant chiffré avec verrouillage (ex: S3 + DynamoDB, Terraform Cloud)",
+            "Un backend distant chiffré avec verrouillage (ex: S3 avec use_lockfile, HCP Terraform)",
             "Un simple fichier local partagé par email",
             "Un commit direct dans le dépôt Git de l'équipe",
             "Une clé USB partagée entre les membres de l'équipe"
@@ -47184,7 +47184,7 @@ async function main() {
       5: { title: 'OWASP Cheat Sheet — Authentication', url: 'https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html', type: 'article' },
       6: { title: 'OWASP Cheat Sheet — IDOR Prevention', url: 'https://cheatsheetseries.owasp.org/cheatsheets/Insecure_Direct_Object_Reference_Prevention_Cheat_Sheet.html', type: 'article' },
       7: { title: 'OWASP Cheat Sheet — SSRF Prevention', url: 'https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html', type: 'article' },
-      8: { title: 'FIRST — Calculateur CVSS 3.1', url: 'https://www.first.org/cvss/calculator/3.1', type: 'tool' },
+      8: { title: 'FIRST — Calculateur CVSS 4.0', url: 'https://www.first.org/cvss/calculator/4.0', type: 'tool' },
     },
     'intro-cyber': {
       1: { title: 'CISA — Bonnes pratiques de cybersécurité', url: 'https://www.cisa.gov/topics/cybersecurity-best-practices', type: 'link' },
@@ -47204,7 +47204,7 @@ async function main() {
       8: { title: 'Microsoft — Tier model pour AD', url: 'https://learn.microsoft.com/en-us/security/privileged-access-workstations/privileged-access-access-model', type: 'article' },
     },
     dfir: {
-      1: { title: 'NIST SP 800-61 — Computer Security Incident Handling Guide', url: 'https://csrc.nist.gov/pubs/sp/800/61/r2/final', type: 'pdf' },
+      1: { title: 'NIST SP 800-61r3 — Incident Response Recommendations', url: 'https://csrc.nist.gov/pubs/sp/800/61/r3/final', type: 'pdf' },
       2: { title: 'SANS — Digital Forensics posters et guides', url: 'https://www.sans.org/posters/', type: 'link' },
       3: { title: 'Volatility 3 — Documentation officielle', url: 'https://volatility3.readthedocs.io/', type: 'tool' },
       4: { title: 'Microsoft — Windows Prefetch forensics', url: 'https://learn.microsoft.com/en-us/windows/win32/w8cookbook/prefetch-files', type: 'article' },
@@ -47216,8 +47216,8 @@ async function main() {
     'redaction-rapports': {
       1: { title: 'OWASP Web Security Testing Guide — Reporting', url: 'https://owasp.org/www-project-web-security-testing-guide/', type: 'article' },
       2: { title: 'PTES — Reporting standard', url: 'http://www.pentest-standard.org/index.php/Reporting', type: 'article' },
-      3: { title: 'FIRST — Calculateur CVSS 3.1', url: 'https://www.first.org/cvss/calculator/3.1', type: 'tool' },
-      4: { title: 'NIST SP 800-61 — Computer Security Incident Handling Guide', url: 'https://csrc.nist.gov/pubs/sp/800/61/r2/final', type: 'pdf' },
+      3: { title: 'FIRST — Calculateur CVSS 4.0', url: 'https://www.first.org/cvss/calculator/4.0', type: 'tool' },
+      4: { title: 'NIST SP 800-61r3 — Incident Response Recommendations', url: 'https://csrc.nist.gov/pubs/sp/800/61/r3/final', type: 'pdf' },
       5: { title: 'Pandoc — Documentation officielle', url: 'https://pandoc.org/', type: 'tool' },
     },
     'droit-cybersecurite': {
@@ -47299,7 +47299,7 @@ async function main() {
     },
     'soc-analysis': {
       1: { title: 'SANS — SOC Survey et ressources', url: 'https://www.sans.org/security-resources/', type: 'link' },
-      2: { title: 'NIST SP 800-61 — Incident Handling Guide', url: 'https://csrc.nist.gov/pubs/sp/800/61/r2/final', type: 'pdf' },
+      2: { title: 'NIST SP 800-61r3 — Incident Response Recommendations', url: 'https://csrc.nist.gov/pubs/sp/800/61/r3/final', type: 'pdf' },
       3: { title: 'Elastic Security — Documentation SIEM', url: 'https://www.elastic.co/guide/en/security/current/index.html', type: 'tool' },
       4: { title: 'MITRE ATT&CK — Framework complet', url: 'https://attack.mitre.org/', type: 'link' },
       5: { title: 'SANS — Digital Forensics posters et guides', url: 'https://www.sans.org/posters/', type: 'link' },
@@ -47333,7 +47333,7 @@ async function main() {
       3: { title: 'NIST SP 800-207 — Zero Trust Architecture', url: 'https://csrc.nist.gov/pubs/sp/800/207/final', type: 'pdf' },
       4: { title: 'Microsoft — Privileged Access Workstations', url: 'https://learn.microsoft.com/en-us/security/privileged-access-workstations/privileged-access-access-model', type: 'article' },
       5: { title: 'MITRE ATT&CK — Detection resources', url: 'https://attack.mitre.org/resources/', type: 'link' },
-      6: { title: 'NIST SP 800-61 — Incident Handling Guide', url: 'https://csrc.nist.gov/pubs/sp/800/61/r2/final', type: 'pdf' },
+      6: { title: 'NIST SP 800-61r3 — Incident Response Recommendations', url: 'https://csrc.nist.gov/pubs/sp/800/61/r3/final', type: 'pdf' },
       7: { title: 'Veeam — La règle 3-2-1 de sauvegarde', url: 'https://www.veeam.com/blog/321-backup-rule.html', type: 'article' },
       8: { title: 'MITRE ATT&CK — Framework complet', url: 'https://attack.mitre.org/', type: 'link' },
       9: { title: 'MITRE — D3FEND', url: 'https://d3fend.mitre.org/', type: 'link' },
@@ -48690,7 +48690,7 @@ async function main() {
     {
       "deck": "ia-cybersecurity",
       "front": "AI Act européen",
-      "back": "Réglementation classant les systèmes d'IA selon leur niveau de risque ; un système de sécurité à fort impact peut relever du risque élevé."
+      "back": "Réglementation classant les systèmes d'IA selon leur niveau de risque ; le haut risque dépend du cas d'usage (annexe III : emploi, biométrie, services essentiels…), pas du seul fait d'être un outil de cybersécurité."
     },
     {
       "deck": "ia-cybersecurity",
@@ -48740,7 +48740,7 @@ async function main() {
     {
       "deck": "intro-cyber",
       "front": "Cyber Kill Chain",
-      "back": "Modèle défensif de Lockheed Martin en 7 étapes, de la reconnaissance jusqu'à l'exfiltration, utilisé par les SOC."
+      "back": "Modèle défensif de Lockheed Martin en 7 étapes, de la reconnaissance jusqu'aux « actions sur objectifs » (exfiltration, chiffrement, sabotage…), utilisé par les SOC."
     },
     {
       "deck": "intro-cyber",
@@ -48955,7 +48955,7 @@ async function main() {
     {
       "deck": "maths",
       "front": "Espace de recherche d'un mot de passe de 8 caractères parmi 94 possibles",
-      "back": "94^8, soit environ 6 milliards de milliards de combinaisons."
+      "back": "94^8, soit environ 6 millions de milliards de combinaisons."
     },
     {
       "deck": "maths",
@@ -49415,7 +49415,7 @@ async function main() {
     {
       "deck": "soc-analysis",
       "front": "Quelle est la principale différence entre la Cyber Kill Chain et MITRE ATT&CK ?",
-      "back": "La Kill Chain offre une vue séquentielle en 7 phases générales ; ATT&CK détaille 14 tactiques avec de nombreuses techniques précises et combinables."
+      "back": "La Kill Chain offre une vue séquentielle en 7 phases générales ; ATT&CK détaille 15 tactiques avec de nombreuses techniques précises et combinables."
     },
     {
       "deck": "soc-analysis",

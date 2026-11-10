@@ -3,14 +3,16 @@ title: Fondamentaux du DevSecOps et shift-left
 chapter: 1
 course: devsecops
 difficulty: intermediate
-duration: 45
-tags: [devsecops, shift-left, threat-modeling, cicd]
+duration: 65
+tags: [devsecops, shift-left, threat-modeling, stride, cicd, owasp-cicd-top10, ssdf, supply-chain]
 ceh_modules: []
 objectives:
   - Comprendre le DevSecOps au-delà du slogan « la sécurité est l'affaire de tous »
   - Expliquer le principe du shift-left et son impact économique sur le coût des vulnérabilités
   - Appliquer le framework STRIDE à la modélisation des menaces d'un pipeline CI/CD
   - Situer ce cours par rapport à DevOps Fondamentaux et à Sécurité des Applications et des API
+  - Relier les attaques réelles contre les pipelines (SolarWinds, Codecov, tj-actions) à l'OWASP Top 10 CI/CD Security Risks
+  - Connaître les référentiels qui encadrent le DevSecOps : NIST SSDF, OWASP SAMM et DSOMM, Cyber Resilience Act
 ---
 
 ## Introduction
@@ -47,6 +49,22 @@ Sans ces réponses, un scanner qui remonte 200 vulnérabilités devient du bruit
   ]}
 />
 
+### Une carte des contrôles le long du pipeline
+
+Le diagramme suivant place les principaux contrôles que ce cours va détailler sur la boucle DevOps. Chacun a un chapitre dédié et, surtout, un propriétaire.
+
+```mermaid
+flowchart LR
+    P["Plan : threat modeling"] --> C["Code : pre-commit, secret scanning, SAST"]
+    C --> B["Build : SCA, SBOM, build isolé"]
+    B --> T["Test : DAST, scan d'image"]
+    T --> R["Release : signature cosign, provenance SLSA"]
+    R --> D["Deploy : admission control, policy as code"]
+    D --> O["Operate : RBAC, NetworkPolicies, détection runtime"]
+    O --> M["Monitor : audit continu, conformité"]
+    M --> P
+```
+
 ## Le shift-left : coût exponentiel d'une vulnérabilité
 
 Le principe du shift-left consiste à déplacer les contrôles de sécurité le plus tôt possible dans le cycle de vie du logiciel — vers la « gauche » d'une frise chronologique qui va du commit à la production. L'argument central n'est pas seulement technique, il est économique.
@@ -68,11 +86,15 @@ graph LR
     D -->|x30+| E[Incident de sécurité en prod]
 ```
 
+Une précision d'honnêteté intellectuelle s'impose : cette table attribuée à l'IBM Systems Sciences Institute est citée partout depuis des décennies, mais la source originale est introuvable et plusieurs chercheurs en ont contesté la rigueur. Retiens-la comme un ordre de grandeur pédagogique, pas comme une mesure scientifique. L'intuition qu'elle illustre reste solide et vérifiable dans n'importe quelle équipe : une vulnérabilité signalée dans l'éditeur se corrige en quelques minutes par la personne qui vient d'écrire le code, alors que la même vulnérabilité découverte en production mobilise une astreinte, une analyse d'impact, un correctif d'urgence, un redéploiement et parfois une notification réglementaire.
+
 <WarningCallout>
 Le facteur x30 en production n'inclut pas les coûts indirects d'un incident de sécurité réel : notification réglementaire, perte de confiance client, astreinte d'urgence, potentiel arrêt de service. Le chiffre affiché dans les études est presque toujours une borne basse.
 </WarningCallout>
 
 Le shift-left ne dit pas « fais tout à la main plus tôt » — il dit « automatise les contrôles pour qu'ils s'exécutent au commit et à la pull request plutôt qu'à l'audit annuel ». C'est précisément l'objet des chapitres suivants de ce cours : durcissement des runners, scan d'images de conteneurs avant push, politiques Kubernetes appliquées avant déploiement, SBOM généré à la construction plutôt que reconstitué après coup.
+
+Le shift-left ne signifie pas pour autant abandonner la droite du cycle. On parle aussi de **shield right** ou de shift-right : détection à l'exécution, journalisation, réponse à incident. Une vulnérabilité zero-day dans une dépendance apparaîtra en production quoi que tu fasses en amont. Une stratégie DevSecOps équilibrée combine des contrôles préventifs tôt et une capacité de détection et de réaction tard.
 
 <TipCallout>
 Un contrôle shift-left qui bloque systématiquement les développeurs sans leur donner de moyen de comprendre ou corriger rapidement finit par être contourné (`--force`, exceptions manuelles). Le shift-left efficace inclut toujours un retour rapide et actionnable, pas seulement un gate bloquant.
@@ -101,9 +123,51 @@ Le framework STRIDE, habituellement appliqué à une application, s'applique tou
   { phase: "Elevation of privilege", attack: "Un job de build obtient plus de droits que nécessaire (accès complet au cluster Kubernetes de production)", defense: "Principe du moindre privilège par job/étape, comptes de service dédiés et scellés par environnement" },
 ]} />
 
+### Des attaques réelles contre la machinerie
+
+Ces menaces ne sont pas théoriques. Plusieurs des incidents les plus graves de la décennie ont visé la chaîne de construction plutôt que l'application elle-même.
+
+- **SolarWinds (découvert en décembre 2020)** : des attaquants ont compromis l'environnement de build de l'éditeur et injecté la porte dérobée SUNBURST dans les mises à jour légitimes et signées du logiciel Orion, distribuées ensuite à des milliers de clients. C'est l'exemple type de l'altération (Tampering) du processus de build.
+- **Codecov (2021)** : le script Bash Uploader, téléchargé et exécuté par de nombreux pipelines CI avec `curl | bash`, a été modifié pour exfiltrer les variables d'environnement des jobs, donc leurs secrets.
+- **Porte dérobée dans xz-utils (CVE-2024-3094, 2024)** : après des années de contributions légitimes, un mainteneur a introduit une porte dérobée visant sshd dans les archives de release de cette bibliothèque de compression, détectée de justesse avant sa diffusion dans les distributions stables.
+- **tj-actions/changed-files (CVE-2025-30066, mars 2025)** : cette action GitHub très populaire a été compromise et ses tags de version réécrits pour pointer vers un code qui affichait les secrets des pipelines dans les logs de build. Tous les dépôts qui la référençaient par un tag mobile ont exécuté le code malveillant.
+
+Dans MITRE ATT&CK, ces scénarios relèvent notamment de la technique **T1195.002 — Compromise Software Supply Chain**.
+
+### L'OWASP Top 10 CI/CD Security Risks
+
+L'OWASP publie depuis 2022 un Top 10 dédié aux risques des pipelines CI/CD. Il fournit un vocabulaire commun pour l'analyse de menaces et sert de fil conducteur aux chapitres suivants.
+
+| Identifiant | Risque | Chapitre du cours |
+| --- | --- | --- |
+| CICD-SEC-1 | Mécanismes de contrôle de flux insuffisants (merge sans revue, déploiement sans approbation) | 2 |
+| CICD-SEC-2 | Gestion des identités et des accès inadéquate | 2 |
+| CICD-SEC-3 | Abus de la chaîne de dépendances (dependency confusion, typosquatting) | 6 |
+| CICD-SEC-4 | Exécution de pipeline empoisonnée (Poisoned Pipeline Execution) | 2 |
+| CICD-SEC-5 | Contrôles d'accès insuffisants au niveau du pipeline | 2 |
+| CICD-SEC-6 | Hygiène insuffisante des identifiants (secrets) | 2 |
+| CICD-SEC-7 | Configuration système non sécurisée | 2, 4, 5 |
+| CICD-SEC-8 | Usage non gouverné de services tiers | 2, 6 |
+| CICD-SEC-9 | Validation insuffisante de l'intégrité des artefacts | 6 |
+| CICD-SEC-10 | Journalisation et visibilité insuffisantes | 7 |
+
 <CehCallout>
 Applique STRIDE à un système, pas seulement à du code : un runner CI, un registry d'images ou un secret store sont chacun des actifs qui méritent leur propre analyse de menaces, exactement comme une application — c'est le changement de focale central de ce cours.
 </CehCallout>
+
+## Les référentiels qui encadrent le DevSecOps
+
+Plusieurs cadres de référence structurent une démarche DevSecOps, et tu les croiseras en audit comme en entretien.
+
+Le **NIST SSDF** (Secure Software Development Framework, publication SP 800-218) regroupe les pratiques de développement sécurisé en quatre familles : préparer l'organisation (PO), protéger le logiciel (PS), produire un logiciel bien sécurisé (PW) et répondre aux vulnérabilités (RV). Aux États-Unis, il sert de base aux attestations exigées des éditeurs qui vendent au gouvernement fédéral.
+
+L'**OWASP SAMM** (Software Assurance Maturity Model) évalue la maturité d'un programme de sécurité logicielle selon cinq fonctions métier (gouvernance, conception, implémentation, vérification, opérations), chacune notée sur trois niveaux. L'**OWASP DSOMM** (DevSecOps Maturity Model) est plus opérationnel : il liste des activités concrètes (scan de secrets, durcissement d'images, etc.) classées par niveau de maturité.
+
+Côté réglementation européenne, le **Cyber Resilience Act** (CRA), entré en vigueur en décembre 2024, impose progressivement aux fabricants de produits comportant des éléments numériques une gestion des vulnérabilités tout au long du cycle de vie, incluant la documentation des composants (un SBOM) et le signalement des vulnérabilités activement exploitées, avec des obligations de signalement applicables à partir de septembre 2026 et l'essentiel des exigences fin 2027. La directive **NIS2** impose de son côté aux entités essentielles et importantes des mesures de sécurité de la chaîne d'approvisionnement.
+
+<LegalCallout>
+Le CRA transforme plusieurs pratiques DevSecOps de « bonnes pratiques » en obligations légales pour les produits mis sur le marché européen : inventaire des composants, traitement des vulnérabilités sur la durée de support annoncée, mises à jour de sécurité. Les sanctions prévues peuvent atteindre plusieurs millions d'euros ou un pourcentage du chiffre d'affaires mondial. Vérifie toujours le texte officiel et son calendrier d'application avant de conseiller une organisation.
+</LegalCallout>
 
 ## Où se situe ce cours
 
@@ -112,6 +176,12 @@ Positionnement du cours DevSecOps Avancé dans le parcours Nyx : le cours **DevO
 </AuditCallout>
 
 Concrètement, si tu veux savoir comment détecter une injection dans une API ou où placer un scan SCA dans un pipeline, le cours Sécurité des Applications et des API répond à cette question. Si tu veux savoir qui doit avoir accès à un runner, comment signer une image de conteneur, ou comment un pipeline lui-même peut être compromis, tu es au bon endroit : c'est l'objet des six chapitres suivants de ce cours.
+
+## Erreurs fréquentes
+
+La première erreur est d'**empiler les outils sans propriétaire** : cinq scanners qui produisent des milliers d'alertes non triées n'améliorent pas la sécurité, ils la noient. Chaque outil introduit doit avoir un responsable du tri, un seuil de blocage et un délai de remédiation. La deuxième est de **bloquer sans expliquer** : un gate rouge sans lien vers la règle, la ligne de code et la correction proposée sera contourné.
+
+On voit aussi des équipes qui **modélisent les menaces de l'application mais jamais celles du pipeline**, alors que le pipeline détient les identifiants de production. Autre erreur classique, **mesurer le nombre de vulnérabilités trouvées** plutôt que le délai de correction : une équipe qui ajoute un scanner verra mécaniquement ce nombre exploser sans être moins sûre. Enfin, beaucoup d'organisations **oublient les dépendances du pipeline lui-même** : actions tierces, images de runners, scripts téléchargés avec `curl | bash`, autant de code exécuté avec les secrets du projet.
 
 ## Lab — Mise en Pratique
 
@@ -122,14 +192,20 @@ Concrètement, si tu veux savoir comment détecter une injection dans une API ou
   { title: "Appliquer STRIDE à chaque composant", description: "Pour chaque composant listé, identifie au moins une menace par catégorie STRIDE pertinente et son propriétaire actuel (ou l'absence de propriétaire, à noter comme risque).", code: "" },
   { title: "Identifier le point le plus critique", description: "Détermine quel composant (runner, secret ou registry) représenterait le pire scénario s'il était compromis, et pourquoi.", code: "" },
   { title: "Rédiger une matrice de responsabilité", description: "Écris une matrice simple (qui possède quoi) pour au moins trois étapes du pipeline, en t'inspirant du format CODEOWNERS.", code: "# CODEOWNERS (extrait)\n.github/workflows/  @equipe-plateforme\ninfra/secrets/       @equipe-securite\nk8s/production/      @equipe-plateforme @equipe-securite" },
+  { title: "Inventorier les dépendances du pipeline", description: "Dans un dépôt GitHub de ton choix, liste toutes les actions tierces utilisées et la façon dont elles sont référencées (tag, branche ou SHA complet). Note celles qui utilisent une référence mobile.", code: "grep -rhoE 'uses: [^ ]+' .github/workflows/ | sort | uniq -c | sort -rn" },
+  { title: "Associer les menaces à l'OWASP CI/CD Top 10", description: "Pour chaque menace STRIDE identifiée à l'étape 2, indique le risque CICD-SEC correspondant. Vérifie quels risques du Top 10 ne sont couverts par aucune de tes menaces : ce sont tes angles morts.", code: "" },
+  { title: "Évaluer la maturité avec DSOMM", description: "Parcours la liste d'activités du niveau 1 de l'OWASP DSOMM et coche celles déjà en place sur ton pipeline. Choisis les deux activités manquantes les plus rentables à mettre en œuvre.", code: "" },
 ]} />
 
-## En résumé
+## À retenir
 
 - Le DevSecOps n'est pas un slogan mais un modèle opérationnel : responsabilités écrites, contrôles automatisés à chaque étape, MTTR suivi comme indicateur de maturité.
 - Le shift-left déplace les contrôles de sécurité vers l'amont du cycle de vie ; le coût de correction d'une vulnérabilité croît de façon exponentielle entre la conception (x1) et la production (x30 et plus, hors coûts indirects d'incident).
 - Un shift-left efficace donne un retour rapide et actionnable aux développeurs, sinon les contrôles finissent contournés.
 - Le pipeline CI/CD est lui-même une cible : runners, secrets et registry d'images doivent chacun avoir un propriétaire identifié et une analyse de menaces, via le framework STRIDE appliqué au système plutôt qu'à l'application.
+- Les attaques SolarWinds, Codecov, xz-utils et tj-actions montrent que la chaîne de construction est une cible de premier plan (ATT&CK T1195.002) ; l'OWASP Top 10 CI/CD Security Risks en donne la taxonomie.
+- Le NIST SSDF, l'OWASP SAMM et DSOMM structurent la démarche ; le Cyber Resilience Act en fait en partie une obligation légale en Europe.
+- Le chiffre « x30 » est un ordre de grandeur pédagogique à la source contestée : l'argument du shift-left repose surtout sur la rapidité du retour au développeur.
 - Ce cours (DevSecOps Avancé) suppose acquis DevOps Fondamentaux et se distingue de Sécurité des Applications et des API en couvrant l'infrastructure et la machinerie du pipeline, pas la couche applicative.
 
 ## Questions de Révision
@@ -140,3 +216,6 @@ Concrètement, si tu veux savoir comment détecter une injection dans une API ou
 4. Cite les trois éléments principaux de la surface d'attaque d'un pipeline CI/CD abordés dans ce chapitre.
 5. Donne un exemple de menace STRIDE de catégorie « Elevation of privilege » appliquée à un pipeline, différent de celui du chapitre.
 6. En quoi ce cours se distingue-t-il du cours Sécurité des Applications et des API, et quel cours est son prérequis ?
+7. Dans l'incident tj-actions/changed-files, quelle pratique de référencement des actions aurait évité l'exécution du code malveillant, et à quel risque CICD-SEC cela correspond-il ?
+8. Pourquoi le nombre de vulnérabilités détectées est-il un mauvais indicateur de maturité DevSecOps, et lequel préférer ?
+9. Quelles nouvelles obligations le Cyber Resilience Act fait-il peser sur un éditeur de logiciel vendu dans l'Union européenne ?

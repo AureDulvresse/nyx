@@ -3,19 +3,24 @@ title: Git avancé et workflows collaboratifs
 chapter: 2
 course: devops
 difficulty: intermediate
-duration: 55
-tags: [git, devops, ci-cd, workflow, versioning]
+duration: 65
+tags: [git, devops, ci-cd, workflow, versioning, conventional-commits, pre-commit, gitleaks]
 ceh_modules: []
 objectives:
   - Choisir entre rebase et merge selon l'historique voulu et l'expliquer en revue de code
   - Comparer GitFlow et trunk-based development pour sélectionner un workflow adapté à une équipe
   - Sécuriser un dépôt avec des git hooks (dont un garde-fou anti-secret) et résoudre un conflit de merge pas à pas
-  - Appliquer le semantic versioning pour tagger des releases de façon cohérente
+  - Appliquer le semantic versioning et les Conventional Commits pour tagger des releases de façon cohérente
+  - Configurer des garde-fous côté serveur (rulesets, merge queue, commits signés) en complément des hooks locaux
 ---
 
 ## Introduction
 
 Un dépôt Git bien maîtrisé n'est pas seulement un outil de sauvegarde de code : c'est la colonne vertébrale de toute la collaboration d'une équipe DevOps, et souvent le premier maillon d'une chaîne CI/CD. Un historique confus, des conflits mal résolus ou un secret commité par erreur peuvent ralentir une équipe entière ou déclencher un incident de sécurité. Ce chapitre va au-delà des commandes de base (`add`, `commit`, `push`) pour t'outiller sur les décisions structurantes : comment réécrire proprement un historique avec `rebase`, quel workflow de branches adopter selon la taille et la maturité d'une équipe, comment automatiser des garde-fous avec les git hooks — notamment contre les fuites de secrets, une cause fréquente de compromission — et comment résoudre un conflit de fusion sans paniquer. Tu verras aussi comment le versionnage sémantique (semver) donne un sens explicite à chaque tag de release, ce qui est indispensable dès qu'un pipeline CI/CD ou un package est consommé par d'autres services. Ces compétences sont directement transférables à n'importe quelle certification ou poste impliquant de l'intégration continue, de l'audit de code ou de la gestion d'incidents liés à des dépôts mal configurés.
+
+### Une remarque sur les commandes modernes
+
+Depuis Git 2.23, deux commandes plus claires remplacent les usages multiples de `git checkout` : `git switch` change de branche (`git switch main`, ou `git switch -c feature/login` pour créer et basculer) et `git restore` restaure des fichiers (`git restore fichier.py` annule les modifications non indexées, `git restore --staged fichier.py` retire un fichier de l'index). `git checkout` fonctionne toujours et tu le croiseras dans d'innombrables documentations, y compris dans ce chapitre, mais les nouvelles commandes évitent les confusions entre « changer de branche » et « écraser un fichier ».
 
 ## Rebase vs Merge : deux philosophies d'historique
 
@@ -65,6 +70,23 @@ feature:             D'---E' (nouveaux hashes)
 <WarningCallout>
 Ne rebase jamais une branche déjà partagée et poussée sur laquelle d'autres personnes travaillent : `rebase` réécrit les hashes de commits, ce qui force un `push --force` et peut détruire le travail des autres si ce n'est pas coordonné. Règle d'or : rebase en local, merge en public.
 </WarningCallout>
+
+Quand tu dois malgré tout pousser une branche rebasée (par exemple ta propre branche de pull request, sur laquelle personne d'autre ne travaille), préfère `git push --force-with-lease` à `git push --force`. L'option `--force-with-lease` refuse d'écraser la branche distante si quelqu'un y a poussé des commits que tu n'as pas encore récupérés : c'est un filet de sécurité qui transforme une destruction silencieuse en simple erreur.
+
+```bash
+git switch feature/login
+git fetch origin
+git rebase origin/main
+git push --force-with-lease
+```
+
+```text
+To github.com:acme/app.git
+ ! [rejected]        feature/login -> feature/login (stale info)
+error: failed to push some refs to 'github.com:acme/app.git'
+```
+
+Ce rejet signifie qu'un collègue a poussé sur ta branche entre-temps : récupère son travail avant de recommencer.
 
 `git rebase -i` (interactif) permet en plus de réorganiser, fusionner (`squash`) ou reformuler des commits avant de les intégrer :
 
@@ -124,6 +146,45 @@ git merge fix/rate-limiter
 git branch -d fix/rate-limiter
 ```
 
+Les deux graphes suivants montrent la différence de forme. GitFlow multiplie les branches longues ; le trunk-based development garde une ligne principale presque droite avec des branches très courtes.
+
+```mermaid
+gitGraph
+    commit id: "init"
+    branch develop
+    checkout develop
+    commit id: "base dev"
+    branch feature-mfa
+    checkout feature-mfa
+    commit id: "mfa 1"
+    commit id: "mfa 2"
+    checkout develop
+    merge feature-mfa
+    branch release-2.4
+    checkout release-2.4
+    commit id: "fix mineur"
+    checkout main
+    merge release-2.4 tag: "v2.4.0"
+    checkout develop
+    merge release-2.4
+```
+
+```mermaid
+gitGraph
+    commit id: "A"
+    branch fix-rate-limiter
+    checkout fix-rate-limiter
+    commit id: "fix"
+    checkout main
+    merge fix-rate-limiter
+    commit id: "B"
+    branch feat-flag-export
+    checkout feat-flag-export
+    commit id: "export (flag off)"
+    checkout main
+    merge feat-flag-export tag: "v2.5.0"
+```
+
 <CompareTable
   titleA="GitFlow"
   titleB="Trunk-Based Development"
@@ -156,6 +217,22 @@ Bonnes pratiques essentielles :
 git checkout -b feature/api-rate-limit
 git push -u origin feature/api-rate-limit
 ```
+
+### Imposer les règles côté serveur : protection de branche, rulesets et merge queue
+
+Les bonnes pratiques ci-dessus ne valent que si la plateforme les impose. Sur GitHub, les **branch protection rules** historiques sont progressivement complétées par les **rulesets**, qui s'appliquent à plusieurs branches ou tags par motif (`main`, `release/*`, `v*`), peuvent être définis au niveau de l'organisation et proposent un mode « évaluation » pour tester une règle sans bloquer. GitLab propose l'équivalent avec les **protected branches** et les **merge request approval rules**. Les réglages essentiels sont toujours les mêmes : interdire le push direct et le force push sur la branche principale, exiger au moins une approbation, exiger que les checks CI passent, et invalider les approbations quand de nouveaux commits sont poussés.
+
+Le fichier `CODEOWNERS` (à la racine, dans `.github/` ou `docs/`) associe des chemins à des équipes responsables, qui deviennent relecteurs obligatoires si la règle correspondante est activée :
+
+```text
+# .github/CODEOWNERS
+*                       @acme/dev-team
+/infra/                 @acme/platform
+/.github/workflows/     @acme/platform @acme/security
+/src/auth/              @acme/security
+```
+
+Sur un dépôt très actif, une **merge queue** (file de fusion, disponible sur GitHub et sous le nom de merge trains sur GitLab) résout un problème subtil : deux PR vertes séparément peuvent casser `main` une fois combinées. La file teste chaque PR rebasée sur le résultat des PR qui la précèdent avant de fusionner réellement.
 
 <AuditCallout>
 ISO 27001 (contrôle A.8.28 — sécurité dans le développement) recommande explicitement une revue de code obligatoire avant toute mise en production, avec traçabilité de l'approbateur — les règles de protection de branche (`branch protection rules`) sur GitHub/GitLab permettent d'imposer cette exigence techniquement, pas seulement par la procédure.
@@ -191,6 +268,46 @@ npm test || {
 <CehCallout>
 Un secret commité (clé API, mot de passe, clé privée) reste dans l'historique Git même après suppression du fichier — un attaquant ayant un accès en lecture au dépôt peut le retrouver via `git log -p` ou `git grep` sur l'ensemble de l'historique. Un hook `pre-commit` anti-secret est une prévention essentielle, mais en cas de fuite déjà commitée, seule une réécriture d'historique (`git filter-repo`) suivie d'une rotation immédiate du secret compromis résout réellement le problème.
 </CehCallout>
+
+### Partager les hooks avec le framework pre-commit
+
+Un hook placé dans `.git/hooks/` n'est pas versionné : chaque développeur doit l'installer lui-même. Le framework **pre-commit** (outil Python, `pipx install pre-commit`) résout ce problème : la configuration vit dans le dépôt, et une seule commande installe les hooks. Dans l'écosystème JavaScript, `husky` joue un rôle similaire.
+
+```yaml
+# .pre-commit-config.yaml
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: check-merge-conflict      # refuse les marqueurs <<<<<<< oubliés
+      - id: check-added-large-files   # bloque les gros binaires
+      - id: detect-private-key
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.21.2
+    hooks:
+      - id: gitleaks
+```
+
+```bash
+pre-commit install          # écrit le hook dans .git/hooks/pre-commit
+pre-commit run --all-files  # exécute tous les hooks sur tout le dépôt
+pre-commit autoupdate       # met à jour les versions épinglées (rev)
+```
+
+```text
+check for merge conflicts................................................Passed
+check for added large files..............................................Passed
+detect private key.......................................................Failed
+- hook id: detect-private-key
+- exit code: 1
+
+Private key found: deploy/id_ed25519
+Detect hardcoded secrets.................................................Passed
+```
+
+<WarningCallout>
+Un hook local se contourne en une seconde avec `git commit --no-verify`. Il protège le développeur de ses propres erreurs, mais ne constitue pas un contrôle de sécurité : la même détection doit être rejouée côté serveur, dans la CI ou via la protection contre les pushs de secrets de la plateforme (push protection de GitHub, secret detection de GitLab).
+</WarningCallout>
 
 <TipCallout>
 Des outils comme `gitleaks` ou `git-secrets` industrialisent cette détection avec des dizaines de motifs déjà prêts (clés AWS, tokens GitHub, certificats privés) — bien plus fiable qu'une seule expression régulière maison en production.
@@ -268,9 +385,29 @@ git tag -l "v2.*"
 git checkout v2.4.1
 ```
 
+Quelques précisions de la spécification Semantic Versioning 2.0.0 sont souvent oubliées. Une version **0.y.z** signale un développement initial : tout peut changer à tout moment, et l'API ne doit pas être considérée comme stable. Une **pré-version** s'écrit avec un tiret (`2.0.0-rc.1`, `2.0.0-beta.3`) et a une priorité inférieure à la version finale. Des **métadonnées de build** peuvent suivre un signe plus (`2.0.0+20260314`) et sont ignorées pour comparer deux versions.
+
+### Automatiser les versions avec les Conventional Commits
+
+La spécification **Conventional Commits** impose un format de message de commit lisible par une machine : un type (`feat`, `fix`, `docs`, `refactor`, `chore`…), une portée facultative et une description. Un `!` après le type, ou une ligne `BREAKING CHANGE:` dans le corps, signale une rupture de compatibilité.
+
+```text
+feat(auth): ajoute la connexion par passkey
+fix(api): corrige la validation des tokens JWT expirés
+feat(api)!: supprime l'endpoint /v1/users
+```
+
+Des outils comme `semantic-release` ou `release-please` lisent ces messages pour calculer automatiquement la prochaine version : un `fix` incrémente le correctif, un `feat` le mineur, une rupture le majeur. Ils génèrent aussi le changelog et le tag. Le lien entre historique Git et numéro de version devient ainsi mécanique et vérifiable, au lieu de dépendre de la mémoire de la personne qui publie.
+
 <AuditCallout>
 Un tag de sécurité (ex: correctif CVE) devrait toujours incrémenter au minimum le CORRECTIF, jamais silencieusement fusionné dans un tag MINEUR — les équipes en aval qui scannent les changelogs pour évaluer leur exposition à une CVE dépendent de cette convention pour prioriser leurs mises à jour.
 </AuditCallout>
+
+## Erreurs fréquentes
+
+Beaucoup d'incidents Git viennent des mêmes réflexes. Le premier est le **force push sur une branche partagée**, souvent après un rebase : utilise `--force-with-lease`, et interdis le force push sur `main` par une règle serveur. Le deuxième est de **supprimer un secret dans un nouveau commit** en croyant le problème réglé : le secret reste dans l'historique, dans les forks et dans les caches ; il faut le révoquer immédiatement, puis éventuellement réécrire l'historique. Le troisième est la **PR géante** de plusieurs milliers de lignes, que personne ne relit vraiment et qui est approuvée par lassitude.
+
+On voit aussi souvent des **branches longues qui divergent pendant des semaines**, au point que la fusion devient un projet en soi : intègre `main` régulièrement, ou découpe le travail derrière un feature flag. Autre classique, **committer des marqueurs de conflit** oubliés dans un fichier, ce que le hook `check-merge-conflict` empêche. Enfin, beaucoup d'équipes **se fient aux hooks locaux comme à un contrôle de sécurité**, alors qu'un simple `--no-verify` les désactive.
 
 ## Lab — Mise en Pratique
 
@@ -281,17 +418,22 @@ Un tag de sécurité (ex: correctif CVE) devrait toujours incrémenter au minimu
   { title: "Provoquer puis résoudre un conflit", description: "Crée deux branches modifiant la même ligne d'un fichier, fusionne-les, résous le conflit avec git add puis git commit." },
   { title: "Installer un hook anti-secret", description: "Ajoute le script pre-commit vu plus haut dans .git/hooks/pre-commit et rends-le exécutable.", code: "chmod +x .git/hooks/pre-commit" },
   { title: "Vérifier que le hook bloque bien un secret", description: "Ajoute une fausse clé AWS dans un fichier, commit, et observe le refus du hook.", code: "echo 'aws_secret_access_key=AKIAFAKEEXAMPLE' > secret.txt && git add secret.txt && git commit -m \"test\"" },
+  { title: "Nettoyer un historique avec rebase interactif", description: "Crée trois petits commits successifs sur une branche, puis fusionne-les en un seul avec squash. Observe avec git log --oneline que l'historique ne contient plus qu'un commit.", code: "git switch -c feature/demo\nfor i in 1 2 3; do echo $i >> demo.txt; git add demo.txt; git commit -m \"wip $i\"; done\ngit rebase -i HEAD~3\ngit log --oneline" },
+  { title: "Installer pre-commit avec gitleaks", description: "Crée le fichier .pre-commit-config.yaml vu dans le chapitre, installe les hooks puis exécute-les sur tout le dépôt. Vérifie que la fausse clé est détectée par gitleaks.", code: "pipx install pre-commit\npre-commit install\npre-commit run --all-files" },
+  { title: "Localiser une régression avec git bisect", description: "Ajoute dix commits dont l'un introduit le mot BUG dans un fichier, puis laisse git bisect run trouver automatiquement le commit fautif.", code: "git bisect start HEAD HEAD~10\ngit bisect run sh -c '! grep -q BUG demo.txt'\ngit bisect reset" },
   { title: "Tagger une release en semver", description: "Crée un tag annoté suivant le format MAJEUR.MINEUR.CORRECTIF.", code: "git tag -a v1.0.0 -m \"Première release stable\"" },
 ]} />
 
-## En résumé
+## À retenir
 
 - `git merge` préserve l'historique complet avec un commit de fusion ; `git rebase` produit un historique linéaire mais réécrit les hashes — à réserver aux branches locales non partagées.
 - GitFlow convient aux cycles de release planifiés avec des branches longues ; le trunk-based development convient au déploiement continu avec des branches courtes et des feature flags.
 - Les pull requests doivent rester petites, passer la CI (tests + SAST) et recevoir au moins une approbation avant fusion, en particulier sur du code sensible.
 - Les git hooks (`pre-commit`, `pre-push`) automatisent des garde-fous, notamment la détection de secrets avant qu'ils n'entrent dans l'historique — une fuite déjà commitée exige une réécriture d'historique et une rotation du secret.
 - Un conflit de merge se résout en éditant les marqueurs `<<<<<<<`/`=======`/`>>>>>>>`, puis `git add` et `git commit` ; `git bisect` localise une régression par recherche dichotomique.
-- Le semantic versioning (`MAJEUR.MINEUR.CORRECTIF`) donne un sens explicite à chaque tag de release, essentiel pour les correctifs de sécurité consommés par des systèmes en aval.
+- Le semantic versioning (`MAJEUR.MINEUR.CORRECTIF`) donne un sens explicite à chaque tag de release, essentiel pour les correctifs de sécurité consommés par des systèmes en aval ; les Conventional Commits permettent de l'automatiser.
+- Un hook local se contourne avec `--no-verify` : les garde-fous qui comptent vivent côté serveur (rulesets, CODEOWNERS, checks obligatoires, push protection).
+- `git push --force-with-lease` remplace `--force` quand une réécriture est vraiment nécessaire.
 
 ## Questions de Révision
 
@@ -301,3 +443,6 @@ Un tag de sécurité (ex: correctif CVE) devrait toujours incrémenter au minimu
 4. Que fait concrètement un hook `pre-commit` conçu pour bloquer les secrets, et pourquoi ne suffit-il pas si un secret a déjà été commité par le passé ?
 5. Quelles sont les trois étapes pour résoudre un conflit de merge une fois les marqueurs de conflit identifiés dans un fichier ?
 6. Pourquoi un correctif de sécurité doit-il au minimum incrémenter le numéro de CORRECTIF (patch) en semver, et jamais être fusionné silencieusement ailleurs ?
+7. Quelle protection apporte `--force-with-lease` par rapport à `--force`, et dans quel cas reste-t-il malgré tout dangereux ?
+8. Pourquoi un hook pre-commit ne peut-il pas être considéré comme un contrôle de sécurité, et quels mécanismes côté serveur le complètent ?
+9. À partir des messages `fix(api): …`, `feat(ui): …` et `feat(api)!: …` commités depuis la version 1.4.2, quelle sera la prochaine version calculée par un outil comme semantic-release ?

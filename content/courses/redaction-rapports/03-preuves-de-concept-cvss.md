@@ -45,7 +45,7 @@ Outil utilisé : sqlmap -u "http://cible/produit.php?id=1" --batch --dump -T use
 
 ## Calculer un score CVSS de base
 
-Le score CVSS v3.1 se construit à partir de 6 métriques de base :
+Le score CVSS v3.1 se construit à partir de 8 métriques de base (les trois impacts C, I et A comptent chacun pour une) :
 
 <CompareTable
   titleA="Métrique"
@@ -55,6 +55,7 @@ Le score CVSS v3.1 se construit à partir de 6 métriques de base :
     { a: "AC (Attack Complexity)", b: "Faut-il des conditions particulières pour réussir ?" },
     { a: "PR (Privileges Required)", b: "Faut-il déjà un compte pour exploiter la faille ?" },
     { a: "UI (User Interaction)", b: "Faut-il qu'une victime clique/agisse ?" },
+    { a: "S (Scope)", b: "L'exploitation peut-elle impacter un composant au-delà de celui qui est vulnérable ?" },
     { a: "C / I / A (Impact)", b: "Impact sur la confidentialité, l'intégrité, la disponibilité ?" },
   ]}
 />
@@ -91,5 +92,5 @@ Un calculateur CVSS officiel (first.org) permet de générer le score et le vect
 ## Questions de Révision
 
 1. Pourquoi une PoC sans requête/commande exacte n'a-t-elle aucune valeur probatoire ?
-2. Cite trois des six métriques de base du score CVSS v3.1.
+2. Cite trois des huit métriques de base du score CVSS v3.1.
 3. Pourquoi ne faut-il jamais donner un score CVSS sans son vecteur ?

@@ -3,15 +3,15 @@ title: Infrastructure as Code — Terraform et Ansible
 chapter: 6
 course: devops
 difficulty: intermediate
-duration: 55
-tags: [iac, terraform, ansible, cloud, automatisation]
+duration: 70
+tags: [iac, terraform, opentofu, ansible, cloud, automatisation, drift]
 ceh_modules: []
 objectives:
   - Comprendre les bénéfices de l'Infrastructure as Code (reproductibilité, revue de code, disaster recovery)
   - Distinguer l'approche déclarative (Terraform) de l'approche impérative (Ansible)
   - Maîtriser le workflow Terraform (init/plan/apply/destroy) et le rôle du fichier state
   - Écrire un playbook Ansible idempotent et savoir quand combiner les deux outils
-
+  - Structurer un projet Terraform (variables, outputs, modules, backend distant) et détecter la dérive de configuration
 ---
 
 ## Introduction
@@ -55,6 +55,12 @@ Ansible est principalement **impératif** (avec des éléments déclaratifs) : t
   ]}
 />
 
+### Terraform, OpenTofu et l'écosystème en 2026
+
+Terraform est édité par HashiCorp, racheté par IBM en 2025. En août 2023, HashiCorp a remplacé la licence open source de Terraform (MPL 2.0) par la Business Source License, plus restrictive. En réaction, la communauté a créé **OpenTofu**, un fork resté open source et hébergé par la Linux Foundation, dont la commande s'appelle `tofu`. Les deux outils partagent le langage HCL, les providers et la majorité des commandes : tout ce chapitre s'applique à l'un comme à l'autre, en remplaçant `terraform` par `tofu`. L'offre SaaS de HashiCorp, longtemps appelée Terraform Cloud, s'appelle désormais HCP Terraform.
+
+D'autres outils existent selon les contextes : Pulumi (infrastructure décrite en TypeScript, Python ou Go), AWS CloudFormation et Azure Bicep (propres à un fournisseur), ou Crossplane (infrastructure pilotée depuis Kubernetes). Les concepts de ce chapitre, état désiré, plan, state et dérive, se retrouvent dans tous.
+
 ## Le workflow Terraform : init, plan, apply, destroy
 
 Un projet Terraform suit systématiquement les mêmes quatre commandes.
@@ -73,6 +79,19 @@ terraform apply
 terraform destroy
 ```
 
+Le schéma suivant montre comment ces commandes interagissent avec le code, le state et l'infrastructure réelle.
+
+```mermaid
+flowchart LR
+    CODE["Code HCL versionné (.tf)"] --> INIT["terraform init : providers, modules, backend"]
+    INIT --> PLAN["terraform plan"]
+    STATE[("State distant (backend chiffré, verrouillé)")] --> PLAN
+    REAL["Infrastructure réelle (API du cloud)"] -->|"refresh"| PLAN
+    PLAN -->|"diff relu en pull request"| APPLY["terraform apply tfplan"]
+    APPLY -->|"appels API"| REAL
+    APPLY -->|"met à jour"| STATE
+```
+
 `terraform plan` est l'étape la plus précieuse du workflow : elle affiche un diff exact (ressources créées en vert, modifiées en jaune, détruites en rouge) avant toute action réelle — l'équivalent d'un `git diff` pour l'infrastructure.
 
 Voici un exemple concret : un fichier `.tf` qui provisionne un bucket de stockage cloud simple.
@@ -83,7 +102,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.0"
+      version = "~> 6.0"
     }
   }
 }
@@ -114,19 +133,107 @@ resource "aws_s3_bucket_public_access_block" "app_uploads" {
 Le bloc `aws_s3_bucket_public_access_block` n'est pas optionnel en production : sans lui, un bucket S3 mal configuré (ou une policy ajoutée plus tard par erreur) peut devenir accessible publiquement. C'est précisément ce type de mauvaise configuration IaC — bucket public, règle de sécurité trop permissive — que tu analyseras en détail dans le cours "DevSecOps Avancé".
 </WarningCallout>
 
+Voici la sortie typique d'un `terraform plan` sur ce fichier :
+
+```text
+Terraform will perform the following actions:
+
+  # aws_s3_bucket.app_uploads will be created
+  + resource "aws_s3_bucket" "app_uploads" {
+      + arn    = (known after apply)
+      + bucket = "nyx-app-uploads-prod"
+      + tags   = {
+          + "Environment" = "production"
+          + "ManagedBy"   = "terraform"
+        }
+    }
+
+  # aws_s3_bucket_public_access_block.app_uploads will be created
+  + resource "aws_s3_bucket_public_access_block" "app_uploads" {
+      + block_public_acls       = true
+      + block_public_policy     = true
+      + ignore_public_acls      = true
+      + restrict_public_buckets = true
+    }
+
+Plan: 2 to add, 0 to change, 0 to destroy.
+```
+
+Lis toujours la dernière ligne avec attention. Un plan qui annonce `1 to destroy` alors que tu pensais modifier un simple tag signale souvent un attribut qui force le remplacement de la ressource (indiqué par `-/+` et la mention `forces replacement`) : pour une base de données, cela veut dire perdre les données.
+
+### Variables, outputs et modules
+
+Un vrai projet ne code pas les valeurs en dur. Les **variables** paramètrent le code, les **outputs** exposent des valeurs utiles (une IP, un identifiant) à d'autres outils, et les **modules** regroupent des ressources réutilisables, comme des fonctions.
+
+```hcl
+# variables.tf
+variable "environment" {
+  type        = string
+  description = "Nom de l'environnement (staging, production)"
+  validation {
+    condition     = contains(["staging", "production"], var.environment)
+    error_message = "environment doit valoir staging ou production."
+  }
+}
+
+# main.tf — appel d'un module local avec une variable
+module "uploads_bucket" {
+  source      = "./modules/private-bucket"
+  name        = "nyx-uploads-${var.environment}"
+}
+
+# outputs.tf
+output "bucket_arn" {
+  value = module.uploads_bucket.arn
+}
+```
+
+```bash
+terraform fmt -check       # vérifie le formatage canonique
+terraform validate         # vérifie la syntaxe et la cohérence des références
+terraform plan -var="environment=staging" -out=tfplan
+```
+
+Depuis Terraform 1.5, le bloc `import` permet d'intégrer au code une ressource créée à la main, et le bloc `moved` permet de renommer une ressource dans le code sans la détruire puis la recréer.
+
 ### Le fichier state : pourquoi il est sensible
 
 Terraform stocke l'état de l'infrastructure qu'il gère dans un fichier `terraform.tfstate`. Ce fichier est la seule source de vérité que Terraform utilise pour savoir quelles ressources existent déjà, avec quels attributs — c'est en comparant ce state au code `.tf` que `plan` calcule le diff à appliquer.
 
 <AuditCallout>
-Le fichier state contient souvent des données sensibles en clair : mots de passe de bases de données générés, clés privées, chaînes de connexion. Il ne doit **jamais** être commité dans Git ni stocké localement en équipe — il doit résider dans un backend distant chiffré (S3 + verrouillage DynamoDB, Terraform Cloud, etc.) avec un accès strictement contrôlé.
+Le fichier state contient souvent des données sensibles en clair : mots de passe de bases de données générés, clés privées, chaînes de connexion. Il ne doit **jamais** être commité dans Git ni stocké localement en équipe — il doit résider dans un backend distant chiffré (bucket S3 avec verrouillage, HCP Terraform, backend GCS ou Azure Storage, etc.) avec un accès strictement contrôlé.
 </AuditCallout>
+
+Le **verrouillage** (locking) empêche deux personnes ou deux pipelines d'appliquer des changements en même temps sur le même state, ce qui le corromprait. Avec le backend S3, le verrouillage passait historiquement par une table DynamoDB ; depuis Terraform 1.10, le backend S3 sait verrouiller nativement avec un fichier de verrou dans le bucket, et l'option DynamoDB est dépréciée.
+
+```hcl
+terraform {
+  backend "s3" {
+    bucket       = "nyx-terraform-state"
+    key          = "prod/network.tfstate"
+    region       = "eu-west-3"
+    encrypt      = true      # chiffrement côté serveur
+    use_lockfile = true      # verrouillage natif S3 (Terraform 1.10+)
+  }
+}
+```
+
+### La dérive de configuration
+
+On parle de **dérive** (drift) quand l'infrastructure réelle ne correspond plus au code, typiquement parce que quelqu'un a modifié une règle de pare-feu directement dans la console cloud pendant un incident. La commande `terraform plan -detailed-exitcode` renvoie le code 0 si rien n'a changé, 1 en cas d'erreur et 2 si des différences existent : planifiée chaque nuit dans la CI, elle devient un détecteur de dérive qui alerte l'équipe. La règle d'or reste que **toute modification passe par le code** ; un changement manuel d'urgence doit être reporté dans le code dès que possible.
 
 Un state perdu ou corrompu est un incident grave : Terraform perd la trace de ce qu'il gère et peut tenter de recréer des ressources déjà existantes, causant doublons ou conflits de noms.
 
 ## Ansible : playbooks et idempotence
 
 Un playbook Ansible est un fichier YAML décrivant une liste de tâches à exécuter sur un ou plusieurs hôtes distants, sans agent à installer (tout passe par SSH).
+
+```ini
+# inventory.ini — les hôtes cibles, regroupés par rôle
+[webservers]
+web1.nyx.internal
+web2.nyx.internal ansible_user=deploy
+```
 
 ```yaml
 # playbook.yml
@@ -135,36 +242,54 @@ Un playbook Ansible est un fichier YAML décrivant une liste de tâches à exéc
   become: true
   tasks:
     - name: Installer nginx
-      apt:
+      ansible.builtin.apt:
         name: nginx
         state: present
         update_cache: true
 
     - name: Déployer la configuration du site
-      template:
+      ansible.builtin.template:
         src: templates/nginx-site.conf.j2
         dest: /etc/nginx/sites-available/app.conf
         mode: "0644"
       notify: Redémarrer nginx
 
     - name: S'assurer que nginx est démarré et activé au boot
-      service:
+      ansible.builtin.service:
         name: nginx
         state: started
         enabled: true
 
   handlers:
     - name: Redémarrer nginx
-      service:
+      ansible.builtin.service:
         name: nginx
         state: restarted
 ```
+
+Les modules sont écrits avec leur **nom pleinement qualifié** (FQCN, Fully Qualified Collection Name), comme `ansible.builtin.apt` : c'est la pratique recommandée depuis l'organisation d'Ansible en collections, et l'outil `ansible-lint` le signale si tu utilises la forme courte `apt`. Le **handler** n'est exécuté qu'une seule fois, en fin de play, et uniquement si une tâche qui le notifie a réellement changé quelque chose.
 
 La notion clé d'Ansible est l'**idempotence** : exécuter ce playbook une fois ou cent fois produit exactement le même résultat final. La tâche `apt` avec `state: present` n'installe nginx que s'il est absent — si le playbook tourne à nouveau alors que nginx est déjà installé, Ansible ne fait rien et le rapporte comme "ok" (inchangé), jamais comme une erreur.
 
 <TipCallout>
 Un module Ansible mal écrit (par exemple une tâche `shell: apt install nginx` brute plutôt que le module `apt`) casse l'idempotence : elle réexécuterait la commande à chaque run, sans vérifier l'état préalable. Privilégie toujours les modules dédiés (`apt`, `template`, `service`) plutôt que `shell`/`command` quand c'est possible.
 </TipCallout>
+
+Deux exécutions successives montrent l'idempotence dans le récapitulatif final :
+
+```text
+$ ansible-playbook -i inventory.ini playbook.yml
+PLAY RECAP *********************************************************************
+web1.nyx.internal  : ok=4  changed=3  unreachable=0  failed=0  skipped=0
+web2.nyx.internal  : ok=4  changed=3  unreachable=0  failed=0  skipped=0
+
+$ ansible-playbook -i inventory.ini playbook.yml
+PLAY RECAP *********************************************************************
+web1.nyx.internal  : ok=3  changed=0  unreachable=0  failed=0  skipped=0
+web2.nyx.internal  : ok=3  changed=0  unreachable=0  failed=0  skipped=0
+```
+
+Au second passage, `changed=0` : rien n'a été modifié et le handler ne s'est pas déclenché. L'option `--check --diff` exécute un playbook en mode simulation et affiche les différences de fichiers, l'équivalent Ansible de `terraform plan`. Pour les secrets (mot de passe de base, clé d'API), **Ansible Vault** chiffre des fichiers de variables (`ansible-vault encrypt group_vars/prod/vault.yml`) qui peuvent alors être versionnés.
 
 ## Quand utiliser lequel — ou les deux
 
@@ -179,6 +304,12 @@ En pratique, Terraform et Ansible ne sont pas concurrents mais complémentaires 
 
 En résumé : Terraform répond à "quelles ressources doivent exister ?", Ansible répond à "que doit-il se passer sur ces ressources ?". Une équipe DevOps mature utilise couramment les deux, chacun sur son périmètre naturel.
 
+## Erreurs fréquentes
+
+La première erreur est de **modifier l'infrastructure à la main** « juste cette fois » : le code ne reflète plus la réalité, et le prochain `apply` peut annuler silencieusement la correction ou échouer. La deuxième est d'**appliquer sans relire le plan**, ou d'appliquer un plan différent de celui qui a été relu ; en CI, on enregistre le plan avec `-out=tfplan` et on applique exactement ce fichier.
+
+On voit aussi des **secrets écrits dans des fichiers `.tfvars` commités**, ou des valeurs sensibles exposées en output sans l'attribut `sensitive = true`. Autre classique, l'abus de `-target` pour appliquer une seule ressource, qui laisse le reste du state incohérent et doit rester un outil de dépannage. Côté versions, **ne pas épingler les providers** expose à une mise à jour majeure qui change le comportement d'une ressource : la contrainte `~> 6.0` autorise les versions 6.x mais pas 7.0, et le fichier `.terraform.lock.hcl`, lui, doit être commité. Enfin, côté Ansible, l'erreur classique reste la tâche `shell` qui casse l'idempotence.
+
 ## Lab — Mise en Pratique
 
 **Environnement** : terminal Nyx Shell (Terraform + Ansible installés)
@@ -187,17 +318,21 @@ En résumé : Terraform répond à "quelles ressources doivent exister ?", Ansib
   { title: "Initialiser un projet Terraform", description: "Crée un fichier main.tf minimal (provider local ou null_resource) puis initialise le projet.", code: "terraform init" },
   { title: "Prévisualiser le plan", description: "Affiche le diff des changements qui seraient appliqués, sans rien modifier.", code: "terraform plan -out=tfplan" },
   { title: "Appliquer le plan validé", description: "Applique exactement le plan prévisualisé à l'étape précédente.", code: "terraform apply tfplan" },
-  { title: "Écrire un playbook Ansible idempotent", description: "Crée un playbook.yml qui installe un paquet via le module apt (pas shell), puis exécute-le deux fois de suite pour observer que la deuxième exécution ne rapporte aucun changement.", code: "ansible-playbook -i localhost, -c local playbook.yml" },
+  { title: "Simuler une dérive", description: "Si ton main.tf utilise une ressource local_file, supprime à la main le fichier qu'elle a créé, puis relance un plan avec -detailed-exitcode et observe le code de sortie 2 qui signale la dérive.", code: "terraform plan -detailed-exitcode; echo \"code de sortie : $?\"" },
+  { title: "Écrire un playbook Ansible idempotent", description: "Crée un playbook.yml qui installe un paquet via le module ansible.builtin.apt (pas shell), puis exécute-le deux fois de suite pour observer que la deuxième exécution affiche changed=0.", code: "ansible-playbook -i localhost, -c local playbook.yml" },
+  { title: "Simuler et vérifier la qualité", description: "Exécute le playbook en mode simulation avec affichage des différences, puis passe-le à ansible-lint.", code: "ansible-playbook -i localhost, -c local playbook.yml --check --diff\nansible-lint playbook.yml" },
   { title: "Nettoyer l'environnement", description: "Détruis les ressources Terraform créées pour ce lab.", code: "terraform destroy" },
 ]} />
 
-## En résumé
+## À retenir
 
 - L'Infrastructure as Code transforme l'infrastructure en fichiers versionnés : reproductibilité, revue de code des changements, et disaster recovery en relançant simplement le code.
 - Terraform est déclaratif (décrit l'état final voulu) ; Ansible est principalement impératif (décrit une séquence d'étapes).
 - Le workflow Terraform suit toujours init → plan → apply → destroy ; `plan` affiche le diff avant toute modification réelle.
 - Le fichier state de Terraform contient des données sensibles et doit résider dans un backend distant chiffré, jamais dans Git.
 - L'idempotence est le principe central d'Ansible : réexécuter un playbook produit toujours le même résultat final, à condition d'utiliser les modules dédiés plutôt que `shell`/`command`.
+- OpenTofu est le fork open source de Terraform (commande `tofu`), compatible avec le même langage HCL ; HCP Terraform est le nouveau nom de Terraform Cloud.
+- Le state doit être verrouillé (verrou natif S3 depuis Terraform 1.10, DynamoDB désormais déprécié) ; `plan -detailed-exitcode` détecte la dérive.
 - Terraform et Ansible se combinent naturellement : Terraform provisionne les ressources, Ansible les configure — les mauvaises configurations IaC (bucket public, règles trop permissives) seront approfondies dans "DevSecOps Avancé".
 
 ## Questions de Révision
@@ -208,3 +343,6 @@ En résumé : Terraform répond à "quelles ressources doivent exister ?", Ansib
 4. Pourquoi le fichier state ne doit-il jamais être commité dans un dépôt Git ?
 5. Qu'est-ce que l'idempotence dans un playbook Ansible, et pourquoi une tâche `shell` brute risque-t-elle de la casser ?
 6. Dans un pipeline combinant les deux outils, quel rôle joue typiquement Terraform, et quel rôle joue typiquement Ansible ?
+7. Un plan affiche `-/+ resource "aws_db_instance"` avec la mention `forces replacement`. Que va-t-il se passer et que fais-tu avant d'appliquer ?
+8. Qu'est-ce que la dérive de configuration, comment la détecter automatiquement et comment l'éviter ?
+9. Pourquoi le verrouillage du state est-il indispensable dès que plusieurs personnes ou pipelines travaillent sur la même infrastructure ?
