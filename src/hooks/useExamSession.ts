@@ -1,113 +1,107 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react'
-import { submitExam } from '@/actions'
+import { startExam, submitExam } from '@/actions'
 import { useToast } from '@/hooks/useToast'
-import { ExamService, QuizService } from '@/services'
-import type { CourseExam, ExamAttemptResult, QuizQuestion } from '@/domain'
+import type { CourseExamSummary, ExamPaper, ExamQuestionPublic, ExamSubmission } from '@/domain'
 
-// Certification-style pacing (CEH/Security+ ballpark) rather than the untimed, reveal-as-you-go
-// chapter quiz — the whole point of a final exam is to simulate real exam conditions.
-const SECONDS_PER_QUESTION = 90
-
-// Reorders one question's 4 options and remaps `correct` to match — so memorizing "the 2nd
-// option" from a previous attempt is useless, the content itself hasn't moved, only its position.
-function shuffleQuestionOptions(question: QuizQuestion): QuizQuestion {
-  const correctSet = new Set(ExamService.correctIndices(question))
-  const order = QuizService.shuffle([0, 1, 2, 3])
-  const options = order.map((i) => question.options[i]) as [string, string, string, string]
-  const remapped = order.reduce<number[]>((acc, originalIndex, newIndex) => {
-    if (correctSet.has(originalIndex)) acc.push(newIndex)
-    return acc
-  }, [])
-  return { ...question, options, correct: (remapped.length === 1 ? remapped[0] : remapped) as QuizQuestion['correct'] }
-}
-
-// Draws a random ~60% slice of the question bank per attempt (once banks are large enough — see
-// content authoring) so two attempts rarely see the exact same set, on top of the per-attempt
-// question/option shuffle above. Falls back to the full bank untouched if it's already small.
-const SUBSET_RATIO = 0.6
-const MIN_SUBSET_SIZE = 20
-
-function buildShuffledQuestions(questions: QuizQuestion[]): QuizQuestion[] {
-  const targetSize = Math.max(MIN_SUBSET_SIZE, Math.round(questions.length * SUBSET_RATIO))
-  const pool = questions.length > targetSize ? QuizService.shuffle(questions).slice(0, targetSize) : QuizService.shuffle(questions)
-  return pool.map(shuffleQuestionOptions)
-}
+export type ExamPhase = 'intro' | 'running' | 'done'
 
 export interface ExamSessionState {
-  shuffledQuestions: QuizQuestion[]
+  phase: ExamPhase
+  questions: ExamQuestionPublic[]
   currentIndex: number
-  currentQuestion: QuizQuestion
+  currentQuestion: ExamQuestionPublic | null
   total: number
   answersByQuestion: Record<string, number[]>
   answeredCount: number
   remainingSeconds: number
-  result: ExamAttemptResult | null
-  isSubmitting: boolean
+  result: ExamSubmission | null
+  error: string | null
+  isPending: boolean
+  start: () => void
   select: (choice: number) => void
   goTo: (index: number) => void
   submit: () => void
   restart: () => void
 }
 
-export function useExamSession(exam: CourseExam): ExamSessionState {
-  const [shuffledQuestions, setShuffledQuestions] = useState(() => buildShuffledQuestions(exam.questions))
-  // Based on the drawn subset actually presented this attempt, not the full question bank — a
-  // 60-question bank sliced down to 30 for this attempt should still get ~30 questions' worth of
-  // time, not time for all 60.
-  const totalSeconds = shuffledQuestions.length * SECONDS_PER_QUESTION
-  const [startedAt] = useState(() => Date.now())
+export function useExamSession(exam: CourseExamSummary): ExamSessionState {
+  const [paper, setPaper] = useState<ExamPaper | null>(null)
+  const [deadline, setDeadline] = useState<number | null>(null)
+  const [now, setNow] = useState(() => Date.now())
   const [currentIndex, setCurrentIndex] = useState(0)
   const [answersByQuestion, setAnswersByQuestion] = useState<Record<string, number[]>>({})
-  const [remainingSeconds, setRemainingSeconds] = useState(totalSeconds)
-  const [result, setResult] = useState<ExamAttemptResult | null>(null)
-  const [isSubmitting, startTransition] = useTransition()
-  // A functional setState updater must stay pure — starting a transition inside one (as this used
-  // to do, to guard against double-submit) trips React's "cannot call startTransition while
-  // rendering" the moment two triggers race (e.g. the timer hitting 0 right as the user clicks
-  // "Terminer"). A ref gives the same synchronous double-submit guard without that side effect.
+  const [result, setResult] = useState<ExamSubmission | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [isPending, startTransition] = useTransition()
+  // Synchronous double-submit guard (timer reaching 0 while the user clicks "Terminer").
   const hasSubmittedRef = useRef(false)
   const toast = useToast()
 
-  const total = shuffledQuestions.length
-  const currentQuestion = shuffledQuestions[currentIndex]
+  const questions = useMemo(() => paper?.questions ?? [], [paper])
+  const total = questions.length
+  const currentQuestion = questions[currentIndex] ?? null
+  const phase: ExamPhase = result ? 'done' : paper ? 'running' : 'intro'
+  const remainingSeconds = deadline ? Math.max(0, Math.ceil((deadline - now) / 1000)) : exam.durationSeconds
 
-  const submit = useCallback(() => {
-    if (hasSubmittedRef.current) return
+  const start = useCallback((): void => {
+    setError(null)
+    startTransition(async () => {
+      const res = await startExam({ examId: exam.id })
+      if (!res.success) {
+        setError(res.error)
+        return
+      }
+      hasSubmittedRef.current = false
+      setPaper(res.data)
+      setCurrentIndex(0)
+      setAnswersByQuestion({})
+      setNow(Date.now())
+      setDeadline(Date.now() + res.data.durationSeconds * 1000)
+    })
+  }, [exam.id])
+
+  const submit = useCallback((): void => {
+    if (!paper || hasSubmittedRef.current) return
     hasSubmittedRef.current = true
 
-    const answers = shuffledQuestions.map((q) => ({ questionId: q.id, chosen: answersByQuestion[q.id] ?? [] }))
+    const answers = paper.questions.map((q) => ({ questionId: q.id, chosen: answersByQuestion[q.id] ?? [] }))
     startTransition(async () => {
-      const duration = Math.round((Date.now() - startedAt) / 1000)
-      const res = await submitExam({ examId: exam.id, answers, duration })
-      if (res.success) {
-        setResult(res.data)
-        toast[res.data.passed ? 'success' : 'error'](
-          res.data.passed
-            ? `Examen réussi — ${res.data.percentage}% (seuil ${exam.passingPercentage}%).`
-            : `Examen échoué — ${res.data.percentage}% (seuil ${exam.passingPercentage}% requis). Tu peux le repasser.`
-        )
+      const res = await submitExam({ token: paper.token, answers })
+      if (!res.success) {
+        setError(res.error)
+        hasSubmittedRef.current = false
+        return
       }
+      setResult(res.data)
+      setDeadline(null)
+      toast[res.data.passed ? 'success' : 'error'](
+        res.data.passed
+          ? `Examen réussi — ${res.data.percentage}% (seuil ${exam.passingPercentage}%).`
+          : `Examen échoué — ${res.data.percentage}% (seuil ${exam.passingPercentage}% requis). Tu peux le repasser.`
+      )
     })
-  }, [exam.id, exam.passingPercentage, shuffledQuestions, answersByQuestion, startedAt, toast])
+  }, [paper, answersByQuestion, exam.passingPercentage, toast])
 
+  // Clock tick while the attempt is running.
   useEffect(() => {
-    if (result) return
-    const interval = setInterval(() => setRemainingSeconds((s) => Math.max(0, s - 1)), 1000)
+    if (!deadline) return
+    const interval = setInterval(() => setNow(Date.now()), 1000)
     return () => clearInterval(interval)
-  }, [result])
+  }, [deadline])
 
+  // Auto-submit when time is up (the server rejects late submissions anyway).
   useEffect(() => {
-    if (remainingSeconds === 0 && !result) submit()
-  }, [remainingSeconds, result, submit])
+    if (phase === 'running' && remainingSeconds === 0) submit()
+  }, [phase, remainingSeconds, submit])
 
   const select = useCallback(
-    (choice: number) => {
+    (choice: number): void => {
+      if (!currentQuestion) return
       setAnswersByQuestion((prev) => {
+        if (!currentQuestion.multiSelect) return { ...prev, [currentQuestion.id]: [choice] }
         const current = prev[currentQuestion.id] ?? []
-        if (!ExamService.isMultiSelect(currentQuestion)) return { ...prev, [currentQuestion.id]: [choice] }
-
         const next = current.includes(choice) ? current.filter((c) => c !== choice) : [...current, choice]
         return { ...prev, [currentQuestion.id]: next }
       })
@@ -116,53 +110,37 @@ export function useExamSession(exam: CourseExam): ExamSessionState {
   )
 
   const goTo = useCallback(
-    (index: number) => {
+    (index: number): void => {
       if (index >= 0 && index < total) setCurrentIndex(index)
     },
     [total]
   )
 
-  const restart = useCallback(() => {
-    hasSubmittedRef.current = false
-    setShuffledQuestions(buildShuffledQuestions(exam.questions))
-    setCurrentIndex(0)
-    setAnswersByQuestion({})
-    setRemainingSeconds(totalSeconds)
+  const restart = useCallback((): void => {
+    setPaper(null)
     setResult(null)
-  }, [exam.questions, totalSeconds])
+    setDeadline(null)
+    setError(null)
+  }, [])
 
-  const answeredCount = Object.keys(answersByQuestion).length
+  const answeredCount = Object.values(answersByQuestion).filter((c) => c.length > 0).length
 
-  return useMemo(
-    () => ({
-      shuffledQuestions,
-      currentIndex,
-      currentQuestion,
-      total,
-      answersByQuestion,
-      answeredCount,
-      remainingSeconds,
-      result,
-      isSubmitting,
-      select,
-      goTo,
-      submit,
-      restart,
-    }),
-    [
-      shuffledQuestions,
-      currentIndex,
-      currentQuestion,
-      total,
-      answersByQuestion,
-      answeredCount,
-      remainingSeconds,
-      result,
-      isSubmitting,
-      select,
-      goTo,
-      submit,
-      restart,
-    ]
-  )
+  return {
+    phase,
+    questions,
+    currentIndex,
+    currentQuestion,
+    total,
+    answersByQuestion,
+    answeredCount,
+    remainingSeconds,
+    result,
+    error,
+    isPending,
+    start,
+    select,
+    goTo,
+    submit,
+    restart,
+  }
 }

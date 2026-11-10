@@ -9,6 +9,7 @@ export const CACHE_KEYS = {
   tpSession: (sessionId: string) => `tp:session:${sessionId}`,
   tpActiveSessions: 'tp:sessions:active:count',
   rateLimit: (key: string) => `ratelimit:${key}`,
+  examSession: (token: string) => `exam:session:${token}`,
   statsActivityDates: 'stats:activity-dates',
   statsEarnedCredits: 'stats:earned-credits',
   statsProgressionCounts: 'stats:progression-counts',

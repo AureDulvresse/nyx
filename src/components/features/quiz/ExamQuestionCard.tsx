@@ -4,8 +4,7 @@ import { CheckmarkSquare01Icon, Square01Icon, CheckmarkCircle01Icon, CircleIcon 
 import { cn } from '@/lib/utils/cn'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { ExamService } from '@/services'
-import type { QuizQuestion } from '@/domain'
+import type { ExamQuestionPublic } from '@/domain'
 
 // Unlike QuestionCard (chapter quizzes), there's no per-question reveal here — real exam
 // conditions mean you don't find out if you were right until the whole thing is submitted.
@@ -16,13 +15,13 @@ export function ExamQuestionCard({
   selected,
   onSelect,
 }: {
-  question: QuizQuestion
+  question: ExamQuestionPublic
   index: number
   total: number
   selected: number[]
   onSelect: (choice: number) => void
 }): React.JSX.Element {
-  const multi = ExamService.isMultiSelect(question)
+  const multi = question.multiSelect
   const OptionIcon = multi
     ? (i: number) => (selected.includes(i) ? CheckmarkSquare01Icon : Square01Icon)
     : (i: number) => (selected.includes(i) ? CheckmarkCircle01Icon : CircleIcon)
@@ -43,6 +42,9 @@ export function ExamQuestionCard({
           return (
             <button
               key={i}
+              type="button"
+              role={multi ? 'checkbox' : 'radio'}
+              aria-checked={selected.includes(i)}
               onClick={() => onSelect(i)}
               className={cn(
                 'flex w-full items-center gap-3 rounded-md border px-4 py-3 text-left text-sm transition-colors',

@@ -1,7 +1,7 @@
 'use client'
 
 import { cn } from '@/lib/utils/cn'
-import type { QuizQuestion } from '@/domain'
+import type { ExamQuestionPublic } from '@/domain'
 
 export function ExamNav({
   questions,
@@ -9,7 +9,7 @@ export function ExamNav({
   answersByQuestion,
   onGoTo,
 }: {
-  questions: QuizQuestion[]
+  questions: Pick<ExamQuestionPublic, 'id'>[]
   currentIndex: number
   answersByQuestion: Record<string, number[]>
   onGoTo: (index: number) => void
@@ -23,6 +23,8 @@ export function ExamNav({
           <button
             key={q.id}
             onClick={() => onGoTo(i)}
+            aria-label={`Question ${i + 1}${answered ? ' (répondue)' : ''}`}
+            aria-current={current ? 'step' : undefined}
             className={cn(
               'flex h-8 w-8 items-center justify-center rounded-md border text-xs font-medium transition-colors',
               current

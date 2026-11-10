@@ -15,6 +15,8 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   if (!exam) notFound()
 
   const latestAttempt = await examRepo.findLatestAttempt(exam.id)
+  // Only metadata reaches the browser: questions are drawn server-side when the attempt starts.
+  const summary = ExamService.summarize(exam)
 
   return (
     <div className="mx-auto max-w-2xl space-y-8">
@@ -26,13 +28,13 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
       />
       <PageHeader
         title={exam.title}
-        description={`${exam.questions.length} questions · ${exam.passingPercentage}% requis pour réussir`}
+        description={`${summary.questionCount} questions · ${Math.round(summary.durationSeconds / 60)} min · ${summary.passingPercentage}% requis pour réussir`}
       />
 
       {ExamService.isRetakeBlocked(latestAttempt) ? (
         <ExamCooldownCard courseSlug={course.slug} />
       ) : (
-        <ExamSession exam={exam} courseSlug={course.slug} />
+        <ExamSession exam={summary} courseSlug={course.slug} />
       )}
     </div>
   )

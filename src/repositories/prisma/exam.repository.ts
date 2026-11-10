@@ -1,7 +1,8 @@
+import { randomUUID } from 'node:crypto'
 import { prisma } from '@/lib/prisma'
 import { cacheService, CACHE_KEYS } from '@/infrastructure/cache'
 import type { IExamRepository } from '../interfaces'
-import type { CourseExam, ExamAttempt, ExamAttemptResult } from '@/domain'
+import type { CourseExam, ExamAttempt, ExamAttemptResult, ExamSessionData } from '@/domain'
 
 export class PrismaExamRepository implements IExamRepository {
   async findByCourse(courseId: string): Promise<CourseExam | null> {
@@ -39,5 +40,18 @@ export class PrismaExamRepository implements IExamRepository {
       where: { examId },
       orderBy: { createdAt: 'desc' },
     }) as unknown as Promise<ExamAttempt | null>
+  }
+
+  async createSession(session: ExamSessionData, ttlSeconds: number): Promise<string> {
+    const token = randomUUID()
+    await cacheService.set(CACHE_KEYS.examSession(token), session, ttlSeconds)
+    return token
+  }
+
+  async consumeSession(token: string): Promise<ExamSessionData | null> {
+    const key = CACHE_KEYS.examSession(token)
+    const session = await cacheService.get<ExamSessionData>(key)
+    if (session) await cacheService.del(key)
+    return session
   }
 }

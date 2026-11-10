@@ -4,32 +4,17 @@ import { Badge } from '@/components/ui/badge'
 import { ProgressRing } from '@/components/common/ProgressRing'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils/cn'
-import { ExamService } from '@/services'
-import type { ExamAttemptResult, QuizQuestion } from '@/domain'
+import type { ExamQuestionPublic, ExamSubmission } from '@/domain'
 
-// Weak-topic breakdown for a failed attempt: which tags had at least one wrong answer, and how
-// many. No question-by-question reveal here on purpose — see the WeakTopics vs QuestionReview
-// split below.
-function WeakTopics({ result, questions }: { result: ExamAttemptResult; questions: QuizQuestion[] }): React.JSX.Element | null {
-  const byId = new Map(questions.map((q) => [q.id, q]))
-  const wrongByTag = new Map<string, number>()
-
-  for (const a of result.answers) {
-    if (a.correct) continue
-    const question = byId.get(a.questionId)
-    for (const tag of question?.tags ?? []) {
-      wrongByTag.set(tag, (wrongByTag.get(tag) ?? 0) + 1)
-    }
-  }
-
-  const sortedTags = Array.from(wrongByTag.entries()).sort((a, b) => b[1] - a[1])
-  if (sortedTags.length === 0) return null
-
+// Weak-topic breakdown for a failed attempt: which tags had wrong answers, and how many. No
+// question-by-question reveal on failure — see QuestionReview below.
+function WeakTopics({ weakTags }: { weakTags: ExamSubmission['weakTags'] }): React.JSX.Element | null {
+  if (weakTags.length === 0) return null
   return (
     <div className="w-full text-left">
       <p className="mb-2 text-sm font-medium text-text-primary">Thèmes à retravailler</p>
       <div className="flex flex-wrap gap-2">
-        {sortedTags.map(([tag, count]) => (
+        {weakTags.map(({ tag, count }) => (
           <Badge key={tag} variant="outline">
             {tag} ({count})
           </Badge>
@@ -39,29 +24,32 @@ function WeakTopics({ result, questions }: { result: ExamAttemptResult; question
   )
 }
 
-// Full per-question breakdown — only ever rendered for a PASSED attempt (see ExamResult below).
-// Revealing exact right/wrong answers on a FAILED attempt would let someone grind pass-fail-retry
-// cycles into free answer-key lookups instead of actually re-studying the material.
-function QuestionReview({ result, questions }: { result: ExamAttemptResult; questions: QuizQuestion[] }): React.JSX.Element {
+// Full per-question correction — the server only sends it for a PASSED attempt, so failing
+// repeatedly can't be used as a free answer-key lookup instead of re-studying the material.
+function QuestionReview({
+  review,
+  questions,
+}: {
+  review: NonNullable<ExamSubmission['review']>
+  questions: ExamQuestionPublic[]
+}): React.JSX.Element {
   const byId = new Map(questions.map((q) => [q.id, q]))
 
   return (
     <div className="w-full space-y-3 text-left">
       <p className="text-sm font-medium text-text-primary">Revue des questions</p>
-      {result.answers.map((a, i) => {
-        const question = byId.get(a.questionId)
+      {review.map((item, i) => {
+        const question = byId.get(item.questionId)
         if (!question) return null
-        const correct = ExamService.correctIndices(question)
-
         return (
-          <Card key={a.questionId} className="p-4">
+          <Card key={item.questionId} className="p-4">
             <p className="mb-2 text-sm font-medium text-text-primary">
               {i + 1}. {question.question}
             </p>
             <div className="space-y-1.5">
               {question.options.map((option, idx) => {
-                const wasChosen = a.chosen.includes(idx)
-                const isCorrect = correct.includes(idx)
+                const wasChosen = item.chosen.includes(idx)
+                const isCorrect = item.correctOptions.includes(idx)
                 return (
                   <div
                     key={idx}
@@ -79,7 +67,7 @@ function QuestionReview({ result, questions }: { result: ExamAttemptResult; ques
                 )
               })}
             </div>
-            <p className="mt-2 text-xs text-text-secondary">{question.explanation}</p>
+            <p className="mt-2 text-xs text-text-secondary">{item.explanation}</p>
           </Card>
         )
       })}
@@ -94,8 +82,8 @@ export function ExamResult({
   courseSlug,
   onRetry,
 }: {
-  result: ExamAttemptResult
-  questions: QuizQuestion[]
+  result: ExamSubmission
+  questions: ExamQuestionPublic[]
   passingPercentage: number
   courseSlug: string
   onRetry: () => void
@@ -103,27 +91,25 @@ export function ExamResult({
   return (
     <Card className="flex flex-col items-center gap-4 p-8 text-center">
       <ProgressRing percentage={result.percentage} size={110} color={result.passed ? 'var(--green)' : 'var(--red)'} />
-      <div>
+      <div aria-live="polite">
         <h3 className="text-xl font-bold text-text-primary">
           {result.passed ? 'Examen réussi — félicitations !' : 'Examen échoué'}
         </h3>
         <p className="mt-1 text-text-secondary">
-          {result.score} / {result.total} bonnes réponses ({result.percentage}%) en {Math.floor(result.duration / 60)}min
-          {result.duration % 60}s
+          {result.score} / {result.total} bonnes réponses ({result.percentage}%) en {Math.floor(result.duration / 60)} min{' '}
+          {String(result.duration % 60).padStart(2, '0')} s
         </p>
         <p className="mt-1 text-sm text-text-secondary">Seuil de réussite : {passingPercentage}%</p>
       </div>
 
-      {result.passed ? (
-        <QuestionReview result={result} questions={questions} />
-      ) : (
-        <WeakTopics result={result} questions={questions} />
-      )}
+      {result.review ? <QuestionReview review={result.review} questions={questions} /> : <WeakTopics weakTags={result.weakTags} />}
 
       <div className="flex gap-2">
-        <Button variant="secondary" onClick={onRetry}>
-          Repasser l&apos;examen
-        </Button>
+        {!result.passed && (
+          <Button variant="secondary" onClick={onRetry}>
+            Repasser l&apos;examen
+          </Button>
+        )}
         <Link href={`/courses/${courseSlug}`}>
           <Button>Retour au cours</Button>
         </Link>
